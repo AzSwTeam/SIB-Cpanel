@@ -1,0 +1,223 @@
+﻿@model SFBCPanel.Models.Custreport
+@using SFBCPanel.Models;
+
+@{
+    ViewBag.Title = "Credit API Reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<CustomerTransferReportViewModel> accumulativereport = Session["accumulativereport"] as List<CustomerTransferReportViewModel>;
+    List<CustomerTransferReportViewModel> transactionsperbranch = Session["transactionperbranch"] as List<CustomerTransferReportViewModel>;
+}
+
+<header>
+    <script src="~/Content/jquery.dataTables.js"></script>
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+    <style>
+
+        * {
+            overflow-y: visible;
+        }
+
+        td {
+            font-size: small !important;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            var table = $('#example').DataTable();
+            var table2 = $('#example2').DataTable();
+            var table3 = $('#example3').DataTable();
+        });
+    </script>
+</header>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <h2>Overview Report</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Customers accumulative transfer report
+                </ol>
+                <div class="box-body">
+                    @using (Html.BeginForm(new { id = "form" }))
+                    {
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-1" style="margin-top:0.5%">Branch</label>
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.BranchCode, Model.Branches, new { @class = "form-control ", @placeholder = "Branch...", @id = "dropfilter" })
+                                </div>
+                            </div>
+                            <br /><br />
+                            <table id="example" class="display nowrap" style="font-size:small">
+                                <thead>
+                                    <tr>
+                                        <th style="font-size:small">
+                                            Transaction Type
+                                        </th>
+                                        <th style="font-size:small">
+                                            Transactions Count
+                                        </th>
+                                        <th style="font-size:small">
+                                            Accumulative Amount
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablebody">
+                                    @foreach (var transaction in accumulativereport)
+                                    {
+                                        <tr>
+                                            <td style="font-size:small">
+                                                @transaction.TranResult
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.CurrencyCode
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.TranReqAmount SDG
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <br />
+                            <br />
+                        </div>
+                        <div class="col-xs-57 col-xs-offset-6" style="position:relative;right:9%">
+                            <input type="submit" onclick="submitanddisable()" formaction="@Url.Action("saveaccumulativereport", "CustomerReport")" value="Print report" class="btn btn-lg" style="color:white;font-size:small" />
+                        </div>
+                    }
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <ol class="breadcrumb" style="font-size:medium">
+                    Transactions per branch report
+                </ol>
+                <div class="box-body">
+                    @using (Html.BeginForm(new { id = "form" }))
+                    {
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-2" style="margin-top:0.5%">Transaction Type</label>
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.BranchCode, Model.transactions_names, new { @class = "form-control ", @id = "transactionsperbranch" })
+                                </div>
+                            </div>
+                            <br /><br />
+                            <table id="example2" class="display nowrap" style="font-size:small">
+                                <thead>
+                                    <tr>
+                                        <th style="font-size:small">
+                                            Branch Name
+                                        </th>
+                                        <th style="font-size:small">
+                                            Transactions Count
+                                        </th>
+                                        <th style="font-size:small">
+                                            Accumulative Amount
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablebody">
+                                    @foreach (var transaction in transactionsperbranch)
+                                    {
+                                        <tr>
+                                            <td style="font-size:small">
+                                                @transaction.TranResult
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.CurrencyCode
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.TranReqAmount SDG
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <br />
+                            <br />
+                        </div>
+                        <div class="col-xs-57 col-xs-offset-6" style="position:relative;right:9%">
+                            <input type="submit" onclick="submitanddisable()" formaction="@Url.Action("savetransactionperbranchreport", "CustomerReport")" value="Print report" class="btn btn-lg" style="color:white;font-size:small" />
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+</section>
+
+<script>
+
+    // setting session variable for branch name -> print document
+    //$_SESSION['Branchname'] = $('#dropfilter').val();
+    //sessionStorage.Branchname = $('#dropfilter').val();
+    //sessionStorage.setItem("Branchname",$('#dropfilter').val());
+    localStorage.setItem("Branchname", $('#dropfilter').val());
+
+
+    // on change action for overview report
+    $("#dropfilter").on("change", function () {
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: '/CustomerReport/FilteredOverviewReport',
+            dataType: 'json',
+            data: {
+                branch_code: $("#dropfilter").val()
+            },
+            contentType: 'application/json',
+            success: function (result) {
+                console.log(result);
+                $("#example").dataTable().fnClearTable();
+                $.each(result, function (status, data) {
+                    $.each(data, function (innerstatus, innerdata) {
+                        var data = [];
+                        data.push(innerdata.TranResult);
+                        data.push(innerdata.CurrencyCode);
+                        data.push(innerdata.TranReqAmount + ' SDG');
+                        $("#example").dataTable().fnAddData(data);
+                    });
+                });
+            }
+        });
+    });
+
+    // on change action for transactions by branch
+    $("#transactionsperbranch").on("change", function () {
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: '/CustomerReport/FilterTransactionsPerBranches',
+            dataType: 'json',
+            data: {
+                transaction_name: $("#transactionsperbranch").val()
+            },
+            contentType: 'application/json',
+            success: function (result) {
+                console.log(result);
+                $("#example2").dataTable().fnClearTable();
+                $.each(result, function (status, data) {
+                    $.each(data, function (innerstatus, innerdata) {
+                        var data = [];
+                        data.push(innerdata.TranResult);
+                        data.push(innerdata.CurrencyCode);
+                        data.push(innerdata.TranReqAmount + ' SDG');
+                        $("#example2").dataTable().fnAddData(data);
+                    });
+                });
+            }
+        });
+    });
+
+</script>

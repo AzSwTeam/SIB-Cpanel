@@ -1,0 +1,76 @@
+﻿@model SFBCPanel.Models.CustomerRegBankinfo
+
+@{
+    ViewBag.Title = "Customer Infomation";
+}
+
+<section class="content">
+    <div class="box-header with-border">
+        <h3 class="box-title my-box-header"></h3>
+    </div>
+    <h2>New Customer Registration</h2><br />
+    <ol class="breadcrumb" style="font-size:medium">
+        Customer Regstration Bank Information
+    </ol>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <!-- TABLE: LATEST Transactions -->
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <div class="box-tools pull-right">
+                        @*<button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                <i class="fa fa-minus"></i>
+                            </button>*@
+                        @*<button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>*@
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <div class="table-responsive">
+                        @*<div class="col-md-6 col-md-offset-0">*@
+                        @using (Html.BeginForm())
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.ValidationSummary(true)
+                            <table id="example1" class="display table-bordered table-hover">
+                                <tr>
+                                    <th style="font-size:small">
+                                        @Html.DisplayNameFor(model => model.CustomerName)
+                                    </th>
+                                    <td style="font-size:small">
+                                        @Html.DisplayFor(model => model.CustomerName)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th style="font-size:small">
+                                        @Html.DisplayNameFor(model => model.CustomerPhone)
+                                    </th>
+                                    <td style="font-size:small">
+                                        @Html.DisplayFor(model => model.CustomerPhone)
+                                    </td>
+                                </tr>
+                            </table>
+                            <br />
+                            <div class="form-group">
+                                <div class="col-xs-5 col-xs-offset-4" style="display:inline-block">
+                                    <input type="submit" value="Refresh" onclick="location.href='@Url.Action("executeupdate", "CustomerRefresh",new { customername = Model.CustomerName , customerphonenumber = Model.CustomerPhone})'" class="btn btn-block btn-flat" style="display:inline-block" />
+                                    <input type="button" value="Cancel" onclick="location.href='@Url.Action("CustomerRefresh", "CustomerRefresh")'" class="btn btn-block btn-flat" style="background-color:red;display:inline-block;width:100%" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@if (ViewBag.msg != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.msg");
+        };
+    </script>
+}

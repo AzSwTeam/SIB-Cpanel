@@ -1,0 +1,3 @@
+http://212.0.139.66:1999/sms_services/bulk/sms.php
+Kh@leej
+Kh@leej*1

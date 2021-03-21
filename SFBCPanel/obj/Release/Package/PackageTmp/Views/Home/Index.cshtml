@@ -1,0 +1,438 @@
+﻿@using SIBCPanel.Models;
+@model IEnumerable<SFBCPanel.Models.TransactionsDetailsModel>
+
+@{
+    ViewBag.Title = "Home Page";
+    List<Charter> usersperbranchscount = Session["usersperbranchscount"] as List<Charter>;
+    List<Charter> usersstatuses = Session["usersstatuses"] as List<Charter>;
+    List<Charter> branchstransactionscount = Session["branchstransactionscount"] as List<Charter>;
+    Layout = null;
+}
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewBag.Title - SSB CPanel</title>
+
+    <!-- Bootstrap CSS CDN -->
+    <link href="~/Content/bootstrap(downloaded).min.css" rel="stylesheet" />
+    <!-- Our Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <!-- Optional Bootstrap theme -->
+    <link rel="stylesheet" href="~/Content/bootstrap-theme.min.css">
+    <!-- Date Picker -->
+    <link href="~/Content/bootstrap-datepicker.css" rel="stylesheet" />
+    <link href="~/Content/mdb.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/Content/style.css">
+    <link href="~/Images/logo_1.png" rel="shortcut icon" type="image/x-icon" />
+
+    <script src="~/Scripts/chart.js"></script>
+
+    <style rel=stylesheet>
+        .navready {
+            min-height: 100vh;
+            background: #005a49;
+            background-image: url('../../Images/noisy.png');
+        }
+
+        @@-webkit-keyframes donut-chart-fill {
+            to {
+                stroke-dasharray: 0 100;
+            }
+        }
+
+        .donut-ring {
+            stroke: #EBEBEB;
+        }
+
+        .donut-segment {
+            animation: donut-chart-fill 1s reverse ease-in;
+            transform-origin: center;
+            stroke: #FF6200;
+        }
+
+        .donut-text {
+            font-family: Arial, Helvetica, sans-serif;
+            /*fill: #FF6200;*/
+        }
+
+        .donut-label {
+            font-size: 0.28em;
+            font-weight: 700;
+            line-height: 1;
+            fill: #000;
+            transform: translateY(0.25em);
+        }
+
+        .donut-percent {
+            font-size: 0.5em;
+            fill: #FF6200;
+            line-height: 1;
+            transform: translateY(0.5em);
+        }
+    </style>
+
+    <script src="~/Scripts/serial.js"></script>
+    <script src="~/Scripts/amcharts.js"></script>
+    <script src="~/Scripts/light.js"></script>
+    <script src="~/Scripts/export.js"></script>
+
+    @*  *@
+    <script src="~/Scripts/amcharts.js"></script>
+    <script src="~/Scripts/light.js"></script>
+    <script src="~/Scripts/pie.js"></script>
+    <script src="~/Scripts/jquery.min.js"></script>
+    <script src="~/Scripts/highcharts.js"></script>
+    <script src="~/Scripts/exporting.js"></script>
+
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- Sidebar Holder -->
+        <div class="navready">
+            <nav id="sidebar" style="width:30%;font-size:12px">
+                <div class="sidebar-header">
+                    <a href="@Url.Action("Index", "Home")"><img src="~/Images/logo_1.png" style="width:47%;height:11%;position: relative;left:26%" /></a>
+                </div>
+                @Html.Action("TopMenu", "Home")
+            </nav>
+        </div>
+        @* PAGE CONTENT *@
+        <div class="container body-content" style="width:95%;height:100%;overflow-x:hidden;overflow-y:hidden">
+            <h4 style="position:absolute;left:80%;top:4%;color:#005a49"> You're logged in as @ViewData["adminname"].ToString()</h4>
+            <h2 style="color:#005a49;position:relative;left:2%">Home</h2><br />
+            <ol class="breadcrumb" style="font-size:medium">
+                IBanking Analysis
+            </ol>
+            <div class="container" style="width:98%">
+                <div class="row my-2">
+                    <div class="col-md-9 py-1 text-center">
+                        <h4> Customers per branch</h4>
+                        <canvas id="myChart3"></canvas>
+                    </div>
+                    <div class="col-md-3 py-1 text-center">
+                        <h4> Registered customers per status </h4>
+                        <canvas id="polarchart" height="400"></canvas>
+                    </div>
+                </div>
+                <br />
+                <div class="row py-2 text-center">
+                    <div class="col-md-9">
+                        <h4> Transactions count per branch </h4>
+                        <canvas id="transactionsperbranch" height="150"></canvas>
+                    </div>
+                    <div class="col-md-3 py-1 text-center">
+                        <div class="card text-white text-center">
+                            <div class="inner" style="display:inline-block">
+                                <h3 style="font-size:40px;display:inline-block;color:#24295E">@ViewBag.Online</h3>
+                                <p style="display:inline-block;color:dimgray">Online Customers</p>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="card text-white text-center">
+                            <div class="inner" style="display:inline-block">
+                                <h3 style="font-size:40px;display:inline-block;color:#24295E">@ViewBag.Offline</h3>
+                                <p style="display:inline-block;color:dimgray">Offline Customers</p>
+                            </div>
+                        </div>
+                        <br />
+                        <a href="@Url.Action("TransactionsStatuses","Home")"><button type="button" class="btn" style="color:white;font-size:large;background-color:#FFCE54">Transactions Statuses Analysis<span style="position:relative;left:5%" class="glyphicon glyphicon-share"></span></button></a>
+                        <a href="@Url.Action("Monitoring","Monitoring")"><button type="button" class="btn" style="color:white;font-size:large;background-color:#008B3B">Connection / transactions monitoring<span style="position:relative;left:3%" class="glyphicon glyphicon-signal"></span></button></a>
+                    </div>
+                </div>
+                @*<br />*@
+                @*<div class="row my-2 text-center">
+                        <div class="col-md-12">
+                            <h4> Successfull and failed transactions </h4>
+                            <canvas id="successfullandfailtransactionsperbranch" height="100"></canvas>
+                        </div>
+                    </div>*@
+                <br />
+            </div>
+
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#sidebarCollapse').on('click', function () {
+            $('#sidebar').toggleClass('active');
+        });
+    });
+</script>
+
+<script>
+
+    var counter = 0; counter1 = 0;counter2 = 0; counter3 = 0;
+    var usersperbranchs = [];
+    var usersstatuses = [];
+    var branchstransactionscount = [];
+
+    populatelists();
+
+    function populatelists() {
+        @foreach (var item in usersperbranchscount)
+        {
+            @:usersperbranchs[counter] = { "branch": "@item.name", "count": "@item.value" }; counter++;
+        }
+        @foreach (var item in usersstatuses)
+        {
+            @:usersstatuses[counter1] = { "status": "@item.name", "count": "@item.value" }; counter1++;
+        }
+        @foreach (var item in branchstransactionscount)
+        {
+            @:branchstransactionscount[counter2] = { "branch": "@item.name", "count": "@item.value" }; counter2++;
+        }
+        console.log(branchstransactionscount);
+    }
+
+</script>
+
+<script>
+
+    var data1 = [];
+    var labels1 = [];
+    for (var i = 0; i < counter1; i++) {
+        labels1.push(usersstatuses[i].status);
+    }
+    for (var i = 0; i < counter1; i++) {
+        data1.push(usersstatuses[i].count);
+    }
+    var ctx = document.getElementById('polarchart').getContext('2d');
+    new Chart(ctx, {
+        data: {
+            datasets: [{
+                data: data1,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.4)'
+                ]
+            }],
+            labels: labels1
+        },
+        type: 'pie'
+    });
+
+</script>
+
+<script>
+
+    var ctx = document.getElementById('doublelineschart').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [{
+                label: '# of Votes',
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }, {
+                label: '# of Votes',
+                data: [10, 20, 30, 40, 50, 60],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+
+</script>
+
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/canvasjs.min.js"></script>
+
+<script>
+    var ctx = document.getElementById('successfullandfailtransactionsperbranch').getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [{
+                label: '# of Votes',
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }, {
+                label: '# of Votes',
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+</script>
+
+<script>
+    var ctx = document.getElementById('myChart2').getContext('2d');
+    var myPieChart = new Chart(ctx, {
+        type: 'polarArea',
+        data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [{
+                label: 'Number of users',
+                data: [12, 19, 3, 5, 2, 3],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        }
+    });
+</script>
+
+<script>
+    var data = [];
+    var labels = [];
+    for (var i = 0; i < counter; i++) {
+        labels.push(usersperbranchs[i].branch);
+    }
+    for (var i = 0; i < counter; i++) {
+        data.push(usersperbranchs[i].count);
+    }
+    var ctx = document.getElementById('myChart3').getContext('2d');
+    var myLineChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Number of users',
+                data: data,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        }
+    });
+</script>
+
+<script>
+    var data2 = [];
+    var labels2 = [];
+    for (var i = 0; i < counter2; i++) {
+        labels2.push(branchstransactionscount[i].branch);
+    }
+    for (var i = 0; i < counter2; i++) {
+        data2.push(branchstransactionscount[i].count);
+    }
+
+    var ctx = document.getElementById('transactionsperbranch').getContext('2d');
+    var myLineChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels2,
+            datasets: [{
+                label: 'Number of users',
+                data: data2,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        }
+    });
+</script>

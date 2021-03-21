@@ -1,0 +1,71 @@
+﻿@model IEnumerable<SFBCPanel.Models.Menu>
+
+<style>
+    #englishnavbar ul li a:hover {
+        background: #cd9537;
+        background-image: url('../../Images/45-degree-fabric-light (1).png');
+    }
+</style>
+
+<div id="englishnavbar">
+    <ul class="list-unstyled " style="color:#FAFAFA">
+        <li style="color:#24295E;">
+            <a href="/Home/index" style="color:#FAFAFA;padding-left:28%">
+                <i class="glyphicon glyphicon-object-align-bottom" style="padding-right:5%"></i>Dashboard
+            </a>
+        </li>
+        @foreach (var m in Model)
+        {
+            if (m.MenuParentID == 0)
+            {
+                var submenu = Model.Where(n => n.MenuParentID == m.MID).ToList();
+                if (submenu != null && submenu.Count > 0)
+                {
+                    <li style="color:#FAFAFA">
+                        <a href="#@m.MID" data-toggle="collapse" aria-expanded="false">
+                            @m.MenuName
+                        </a>
+                        <ul class="collapse list-unstyled" id="@m.MID">
+                            @foreach (var e in submenu)
+                            {
+                                var submenu2 = Model.Where(n => n.subMenuParentID == e.MID).ToList();
+                                if (submenu2 != null && submenu2.Count > 0)
+                                {
+                                    <li>
+                                        <a href="#@e.MID" data-toggle="collapse" aria-expanded="false">
+                                            @e.MenuName
+                                        </a>
+                                        <ul id="@e.MID" class="collapse list-unstyled">
+                                            @foreach (var ee in submenu2)
+                                            {
+                                                string exampleString = ee.MenuURL;
+                                                // Split string on spaces. This will separate all the words in a string
+                                                string[] words = exampleString.Split('/');
+                                                <li style="color:#FAFAFA"><a href="@ee.MenuURL">@ee.MenuName </a></li>
+                                            }
+                                        </ul>
+                                    </li>
+                                }
+                                else
+                                {
+                                    string exampleString = e.MenuURL;
+                                    // Split string on spaces. This will separate all the words in a string
+                                    string[] words = exampleString.Split('/');
+                                    <li><a href="@Url.Action(words[1],words[0])" style="color:#FAFAFA">@e.MenuName </a></li>
+                                }
+                            }
+                        </ul>
+                    </li>
+                }
+                else
+                {
+                    //if parent menu does not have child menu
+                    <li>
+                        <a href="@m.MenuURL">@m.MenuName</a>
+                    </li>
+                }
+            }
+        }
+        <li><a href="@Url.Action("Logout", "Home")" style="color:#FAFAFA"> Logout <img src="~/Images/Exit_64px(white).png" width="22" height="22" style="position:relative;left:69%" /></a></li>
+    </ul>
+</div>

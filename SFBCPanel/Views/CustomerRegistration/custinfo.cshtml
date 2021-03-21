@@ -1,0 +1,166 @@
+﻿@model SFBCPanel.Models.CustomerRegBankinfo2
+
+@{
+    ViewBag.Title = "Customer Infomation";
+    var customername = Model.CustomerName;
+}
+
+<style>
+    span {
+        color: #9F3B3E;
+    }
+
+    @@media print {
+        body * {
+            visibility: hidden;
+        }
+
+        .divtoprint * {
+            visibility: visible;
+        }
+    }
+</style>
+
+
+<script src="~/Scripts/qrcode.js"></script>
+
+<section class="content">
+    <div class="box-header with-border">
+        <h3 class="box-title my-box-header"></h3>
+    </div>
+    <h2>New Customer Registration</h2><br />
+    <ol class="breadcrumb" style="font-size:medium">
+        Customer Regstration Bank Information
+    </ol>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="box box-info">
+                    <div class="box-body">
+                        <div class="table-responsive">
+                            <label>
+                                Customer Informations
+                            </label>
+                            @using (Html.BeginForm())
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary(true)
+                                <table id="example1" class="display table-bordered table-hover border-top">
+                                    @if (Model.CustomerID != null)
+                                    {
+                                        <tr>
+                                            <th style="font-size:small">
+                                                @Html.DisplayNameFor(model => model.CustomerID)
+                                            </th>
+                                            <td style="font-size:small">
+                                                @Html.DisplayFor(model => model.CustomerID)
+                                            </td>
+                                        </tr>
+                                    }
+                                    @if (Model.CustomerName != null)
+                                    {
+                                        <tr>
+                                            <th style="font-size:small">
+                                                @Html.DisplayNameFor(model => model.CustomerName)
+                                            </th>
+                                            <td style="font-size:small">
+                                                @Html.DisplayFor(model => model.CustomerName)
+                                            </td>
+                                        </tr>
+                                    }
+                                    @if (Model.CustomerNameArabic != null)
+                                    {
+                                        <tr>
+                                            <th style="font-size:small">
+                                                @Html.DisplayNameFor(model => model.CustomerNameArabic)
+                                            </th>
+                                            <td style="font-size:small">
+                                                @Html.DisplayFor(model => model.CustomerNameArabic)
+                                            </td>
+                                        </tr>
+                                    }
+                                    @if (Model.CustomerPhone != null)
+                                    {
+                                        <tr>
+                                            <th style="font-size:small">
+                                                @Html.DisplayNameFor(model => model.CustomerPhone)
+                                            </th>
+                                            <td style="font-size:small">
+                                                @Html.DisplayFor(model => model.CustomerPhone)
+                                            </td>
+                                        </tr>
+                                    }
+                                    @if (Model.CustomerAddress != null)
+                                    {
+                                        <tr>
+                                            <th style="font-size:small">
+                                                @Html.DisplayNameFor(model => model.CustomerAddress)
+                                            </th>
+                                            <td style="font-size:small">
+                                                @Html.DisplayFor(model => model.CustomerAddress)
+                                            </td>
+                                        </tr>
+                                    }
+
+                                </table>
+                                <br />
+                                <div class="form-group">
+                                    <strong>
+                                        @Html.LabelFor(model => model.CustomerAccount, new { @class = "control-label col-md-4 text-left" })
+                                    </strong><br />
+                                    @Html.DropDownList("CustomerAccount", (IEnumerable<SelectListItem>)ViewBag.CustomerAccounts, new { @class = "form-control", @placeholder = "Enter Account Number...", required = "true", @id = "accountselector" })
+                                </div>
+                                <br />
+                                <div class="form-group">
+                                    <div class="col-xs-5 col-xs-offset-5">
+                                        <input type="submit" value="Submit" class="btn btn-block btn-flat" />
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="col-md-offset-2">
+                    <label>
+                        Customer QR Code
+                    </label>
+                    <div class="divtoprint" id="qrcode" style="width:200px; height:200px; margin-top:15px;margin-left:20px"></div>
+                    <br />
+                    <br />
+                    <div class="form-group">
+                        <div class="col-xs-4 col-xs-offset-2">
+                            <input type="button" value="Print" onclick="window.print();" class="btn btn-block btn-flat" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+    var customername = @Html.Raw(Json.Encode(Model.CustomerNameArabic));
+    var customeraccount = document.getElementById("accountselector").value;
+    var qrtext = '{"no":"' + customeraccount + '","name":"' + customername + '","amount":"0"}';
+
+    var qrcode = new QRCode(document.getElementById("qrcode"), {
+        width: 200,
+        height: 200
+    });
+
+    $("#accountselector").on("change", function () {
+        makeCode();
+        customeraccount = document.getElementById("accountselector").value;
+        qrtext = '{"no":"' + customeraccount + '","name":"' + customername + '","amount":"0"}';
+    });
+
+    qrcode.makeCode(qrtext);
+
+    function makeCode() {
+        customeraccount = document.getElementById("accountselector").value;
+        qrtext = '{"no":"' + customeraccount + '","name":"' + customername + '","amount":"0"}';
+        qrcode.makeCode(qrtext);
+    }
+</script>

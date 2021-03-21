@@ -1,0 +1,228 @@
+﻿@model SFBCPanel.Models.CustomerRegBankinfo
+@using System.Web.Mvc.Html;
+
+@{
+    ViewBag.Title = "Registration";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .switch-field {
+        display: flex;
+        overflow: hidden;
+        padding-left: 1.8%;
+    }
+
+        .switch-field input {
+            position: absolute !important;
+            clip: rect(0, 0, 0, 0);
+            height: 1px;
+            width: 1px;
+            border: 0;
+            overflow: hidden;
+        }
+
+        .switch-field label {
+            background-color: #e4e4e4;
+            color: rgba(0, 0, 0, 0.6);
+            font-size: 14px;
+            line-height: 1;
+            text-align: center;
+            padding: 8px 16px;
+            margin-right: -1px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px rgba(255, 255, 255, 0.1);
+            transition: all 0.1s ease-in-out;
+        }
+
+            .switch-field label:hover {
+                cursor: pointer;
+            }
+
+        .switch-field input:checked + label {
+            background-color: #FFCE54;
+            box-shadow: none;
+        }
+
+        .switch-field label:first-of-type {
+            border-radius: 4px 0 0 4px;
+        }
+
+        .switch-field label:last-of-type {
+            border-radius: 0 4px 4px 0;
+        }
+</style>
+
+@*<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>*@
+
+<section class="col-md-12 connectedSortable">
+    <!-- Own Transfer -->
+    <div class="box-header with-border">
+        <h3 class="box-title my-box-header"></h3>
+    </div>
+    <h2>New Customer Registration</h2><br />
+    <ol class="breadcrumb" style="font-size:medium">
+        Customer Regstration Bank Information
+    </ol>
+    @if (ViewBag.SuccessMessage != null)
+    {
+        <div class="alert alert-success" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>Success!</strong> @ViewBag.SuccessMessage
+        </div>
+    }
+
+    @if (Session["nottobankcustomeraccount"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>Failed!</strong><br />
+            @Session["nottobankcustomeraccount"].ToString()
+        </div>
+    }
+
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-10">
+
+                @using (Html.BeginForm(new { id = "form" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true)
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.cif, new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                @Html.TextBoxFor(model => model.cif, new { @class = "form-control ", @placeholder = "CIF ...", @type = "number", @id = "accountnumber", @maxlength = "7" })
+                                @Html.ValidationMessageFor(model => model.cif)
+                            </div>
+                        </div>
+
+                        @*<div class="form-group">
+                                @Html.LabelFor(model => model.Branch, new { @class = "control-label col-md-4" })
+                                <div class="col-md-8">
+                                    @Html.DropDownListFor(model => model.BranchCode, Model.Branches, null, new { @class = "form-control ", @placeholder = "Branch..." })
+                                    @Html.ValidationMessageFor(model => model.BranchCode)
+                                </div>
+                            </div>*@
+
+                        @*<div class="form-group">
+                                @Html.LabelFor(model => model.Currency, new { @class = "control-label col-md-4" })
+                                <div class="col-md-8">
+                                    @Html.DropDownListFor(model => model.CurrencyCode, Model.Currencies, new { @class = "form-control ", @placeholder = "Branch..." })
+                                    @Html.ValidationMessageFor(model => model.CurrencyCode)
+                                </div>
+                            </div>*@
+
+                        @*<div class="form-group">
+                                @Html.LabelFor(model => model.AccountType, new { @class = "control-label col-md-4" })
+                                <div class="col-md-8">
+                                    @Html.DropDownListFor(model => model.AccountTypecode, Model.AccTypes, new { @class = "form-control ", @placeholder = "Branch..." })
+                                    @Html.ValidationMessageFor(model => model.AccountTypecode)
+                                </div>
+                            </div>*@
+
+                        @*<div class="form-group">
+                                @Html.LabelFor(model => model.AccountNumber, new { @class = "control-label col-md-4" })
+                                <div class="col-md-8">
+                                    @Html.TextBoxFor(model => model.AccountNumber, new { @class = "form-control ", @placeholder = "Account #...", @type = "number", @id = "accountnumber", @maxlength = "7" })
+                                    @Html.ValidationMessageFor(model => model.AccountNumber)
+                                </div>
+                            </div>*@
+
+                        @*<div class="form-group">
+                                @Html.LabelFor(model => model.category, new { @class = "control-label col-md-4" })
+                                <div class="switch-field">
+                                    <input type="radio" id="radio-three" name="switch-two" value="yes" checked />
+                                    <label for="radio-three">One</label>
+                                    <input type="radio" id="radio-four" name="switch-two" value="maybe" />
+                                    <label for="radio-four">Two</label>
+                                    <input type="radio" id="radio-five" name="switch-two" value="no" />
+                                    <label for="radio-five">Three</label>
+                                </div>
+                            </div>*@
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.category, new { @class = "control-label col-md-4" })
+
+                            <div class="col-md-8">
+                                <p>
+                                    @if (Model.Branch != null)
+                                    {
+                                        foreach (var a in Model.catgories)
+                                        {
+                                            if (Model.CategoryCode == a.Value)
+                                            {
+                                                @Html.RadioButtonFor(b => b.CategoryCode, a.Value, new { @class = "radio-inline radio" }) @a.Text
+                                            }
+                                            else
+                                            {
+                                                @Html.RadioButtonFor(b => b.CategoryCode, a.Value, new { @class = "radio-inline radio" }) @a.Text
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        foreach (var a in Model.catgories)
+                                        {
+                                            @Html.RadioButtonFor(b => b.CategoryCode, a.Value, new { @class = "radio-inline radio" }) @a.Text
+                                        }
+                                    }
+                                </p>
+                                @Html.ValidationMessageFor(model => model.CategoryCode)
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+
+                            @Html.LabelFor(model => model.Channel, new { @class = "control-label col-md-4", @type = "label", @value = Model.Channel, id = "1" })
+
+                            <div class="col-md-8">
+                                @Html.CheckBoxListFor(model => model.SelectedChannelsID, model => model.Channels, item => item.ID, item => item.Name, model => model.SelectedChannels, MvcCheckBoxList.Model.Position.Horizontal)
+                                @*@foreach (var a in model.channels)
+                                    {
+                                        @html.checkboxfor(a => a.name,true)
+                                    }*@
+                            </div>
+
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <div class="col-md-5 col-xs-offset-6">
+                            <input type="submit" value="Register" formaction="@Url.Action("Registration","CustomerRegistration")" class="btn btn-lg btn-flat btn-block" onclick="submitanddisable()" style="color:white;font-size:small" />
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    $(".radio").change(function () {
+        var profilevalue = $("input[type='radio']:checked").val();
+        if (profilevalue == 2 | profilevalue == 3) {
+            //$("input[type=checkbox][value=\"2\"]").attr("disabled", true);
+            $("input[type=checkbox][value=\"2\"]").hide();
+            $("input[type=checkbox][value=\"2\"]").next().hide();
+        } else {
+            $("input[type=checkbox][value=\"2\"]").show();
+            $("input[type=checkbox][value=\"2\"]").next().show();
+            console.log("in");
+        }
+    });
+</script>
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <script>
+        window.setTimeout(function () {
+            $(".alert").fadeTo(500, 0).slideUp(500, function () {
+                $(this).remove();
+            });
+        }, 4000);
+    </script>
+}

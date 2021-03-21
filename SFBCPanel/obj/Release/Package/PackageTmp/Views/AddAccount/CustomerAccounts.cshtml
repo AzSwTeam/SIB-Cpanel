@@ -1,0 +1,88 @@
+﻿@model   Cpanel.Models.accountsresult
+
+@{
+    ViewBag.Title = "CustomerAccounts";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@using (Html.BeginForm(new { id = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <section class="content">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <!-- TABLE: LATEST Transactions -->
+                <div class="box box-info">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Customer Accounts</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                <i class="fa fa-minus"></i>
+                            </button>
+
+                        </div>
+                    </div>
+
+                    <div class="box-body">
+
+                        <div class="table-responsive">
+
+                            <table id="example1" class="table table-bordered table-hover table-bordered table-striped">
+                                <thead style="color: cadetblue">
+
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>
+                                             Account Number
+                                        </th>
+                                        <th>
+                                            Account Branch
+                                        </th>
+                                       
+                                        <th>   Account Type</th>
+
+                                        <th>   Account Currency</th>
+                                    </tr>
+                                </thead>
+                                <thead>
+                                    @for (int idx = 0; idx < Model.accountSelected.Count; idx++)
+                                    {
+
+
+                                        <tr>
+                                            <th>
+                                                @Html.DisplayFor(x => Model.accountSelected[idx].AccountID)
+                                                @Html.CheckBoxFor(x => Model.accountSelected[idx].IsSelected)
+                                                @Html.HiddenFor(x => Model.accountSelected[idx].IsSelected)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayFor(x => Model.accountSelected[idx].AccountNumber)
+                                                @Html.HiddenFor(x => Model.accountSelected[idx].AccountNumbercomplete)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayFor(x => Model.accountSelected[idx].Branch)
+                                                @Html.HiddenFor(x => Model.accountSelected[idx].Branch)
+
+                                            </th>
+
+                                            <th>
+                                                @Html.DisplayFor(x => Model.accountSelected[idx].AccountType)
+                                                @Html.HiddenFor(x => Model.accountSelected[idx].AccountType)
+                                            </th>
+                                            <th>
+                                                @Html.DisplayFor(x => Model.accountSelected[idx].Currency)
+                                                @Html.HiddenFor(x => Model.accountSelected[idx].Currency)
+                                            </th>
+                                        </tr>
+
+                                    }
+                                </thead>
+                            </table>
+                            <input type="submit" onclick="submitanddisable()" value="Add" class="btn btn-primary btn-block btn-flat">                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+}

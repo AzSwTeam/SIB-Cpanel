@@ -1,0 +1,100 @@
+﻿@model IEnumerable<SFBCPanel.Models.AtmCardModel>
+
+
+<header>
+
+    @*<script src="~/Content/jquery-1.11.3.min.js"></script>*@
+    <script src="~/Content/jquery.dataTables.js"></script>
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+
+    <script>
+        $(document).ready(function () {
+            var table = $('#example').DataTable();
+        });
+    </script>
+</header>
+
+<section class="content">
+    @*<div class="row">
+        <div class="col-md-12">*@
+    <!-- TABLE: LATEST Transactions -->
+    <div class="box box-info">
+        <h2>Atm Cards requests</h2><br />
+        <ol class="breadcrumb" style="font-size:medium">
+            Cheques books requests
+        </ol>
+        <!-- /.box-header -->
+        <div class="box-body">
+            <div class="col-lg-12 col-md-11 col-sm-11">
+                <table id="example" class="display nowrap" style="font-size:small">
+                    <thead>
+                        <tr>
+                            <th style="font-size:small">
+                                @Html.DisplayNameFor(model => model.account_number)
+                            </th>
+                            <th style="font-size:small">
+                                @Html.DisplayNameFor(model => model.name)
+                            </th>
+                            <th style="font-size:small">
+                                @Html.DisplayNameFor(model => model.name_on_card)
+                            </th>
+                            <th style="font-size:small">
+                                @Html.DisplayNameFor(model => model.request_date)
+                            </th>
+                            <th style="font-size:small">
+                                @Html.DisplayNameFor(model => model.request_reason)
+                            </th>
+                            <th style="font-size:small">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td style="font-size:small">
+                                    @Html.DisplayFor(modelItem => item.account_number)
+                                </td>
+                                <td style="font-size:small">
+                                    @Html.DisplayFor(modelItem => item.name)
+                                </td>
+                                <td style="font-size:small">
+                                    @Html.DisplayFor(modelItem => item.name_on_card)
+                                </td>
+                                <td style="font-size:small">
+                                    @Html.DisplayFor(modelItem => item.request_date)
+                                </td>
+                                <td style="font-size:small">
+                                    @Html.DisplayFor(modelItem => item.request_reason)
+                                </td>
+
+                                <td style="font-size:small">
+                                    @Html.ActionLink("Accept", "Accept", new { id = item.request_id }, new { @style = "color:black;" }) |
+                                    @Html.ActionLink("Reject", "Reject", new { id = item.request_id }, new { @style = "color:black;" })
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    @using (Html.BeginForm("CreatePdf", "CardRequest", new { id = "form" }))
+    {
+        <div class="form-group">
+            <div class="col-xs-57 col-xs-offset-5">
+                <input type="submit" onclick="submitanddisable()" value="Print" class="btn btn-lg btn-block btn-flat" style="color:white;font-size:small" />
+            </div>
+        </div>
+    }
+</section>
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <script type="text/javascript">
+                window.onload = function () {
+                    alert("@ViewBag.SuccessMessage");
+                };
+    </script>
+}

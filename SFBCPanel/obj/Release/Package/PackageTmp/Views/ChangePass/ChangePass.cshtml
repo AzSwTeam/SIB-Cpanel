@@ -1,0 +1,118 @@
+﻿@model SFBCPanel.Models.changepassword
+
+@{
+    ViewBag.Title = "ChangePass";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content">
+    <div class="row">
+        <!-- Left col -->
+        <section class="col-md-12 connectedSortable">
+            <!-- Own Transfer -->
+            <div class="box box-info">
+                <h2>Password Update</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Change Your Password
+                </ol>
+                @if (ViewBag.SuccessMessage != null)
+                {
+                    <div class="alert alert-success" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <strong>Success!</strong> @ViewBag.SuccessMessage
+                    </div>
+                }
+
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-2">
+
+                            @using (Html.BeginForm(new { id = "form" }))
+                            {
+                                @Html.AntiForgeryToken()
+
+                                <div class="form-horizontal">
+                                    @Html.ValidationSummary(true)
+
+
+
+                                    <div class="form-group has-feedback">
+                                        @Html.TextBoxFor(model => model.OldPassword, new
+                                   {
+                                       @class = "form-control",
+                                       minlength = "8",
+                                       maxlength = "20",
+                                       pattern = "\\[A-Za-z0-9]{8,20}",
+                                       @placeholder = "Enter Your Old Password",
+                                       @type = "password"
+                                   })
+                                        @Html.ValidationMessageFor(model => model.OldPassword, "", new { @class = "text-danger" })
+                                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                                    </div>
+                                    <div class="form-group has-feedback">
+                                        @Html.TextBoxFor(model => model.newPassword, new
+                                   {
+                                       @class = "form-control",
+                                       minlength = "8",
+                                       maxlength = "20",
+                                       pattern = "\\[A-Za-z0-9]{8,20}",
+                                       @placeholder = "Enter Your new Password",
+                                       @type = "password"
+                                   })
+                                        @Html.ValidationMessageFor(model => model.newPassword, "", new { @class = "text-danger" })
+                                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                                    </div>
+                                    <div class="form-group has-feedback">
+                                        @Html.TextBoxFor(model => model.confrimPassword, new
+                                   {
+                                       @class = "form-control",
+                                       minlength = "8",
+                                       maxlength = "20",
+                                       pattern = "\\[A-Za-z0-9]{8,20}",
+                                       @placeholder = "Enter Confirm new Password",
+                                       @type = "password"
+                                   })
+                                        @Html.ValidationMessageFor(model => model.confrimPassword, "", new { @class = "text-danger" })
+                                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-xs6">
+                                        </div>
+                                        <!-- /.col -->
+                                        <div class="col-xs-57 col-xs-offset-5">
+                                            <input type="submit" onclick="submitanddisable()" value="Update" class="btn btn-lg btn-flat btn-block" style="color:white;font-size:small" />
+                                        </div>
+                                        <!-- /.col -->
+                                    </div>
+
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+<script>
+    function submitanddisable() {
+        $("#form").submit();
+        this.disable = "disable";
+    }
+</script>
+@if (ViewBag.SuccessMessage != null)
+{
+    <script>
+        window.setTimeout(function () {
+            $(".alert").fadeTo(500, 0).slideUp(500, function () {
+                $(this).remove();
+            });
+        }, 4000);
+    </script>
+    @*<script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.SuccessMessage");
+        };
+    </script>*@
+}

@@ -1,0 +1,152 @@
+﻿@model IEnumerable<SFBCPanel.Models.profilelist>
+
+
+<header>
+    @*<script src="~/Content/jquery-1.11.3.min.js"></script>*@
+    <script src="~/Content/jquery.dataTables.js"></script>
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+
+    <script>
+        $(document).ready(function () {
+            var table = $('#example').DataTable();
+        });
+    </script>
+</header>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-auto ">
+            <!-- TABLE: LATEST Transactions -->
+            <div class="box box-info">
+                <h2>Customers Profile Informations</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    All Profiles
+                </ol>
+                <div class="box-body col-md-10 col-md-offset-1">
+                    <div class="table-responsive">
+
+                        <table id="example1" class="display nowrap">
+                            <thead>
+                                <tr>
+                                    <th style="font-size:small">
+                                        @Html.DisplayNameFor(model => model.role_id)
+                                    </th>
+                                    <th style="font-size:small">
+                                        @Html.DisplayNameFor(model => model.name)
+                                    </th>
+                                    <th style="font-size:small">
+                                        @Html.DisplayNameFor(model => model.users_count)
+                                    </th>
+                                    <th style="font-size:small">
+                                        @Html.DisplayNameFor(model => model.inserted_date)
+                                    </th>
+                                    <th style="font-size:small">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)//.OrderBy(item => item.user_id)
+                                {
+                                    <tr>
+                                        <td style="font-size:small" class="col-md-1">
+                                            @Html.DisplayFor(modelItem => item.role_id)
+                                        </td>
+                                        <td style="font-size:small" class="col-md-3">
+                                            @Html.DisplayFor(modelItem => item.name)
+                                        </td>
+                                        <td style="font-size:small" class="col-md-3">
+                                            @Html.DisplayFor(modelItem => item.inserted_date)
+                                        </td>
+                                        <td style="font-size:small" class="col-md-3">
+                                            @Html.DisplayFor(modelItem => item.users_count)
+                                        </td>
+                                        <td class="col-md-2">
+                                            <table>
+                                                <tr>
+                                                    <td class="col-md-3">
+                                                        @Html.ActionLink("Update", "Edit", new { roleid = item.role_id }, new { @class = "btn btn-success btn-block btn-flat" })
+                                                    </td>
+                                                    <td class="col-md-3">@Html.ActionLink("View", "View", new { id = item.role_id }, new { @class = "btn btn-warning btn-block btn-flat" })</td>
+<td class="col-md-2"> @Html.ActionLink("Delete", "Delete", new { roleid = item.role_id }, new { @class = "btn btn-danger btn-block btn-flat" })</td>
+</tr>
+</table>
+</td>
+</tr>
+}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="box-footer">
+                        <section class="row">
+                            <div class="col-md-8">
+
+                                @using (Html.BeginForm("NewProfile", "Profile", FormMethod.Get))
+                                {
+
+
+
+                                    <div class="form-group">
+                                        <div class="col-xs-4 col-xs-offset-7">
+                                            <input type="submit" value="Create New Profile" class="btn btn-primary btn-block btn-flat" />
+                                        </div>
+                                    </div>
+                                }
+
+                                @*<div class="btn-group">
+
+                                        @Html.ActionLink("Create New User", "Add", new { @class = "btn btn-primary btn-block btn-flat " })
+
+                                    </div>*@
+                                @* Save PDF *@
+                                @*@using (Html.BeginForm("CreatePdf", "User"))
+                                    {
+
+
+
+                                        <div class="form-group">
+                                            <div class="col-xs-4">
+                                                <input type="submit" value="Print" class="btn btn-danger btn-block btn-flat" />
+                                            </div>
+                                        </div>
+                                    }*@
+                            </div>
+
+
+
+                        </section>
+
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</section>
+
+<script>
+
+    var alert = $('.alert');
+
+    $('.button').click(function () {
+        alert.addClass('open');
+    });
+
+    $('span.close').on('click', function () {
+        alert.removeClass('open');
+    });
+
+</script>
+
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.SuccessMessage");
+        };
+    </script>
+}
+

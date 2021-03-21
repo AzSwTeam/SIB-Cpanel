@@ -1,0 +1,241 @@
+﻿@using SFBCPanel.Models;
+@model  SFBCPanel.Models.Custreport
+
+@{
+    ViewBag.Title = "Credit API Reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    List<CustomerTransferReportViewModel> alltransactions = Session["alltransactions"] as List<CustomerTransferReportViewModel>;
+}
+
+<header>
+    <script src="~/Content/jquery.dataTables.js"></script>
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+    <style>
+
+        body {
+            overflow-y: visible
+        }
+
+        td {
+            font-size: small !important;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            var table = $('#example').DataTable();
+            var table2 = $('#example2').DataTable();
+        });
+    </script>
+</header>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <h2>Transactions Details</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Account to card transactions
+                </ol>
+                <div class="box-body">
+                    @using (Html.BeginForm(new { id = "form" }))
+                    {
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-2" style="margin-top:0.5%">Transaction name</label>
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.TranName, Model.transactions_names, new { @class = "form-control ", @id = "namefilter" })
+                                </div>
+                                <label class="control-label col-md-2" style="margin-top:0.5%">Transaction status</label>
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.CategoryCode, Model.transactions_statuses, new { @class = "form-control ", @id = "statusfilter" })
+                                </div>
+                                <br />
+                                <br />
+                                <label class="control-label col-md-1" style="margin-top:0.5%">Branch</label>
+                                <div class="col-md-4">
+                                    @Html.DropDownListFor(model => model.BranchCode, Model.Branches, new { @class = "form-control ", @id = "branchfilter" })
+                                </div>
+                            </div>
+                            <br /><br />
+                            <table id="example" class="display nowrap" style="font-size:small">
+                                <thead>
+                                    <tr>
+                                        <th style="font-size:small">
+                                            From Account
+                                        </th>
+                                        <th style="font-size:small">
+                                            Status
+                                        </th>
+                                        <th style="font-size:small">
+                                            Transaction Name
+                                        </th>
+                                        <th style="font-size:small">
+                                            amount
+                                        </th>
+                                        <th style="font-size:small">
+                                            Date
+                                        </th>
+                                        <th style="font-size:small">
+                                            Token
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tablebody">
+                                    @foreach (var transaction in alltransactions)
+                                    {
+                                        <tr>
+
+                                            <td style="font-size:small">
+                                                @transaction.TranFromAccount
+                                            </td>
+                                            <td style="font-size:small">
+                                                @if (transaction.TranStatus == "Secussfully" || transaction.TranStatus == "Approved")
+                                                {
+                                                    <span class="badge badge-success">
+                                                        @transaction.TranStatus
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-danger">
+                                                        @transaction.TranStatus
+                                                    </span>
+                                                }
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.TranName
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.TranReqAmount
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.TranDate
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.TranToken
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <br />
+                        <br />
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    @*<div class="col-xs-57 col-xs-offset-6" style="position:relative;right:9%">
+        <input type="submit" onclick="submitanddisable()" formaction="@Url.Action("savecreditapireport", "CustomerReport")" value="Print report" class="btn btn-lg" style="color:white;font-size:small" />
+    </div>*@
+    <br />
+    <br />
+</section>
+
+<script>
+
+    $("#branchfilter").on("change", function () {
+        $('#overlay').show();
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: '/CustomerReport/FilterAllTransactionsReport',
+            dataType: 'json',
+            data: {
+                branch_code: $("#branchfilter").val(),
+                status: $("#statusfilter").val(),
+                transaction_name: $("#namefilter").val()
+
+            },
+            contentType: 'application/json',
+            success: function (result) {
+                console.log(result);
+                $("#example").dataTable().fnClearTable();
+                $.each(result, function (status, data) {
+                    $.each(data, function (innerstatus, innerdata) {
+                        var data = [];
+                        data.push(innerdata.TranFromAccount);
+                        data.push(innerdata.TranStatus);
+                        data.push(innerdata.TranName);
+                        data.push(innerdata.TranReqAmount);
+                        data.push(innerdata.TranDate);
+                        data.push(innerdata.TranToken);
+                        $("#example").dataTable().fnAddData(data);
+                    });
+                });
+                $('#overlay').hide();
+            }
+        });
+    });
+
+    $("#statusfilter").on("change", function () {
+        $('#overlay').show();
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: '/CustomerReport/FilterAllTransactionsReport',
+            dataType: 'json',
+            data: {
+                branch_code: $("#branchfilter").val(),
+                status: $("#statusfilter").val(),
+                transaction_name: $("#namefilter").val()
+
+            },
+            contentType: 'application/json',
+            success: function (result) {
+                console.log(result);
+                $("#example").dataTable().fnClearTable();
+                $.each(result, function (status, data) {
+                    $.each(data, function (innerstatus, innerdata) {
+                        var data = [];
+                        data.push(innerdata.TranFromAccount);
+                        data.push(innerdata.TranStatus);
+                        data.push(innerdata.TranName);
+                        data.push(innerdata.TranReqAmount);
+                        data.push(innerdata.TranDate);
+                        data.push(innerdata.TranToken);
+                        $("#example").dataTable().fnAddData(data);
+                    });
+                });
+                $('#overlay').hide();
+            }
+        });
+    });
+
+    $("#namefilter").on("change", function () {
+        $('#overlay').show();
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: '/CustomerReport/FilterAllTransactionsReport',
+            dataType: 'json',
+            data: {
+                branch_code: $("#branchfilter").val(),
+                status: $("#statusfilter").val(),
+                transaction_name: $("#namefilter").val()
+
+            },
+            contentType: 'application/json',
+            success: function (result) {
+                console.log(result);
+                $("#example").dataTable().fnClearTable();
+                $.each(result, function (status, data) {
+                    $.each(data, function (innerstatus, innerdata) {
+                        var data = [];
+                        data.push(innerdata.TranFromAccount);
+                        data.push(innerdata.TranStatus);
+                        data.push(innerdata.TranName);
+                        data.push(innerdata.TranReqAmount);
+                        data.push(innerdata.TranDate);
+                        data.push(innerdata.TranToken);
+                        $("#example").dataTable().fnAddData(data);
+                    });
+                });
+                $('#overlay').hide();
+            }
+        });
+    });
+
+</script>

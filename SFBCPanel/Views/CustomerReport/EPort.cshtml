@@ -1,0 +1,63 @@
+﻿@model SFBCPanel.Models.EPortReceipt
+
+<section class="content">
+    <div class="row">
+        <!-- Left col -->
+        <section class="col-md-12 connectedSortable">
+            <!-- Own Transfer -->
+            <div class="box box-info">
+                <h2>EPort Receipts</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Receipts retrival
+                </ol>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-10">
+                            @using (Html.BeginForm(new { id = "form" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <div class="form-horizontal">
+                                    @Html.ValidationSummary(true)
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">EPort Notice Number</label>
+                                        <div class="col-md-6">
+                                            @Html.TextBoxFor(model => model.tran_payserviceid, new { @class = "form-control ", @placeholder = "..." })
+                                        </div>
+                                    </div>
+                                    @*<div class="form-group">
+                                            @Html.LabelFor(model => model.Branch, new { @class = "control-label col-md-4" })
+                                            <div class="col-md-8">
+                                                @Html.DropDownListFor(model => model.BranchCode, Model.Branches, new { @class = "form-control ", @placeholder = "Branch..." })
+                                                @Html.ValidationMessageFor(model => model.BranchCode)
+                                            </div>
+                                        </div>*@
+                                    @*<div class="form-group">
+                                        @Html.LabelFor(model => model.CustomerType, new { @class = "control-label col-md-4" })
+                                        <div class="col-md-8">
+                                            @Html.DropDownListFor(model => model.CategoryCode, Model.catgories, new { @class = "form-control ", @placeholder = "Branch..." })
+                                            @Html.ValidationMessageFor(model => model.CategoryCode)
+                                        </div>
+                                    </div>*@
+                                    @*<div class="form-group">
+                                        @Html.LabelFor(model => model.CustStatus, new { @class = "control-label col-md-4" })
+                                        <div class="col-md-8">
+                                            @Html.DropDownListFor(model => model.StatusCode, Model.CustomerStatus, new { @class = "form-control ", @placeholder = "Branch..." })
+                                            @Html.ValidationMessageFor(model => model.StatusCode)
+                                        </div>
+                                    </div>*@
+                                    <div class="col-xs-57 col-xs-offset-6">
+                                        <input type="submit" onclick="submitanddisable()" value="Submit" class="btn btn-lg btn-block btn-flat" style="color:white;font-size:small" />
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

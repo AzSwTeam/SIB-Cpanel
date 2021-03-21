@@ -1,0 +1,137 @@
+﻿@model IEnumerable<SFBCPanel.Models.TransactionStatusesModel>
+
+@{
+    ViewBag.Title = "Transactions Statuses";
+    Layout = null;
+}
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>@ViewBag.Title - SFB CPanel</title>
+
+        <!-- Bootstrap CSS CDN -->
+        <link href="~/Content/bootstrap(downloaded).min.css" rel="stylesheet" />
+        <!-- Our Custom CSS -->
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+        <!-- Optional Bootstrap theme -->
+        <link rel="stylesheet" href="~/Content/bootstrap-theme.min.css">
+        <!-- Date Picker -->
+        <link href="~/Content/bootstrap-datepicker.css" rel="stylesheet" />
+        <link href="~/Content/mdb.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="~/Content/style.css">
+        <link href="~/Images/logo_1.png" rel="shortcut icon" type="image/x-icon" />
+
+        <style rel=stylesheet>
+            .navready {
+                min-height: 100vh;
+                background: #005a49;
+                background-image: url('../../Images/noisy.png');
+            }
+        </style>
+
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://www.amcharts.com/lib/4/core.js"></script>
+        <script src="https://www.amcharts.com/lib/4/charts.js"></script>
+        <script src="https://www.amcharts.com/lib/4/themes/frozen.js"></script>
+        <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+        <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+        <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+        <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+        <script src="~/Scripts/export.js"></script>
+
+    </head>
+
+<body>
+    <div class="wrapper" style="height:100%;width:100%">
+        <!-- Sidebar Holder -->
+        <div class="navready">
+            <nav id="sidebar" style="width:30%;font-size:12px">
+                <div class="sidebar-header">
+                    <a href="@Url.Action("Index", "Home")"><img src="~/Images/logo_1.png" style="width:47%;height:8%;position: relative;left:23%" /></a>
+                </div>
+                @Html.Action("TopMenu", "Home")
+            </nav>
+        </div>
+        @* PAGE CONTENT *@
+        <div class="container body-content col-sm-12 col-md-12 col-lg-12" style="width:100%;height:100%;overflow-x:hidden">
+            <h2>IBanking Analysis</h2><br />
+            <ol class="breadcrumb" style="font-size:medium">
+                Transactions Statuses
+            </ol>
+            <div id="charter" style="width:100%"></div>
+        </div>
+    </div>
+</body>
+
+<script>
+    am4core.ready(function () {
+
+        // Themes begin
+        am4core.useTheme(am4themes_frozen);
+        am4core.useTheme(am4themes_animated);
+        // Themes end
+
+        // Create chart
+        var chart = am4core.create("charter", am4charts.PieChart);
+        chart.hiddenState.properties.opacity = 0; // this creates initial fade-in
+
+        chart.data = statuseslist;
+
+        var series = chart.series.push(new am4charts.PieSeries());
+        series.dataFields.value = "count";
+        series.dataFields.radiusValue = "value";
+        series.dataFields.category = "status";
+        series.slices.template.cornerRadius = 6;
+        series.colors.step = 3;
+
+        series.hiddenState.properties.endAngle = -90;
+
+        chart.legend = new am4charts.Legend();
+
+    }); // end am4core.ready()
+
+    function printChart() {
+        chart.export.capture({}, function () {
+            this.toPRINT();
+        });
+    }
+
+</script>
+
+<script type="text/javascript">
+
+    var objectlist = []; var barslist = []; var statuseslist = [];
+    populatelists();
+
+    function populatelists() {
+        var counter = 0;
+        @foreach (var item in Model)
+    {
+        @:statuseslist[counter] = { "status": "@item.status", "count": "@item.count" }; counter++;
+    }
+    }
+
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#sidebarCollapse').on('click', function () {
+            $('#sidebar').toggleClass('active');
+        });
+    });
+</script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <script type="text/javascript">
+    window.onload = function () {
+        alert("@ViewBag.SuccessMessage");
+    };
+    </script>
+}

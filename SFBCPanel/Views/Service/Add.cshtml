@@ -1,0 +1,56 @@
+﻿@model SFBCPanel.Models.ServiceInsertModel
+
+@{
+    ViewBag.Title = "Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<section class="content">
+    <div class="row">
+        <!-- Left col -->
+        <section class="col-md-12 connectedSortable">
+            <!-- Own Transfer -->
+            <div class="box box-info">
+                <h2>Add Service</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Service information
+                </ol>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-10">
+                            @using (Html.BeginForm(new { id = "form" }))
+                            {
+                                @Html.AntiForgeryToken()
+
+                                <div class="form-horizontal">
+                                    @Html.ValidationSummary(true)
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.service_name, new { @class = "control-label col-md-4" })
+                                        <div class="col-md-8">
+                                            @Html.TextBoxFor(model => model.service_name, new { @class = "form-control ", @placeholder = "Name #..." })
+                                            @Html.ValidationMessageFor(model => model.service_name)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-xs-57 col-xs-offset-7">
+                                            <input type="submit" onclick="submitanddisable()" value="Add" class="btn btn-lg" style="background:#24295E;color:white;font-size:small" />
+                                        </div>
+                                    </div>
+
+                                </div>
+                            }
+
+                            <div class="form-group col-md-offset-3">
+                                @Html.ActionLink("Back to List", "Index", new { @class = "btn btn-lg btn-primary" })
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+
+

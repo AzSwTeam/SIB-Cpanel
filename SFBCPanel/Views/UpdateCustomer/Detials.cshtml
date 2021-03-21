@@ -1,0 +1,101 @@
+﻿@model SFBCPanel.Models.custinfo
+
+
+<div class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-solid">
+                <h2>Customers Management</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Update Customer
+                </ol>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-3">
+
+                            <blockquote>
+
+                                <dl class="dl-horizontal">
+
+
+
+                                    <dt style="text-align: left">
+                                        @Html.DisplayNameFor(model => model.user_name)
+                                    </dt>
+
+                                    <dd>
+                                        @Html.DisplayFor(model => model.user_name)
+                                    </dd>
+
+                                    <dt style="text-align: left;width:auto">
+                                        @Html.DisplayNameFor(model => model.user_log)
+                                    </dt>
+
+                                    <dd>
+                                        @Html.DisplayFor(model => model.user_log)
+                                    </dd>
+                                    <dt style="text-align: left">
+                                        @Html.DisplayNameFor(model => model.user_mobile)
+                                    </dt>
+
+                                    <dd>
+                                        @Html.DisplayFor(model => model.user_mobile)
+                                    </dd>
+                                    <dt style="text-align: left;width:auto">
+                                        @Html.DisplayNameFor(model => model.user_adrs)
+                                    </dt>
+                                    <dd>
+                                        @Html.DisplayFor(model => model.user_adrs)
+                                    </dd>
+
+                                    <dt style="text-align: left">
+                                        @Html.DisplayNameFor(model => model.name)
+                                    </dt>
+
+                                    <dd>
+                                        @Html.DisplayFor(model => model.name)
+                                    </dd>
+
+                                    <dt style="text-align: left">
+                                        @Html.DisplayNameFor(model => model.status)
+                                    </dt>
+
+                                    <dd>
+                                        @Html.DisplayFor(model => model.status)
+                                    </dd>
+                                </dl>
+                                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups" style="position:relative;left:15%">
+                                    <div class="btn-group" role="group" aria-label="First group">
+
+                                        @Html.ActionLink("Update", "Update", new { id = Model.user_id }, new { @class = "btn btn-success btn-block btn-flat " })
+                                    </div>
+                                    <div class="btn-group" role="group" aria-label="Second group">
+                                        @Html.ActionLink("Delete", "Delete", new { id = Model.user_id }, new { @class = "btn btn-danger  btn-block btn-flat " })
+
+
+                                    </div>
+                                </div>
+                                @if (ViewBag.Message != null)
+                                {
+                                    <script type="text/javascript">
+                                        window.onload = function () {
+                                            alert("@ViewBag.Message");
+                                        };
+                                    </script>
+                                }
+                            </blockquote>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $("#resoan").hide();
+    $("input[name='status']").on("change", function () {
+        if ($(this).val() == "false") {
+            $("#resoan").show();
+        }
+    });
+</script>

@@ -1,0 +1,102 @@
+﻿@model SFBCPanel.Models.custinfo
+
+<section class="content">
+    <div class="row">
+        <!-- Left col -->
+        <section class="col-md-12 connectedSortable">
+            <!-- Own Transfer -->
+            <div class="box box-info">
+                <h2>Customers Management</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Personal information
+                </ol>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-2">
+
+
+                            @using (Html.BeginForm())
+                            {
+                                @Html.AntiForgeryToken()
+
+                                <div class="form-horizontal">
+                                    @Html.ValidationSummary(true)
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.user_name, new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10">
+                                            @Html.TextBoxFor(model => model.user_name, new { @class = "form-control ", @placeholder = "CustomerName #...", @readonly = "true" })
+                                            @Html.ValidationMessageFor(model => model.user_name)
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.user_log, new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10">
+                                            @Html.TextBoxFor(model => model.user_log, new { @class = "form-control ", @placeholder = "UserName #...", @readonly = "true" })
+                                            @Html.ValidationMessageFor(model => model.user_log)
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Profiles, new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10">
+                                            @Html.DropDownListFor(model => model.profileCode, Model.Profiles, new { @class = "form-control ", @placeholder = "Profile..." })
+
+                                            @Html.ValidationMessageFor(model => model.profileCode)
+                                        </div>
+                                    </div>
+                                    @*<div class="form-group">
+                                            @Html.LabelFor(model => model.user_mobile, new { @class = "control-label col-md-2" })
+                                            <div class="col-md-10">
+                                                @Html.TextBoxFor(model => model.user_mobile, new { @class = "form-control ", @placeholder = "Mobile #..." })
+                                                @Html.ValidationMessageFor(model => model.user_mobile)
+                                            </div>
+                                        </div>*@
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.user_adrs, new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10">
+                                            @Html.TextBoxFor(model => model.user_adrs, new { @class = "form-control ", @placeholder = "User Address #..." })
+                                            @Html.ValidationMessageFor(model => model.user_adrs)
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.user_email, new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10">
+                                            @Html.TextBoxFor(model => model.user_email, new { @class = "form-control ", @placeholder = "User Email #..." })
+                                            @Html.ValidationMessageFor(model => model.user_email)
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="display:none">
+                                        @Html.LabelFor(model => model.user_id, new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10">
+                                            @Html.TextBoxFor(model => model.user_id, new { @class = "form-control ", @placeholder = "User ID #..." })
+                                            @Html.ValidationMessageFor(model => model.user_id)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Channel, new { @class = "control-label col-md-2" })
+                                        <div class="col-md-10">
+                                            @Html.CheckBoxListFor(model => model.SelectedChannelsID, model => model.Channels, item => item.ID, item => item.Name, model => model.SelectedChannels, MvcCheckBoxList.Model.Position.Horizontal)
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-xs-5 col-xs-offset-5">
+                                            <input type="submit" value="Submit" class="btn btn-block btn-flat" />
+                                        </div>
+                                    </div>
+
+                                </div>
+                            }
+
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </div>
+</section>

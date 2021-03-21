@@ -1,0 +1,51 @@
+﻿@model IEnumerable<SFBCPanel.Models.Menu>
+
+<ul class="list-unstyled">
+    @foreach (var m in Model)
+    {
+        if (m.MenuParentID == 0)
+        {
+            var submenu = Model.Where(n => n.MenuParentID == m.MID).ToList();
+            if (submenu != null && submenu.Count > 0)
+            {
+                <li>
+                    <a href="#@m.MID" data-toggle="collapse" aria-expanded="false">
+                        <span style="color:#FAFAFA">@m.MenuName</span>
+                    </a>
+                    <ul class="collapse list-unstyled" id="@m.MID">
+                        @foreach (var e in submenu)
+                        {
+                            var submenu2 = Model.Where(n => n.subMenuParentID == e.MID).ToList();
+                            if (submenu2 != null && submenu2.Count > 0)
+                            {
+                                <li>
+                                    <a href="#@e.MID" data-toggle="collapse" aria-expanded="false">
+                                        <span style="color:#FAFAFA">@e.MenuName</span>
+                                    </a>
+                                    <ul id="@e.MID" class="collapse list-unstyled">
+                                        @foreach (var ee in submenu2)
+                                        {
+                                            <li><a href="@ee.MenuURL">@ee.MenuName </a></li>
+                                        }
+                                    </ul>
+                                </li>
+                            }
+                            else
+                            {
+                                <li><a href="@e.MenuURL">@e.MenuName </a></li>
+                            }
+                        }
+                    </ul>
+                </li>
+            }
+            else
+            {
+                //if parent menu does not have child menu
+                <li>
+                    <a href="@m.MenuURL"><span style="color:#FAFAFA">@m.MenuName</span></a>
+                </li>
+            }
+        }
+    }
+    <li><a href="@Url.Action("Logout", "Home")">Logout<img src="~/Images/Exit_64px(white).png" width="22" height="22" style="position:relative;left:69%" /></a></li>
+</ul>

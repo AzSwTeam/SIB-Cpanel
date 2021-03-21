@@ -1,0 +1,92 @@
+﻿@model SFBCPanel.Models.CustomerTransferReportViewModel
+
+@{
+    ViewBag.Title = "TransferReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<section class="content">
+    <div class="row">
+        <!-- Left col -->
+        <section class="col-md-12 connectedSortable">
+            <!-- Own Transfer -->
+            <div class="box box-info">
+                <h2>Transfers Report</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Customer Transfer Report
+                </ol>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-10">
+
+                            @using (Html.BeginForm(new { id = "form" }))
+                            {
+                                @Html.AntiForgeryToken()
+                            <div class="form-horizontal">
+                                @Html.ValidationSummary(true)
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Username or ID</label>
+                                    <div class="col-md-6">
+                                        @Html.TextBoxFor(model => model.Branch, new { @class = "form-control ", @placeholder = "..." })
+                                    </div>
+                                    <div class="col-xs-2">
+                                        <input id="loadbutton" value="Load" type="submit" class="btn btn-md btn-flat btn-block" formaction="@Url.Action("TransferReportporcess","CustomerTransferReport")" style="color:white;font-size:small" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Branch, new { @class = "control-label col-md-4" })
+                                    <div class="col-md-8">
+                                        @Html.DropDownListFor(model => model.BranchCode, Model.Branches, new { @class = "form-control ", @placeholder = "Branch..." })
+                                        @Html.ValidationMessageFor(model => model.BranchCode)
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.AccountType, new { @class = "control-label col-md-4" })
+                                    <div class="col-md-8">
+                                        @Html.DropDownListFor(model => model.AccountTypecode, Model.AccTypes, new { @class = "form-control ", @placeholder = "Branch..." })
+                                        @Html.ValidationMessageFor(model => model.AccountTypecode)
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Currency, new { @class = "control-label col-md-4" })
+                                    <div class="col-md-8">
+                                        @Html.DropDownListFor(model => model.CurrencyCode, Model.Currencies, new { @class = "form-control ", @placeholder = "Branch..." })
+                                        @Html.ValidationMessageFor(model => model.CurrencyCode)
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.AccountNumber, new { @class = "control-label col-md-4" })
+                                    <div class="col-md-8">
+                                        @Html.TextBoxFor(model => model.AccountNumber, new { @class = "form-control ", @placeholder = "Account #...", @maxlength = "7", @id = "accountnumber", @type = "number",@Value = (Model.AccountNumber == null) ? "" : Model.AccountNumber.ToString() })
+                                        @Html.ValidationMessageFor(model => model.AccountNumber)
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="col-xs-57 col-xs-offset-6">
+                                        <input type="submit" onclick="submitanddisable()" formaction="@Url.Action("TransferReport","CustomerTransferReport")" value="Show report" class="btn btn-lg btn-flat btn-block" style="color:white;font-size:small" />
+                                    </div>
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+
+<script>
+    //document.getElementById("accountnumber").value = @Model.AccountNumber;
+</script>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

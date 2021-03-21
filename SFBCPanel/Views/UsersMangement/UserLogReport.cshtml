@@ -1,0 +1,79 @@
+﻿@model SFBCPanel.Models.UsersMangementViewModel
+
+@{
+    ViewBag.Title = "UserLogReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<section class="col-md-12 connectedSortable">
+    <!-- Own Transfer -->
+    <div class="box box-info">
+        <h2>Users Log</h2><br />
+        <ol class="breadcrumb" style="font-size:medium">
+            Users Log Report
+        </ol>
+        <br />
+        <div class="box-body">
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    @using (Html.BeginForm(new { id = "form" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true)
+
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Username, new { @class = "col-md-2" })
+                            <div class="col-md-10">
+                                @Html.TextBoxFor(model => model.Username, new { @class = "form-control ", @placeholder = "username", required = true })
+                                @Html.ValidationMessageFor(model => model.Username)
+                            </div>
+                        </div>
+                        <br />
+                        <div class="form-group">
+                            <label class="col-md-3"> Login Type</label>
+
+                            <div class="col-md-2">
+                                <label>
+                                    All
+                                    @Html.RadioButtonFor(model => model.SuccessfulLogin, "1", new { @class = "flat-red" })
+                                </label>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label>
+                                    Successful Login
+                                    @Html.RadioButtonFor(model => model.SuccessfulLogin, "2", new { @class = "flat-red" })
+                                </label>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label>
+                                    Failed Login
+                                    @Html.RadioButtonFor(model => model.SuccessfulLogin, "3", new { @class = "flat-red" })
+                                </label>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="form-group">
+                            <div class="col-xs-60 col-xs-offset-5">
+                                <input type="submit" onclick="submitanddisable()" value="Show report" class="btn btn-lg btn-block btn-flat" style="color:white;font-size:small;position:relative" />
+                            </div>
+                            <div class="col-xs-60 col-xs-offset-5" style="position:relative;right:4%">
+                                <br /><br />
+                                <a href="@Url.Action("UsersDetails","UsersMangement")"><input value="Completed User details" class="btn btn-lg btn-block btn-flat" style="color:white;font-size:small;position:relative" /></a>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

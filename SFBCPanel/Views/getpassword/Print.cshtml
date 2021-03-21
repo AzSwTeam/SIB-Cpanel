@@ -1,0 +1,89 @@
+﻿@model SFBCPanel.Models.GETpassword
+
+@{
+    ViewBag.Title = "GetPassword";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<section class="content">
+    <div class="row">
+        <!-- Left col -->
+        <section class="col-md-12">
+            <!-- Own Transfer -->
+            <div class="box box-info">
+                <h2>Password Generate</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Customer Information
+                </ol>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-2">
+                            <blockquote>
+                                <dl class="dl-horizontal col-md-12">
+                                    <dt style=" text-align: left;width :30%">
+                                        @Html.DisplayNameFor(model => model.name)
+                                    </dt>
+
+                                    <dd>
+                                        @Html.DisplayFor(model => model.name)
+                                    </dd>
+
+                                    <dt style=" text-align: left;width :30%">
+                                        @Html.DisplayNameFor(model => model.account)
+                                    </dt>
+
+                                    <dd>
+                                        @Html.DisplayFor(model => model.account)
+                                    </dd>
+
+                                    <dt style=" text-align: left; width: 30%">
+                                        @Html.DisplayNameFor(model => model.branchname)
+                                    </dt>
+                                    <dd>
+                                        @Html.DisplayFor(model => model.branchname)
+                                    </dd>
+                                    <dt style=" text-align: left; width: 30%;visibility:hidden">
+                                        @Html.DisplayNameFor(model => model.fullaccount)
+                                    </dt>
+                                    <dd style="visibility:hidden">
+                                        @Html.DisplayFor(model => model.fullaccount)
+                                    </dd>
+                                </dl>
+                            </blockquote>
+                            @*<p>
+                                @using (Html.BeginForm("SavePDF", "getpassword"))
+                                {
+                                    <br />
+                                    <div class="form-group">
+                                        <div class="col-xs-10 col-xs-offset-5">
+                                            <input type="submit" value="Print" class="btn btn-block btn-flat" style="background-color:#24295E" />
+                                        </div>
+                                    </div>
+                                }
+                            </p>*@
+                        </div>
+                    </div>
+                    <div class="row">
+                        @using (Html.BeginForm("smspassword", "getpassword", new { password = Model.pass, account = Model.fullaccount }))
+                        {
+                            <div class="form-group" style="margin-left:2.7%">
+                                <div class="col-xs-10 col-xs-offset-5">
+                                    <input type="submit" value="Send SMS" class="btn btn-block btn-flat"/>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.SuccessMessage");
+        };
+    </script>
+}

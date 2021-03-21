@@ -1,0 +1,98 @@
+﻿@model IEnumerable<SFBCPanel.Models.CustomerAuthorization>
+
+@{
+    ViewBag.Title = "CustomerAuth";
+}
+
+<style>
+    td {
+        color: black;
+    }
+</style>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <!-- TABLE: LATEST Transactions -->
+            <div class="box box-info">
+                <div class="box-header with-border">
+                    <h3 class="box-title my-box-header"></h3>
+                </div>
+                <h2>New Customers Check</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    New Customers Authorizations
+                </ol>
+                @if (ViewBag.SuccessMessage != null)
+                {
+                    <div class="alert alert-success" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <strong>Success!</strong> @ViewBag.SuccessMessage
+                    </div>
+                }
+
+                <!-- /.box-header -->
+                <div class="box-body">
+                    <div class="table-responsive col-md-10 col-md-offset-1">
+
+                        <table id="example1" class="display nowrap">
+                            <thead>
+                                <tr style="font-size:small">
+                                    <th style="font-size:small" class="col-md-6">
+                                        @Html.DisplayNameFor(model => model.Customername)
+                                    </th>
+                                    <th style="font-size:small" class="col-md-6">
+                                        @Html.DisplayNameFor(model => model.Customeraccount)
+                                    </th>
+                                    <th style="font-size:small">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+
+
+                            @foreach (var item in Model)
+                            {
+                                <tr style="font-size:small">
+                                    <td style="font-size:small">
+                                        @Html.DisplayFor(modelItem => item.Customername)
+                                    </td>
+                                    <td style="font-size:small">
+                                        @Html.DisplayFor(modelItem => item.Customeraccount)
+                                    </td>
+                                    @*<td>
+                                @Html.DisplayFor(modelItem => item.CustomerID)
+                            </td>*@
+                                    <td style="font-size:small;color-rendering:initial">
+
+                                        @Html.ActionLink("Details", "Details", new { id = item.CustomerID }, new { @style = "color:black;" })
+
+                                    </td>
+                                </tr>
+                            }
+                            </thead>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</section>
+
+@if (ViewBag.SuccessMessage != null)
+{
+    @*<script type="text/javascript">
+                    window.onload = function () {
+                        alert("@ViewBag.SuccessMessage");
+                    };
+        </script>*@
+    <script>
+        window.setTimeout(function () {
+            $(".alert").fadeTo(500, 0).slideUp(500, function () {
+                $(this).remove();
+            });
+        }, 4000);
+    </script>
+}

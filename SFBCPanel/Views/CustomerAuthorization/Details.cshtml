@@ -1,0 +1,192 @@
+﻿@model SFBCPanel.Models.CustomerAuthorizationinfo
+
+
+@{
+    ViewBag.Title = "Details";
+
+}
+
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-solid">
+                <div class="box-header with-border">
+                    @*<i class="fa fa-text-width"></i>*@
+                    <h3 class="box-title">Customer Authorization</h3>
+                </div>
+            </div>
+            <br />
+                     <ol class="breadcrumb" style="font-size:medium">
+                         Customer Checker
+                     </ol>
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-10 col-md-offset-3">
+
+                        <blockquote>
+
+                            <dl class="dl-horizontal col-md-12">
+                                <dt style=" text-align: left;">
+                                    @Html.DisplayNameFor(model => model.Customername)
+                                </dt>
+
+                                <dd style=" text-align: left;">
+                                    @Html.DisplayFor(model => model.Customername)
+                                </dd>
+
+                                <dt style=" text-align: left;">
+                                    @Html.DisplayNameFor(model => model.Branch)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.Branch)
+                                </dd>
+                                <dt style="">
+                                    @Html.DisplayNameFor(model => model.Customeraccount)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.Customeraccount)
+                                </dd>
+                                @*<dt style=" text-align left;">
+                @Html.DisplayNameFor(model => model.Currency)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Currency)
+            </dd>*@
+
+
+                                <dt style=" text-align: left;">
+                                    @Html.DisplayNameFor(model => model.AccountType)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.AccountType)
+                                </dd>
+
+
+
+
+                                @*<dt>
+                @Html.DisplayNameFor(model => model.CustomerID)
+            </dt>*@
+
+                                @*<dd>
+                @Html.DisplayFor(model => model.CustomerID)
+            </dd>*@
+
+                                <dt style=" text-align: left;">
+                                    @Html.DisplayNameFor(model => model.Email)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.Email)
+                                </dd>
+
+                                <dt style=" text-align :left;">
+                                    @Html.DisplayNameFor(model => model.Profile)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.Profile)
+                                </dd>
+
+                                <dt style=" text-align :left;">
+                                    @Html.DisplayNameFor(model => model.UserName)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.UserName)
+                                </dd>
+
+                                <dt style=" text-align :left;">
+                                    @Html.DisplayNameFor(model => model.Address)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.Address)
+                                </dd>
+
+                                <dt style=" text-align :left;">
+                                    @Html.DisplayNameFor(model => model.CustomerPhone)
+                                </dt>
+
+                                <dd>
+                                    @Html.DisplayFor(model => model.CustomerPhone)
+                                </dd>
+
+                            </dl>
+                        </blockquote>
+                            <div id="resoan" style="display:none">
+                                <div class="ui-grid-solo">
+                                    <div class="ui-block-a">
+                                        <span>
+                                            @Html.EditorFor(m => m.RejectReason)
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            @*<div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="col-xs-5 col-xs-offset-2">
+                                    @Html.ActionLink("Authorize Customer", "Authorize", new { id = Model.userid, status = Model.authsts },new { @class="btn btn-success btn-block" })
+                                </div>
+                            </div>
+                        </div>*@
+
+                            @*<div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="col-xs-5 col-xs-offset-2">
+                                        @Html.ActionLink("Reject Customer", "Reject", new { id = Model.userid, status = Model.rjtsts },new { @class="btn btn-danger btn-block " })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>*@
+
+
+                            @if (ViewBag.Message != null)
+                            {
+                                <script type="text/javascript">
+                                        window.onload = function () {
+                                            alert("@ViewBag.Message");
+                                        };
+                                </script>
+                            }
+                    </div>
+
+                </div>
+                <div class="btn-toolbar justify-content-between" role="toolbar" aria-label="Toolbar with button groups" style="position:relative;left:30%">
+                    <div class="btn-group" role="group" aria-label="First group">
+
+
+                        @Html.ActionLink("Authorize Customer", "Authorize", new { id = Model.userid, status = Model.authsts }, new { @class = "btn btn-success btn-block btn-flat " })
+                    </div>
+                    <div class="btn-group" role="group" aria-label="Second group">
+                        @Html.ActionLink("Reject Customer", "Reject", new { id = Model.userid, status = Model.rjtsts }, new { @class = "btn btn-danger  btn-block btn-flat " })
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        </div>
+    </div>
+</section>
+<script>
+            $("#resoan").hide();
+            $("input[name='status']").on("change", function () {
+                if ($(this).val() == "false") {
+                    $("#resoan").show();
+                }
+            });
+
+</script>
+
+

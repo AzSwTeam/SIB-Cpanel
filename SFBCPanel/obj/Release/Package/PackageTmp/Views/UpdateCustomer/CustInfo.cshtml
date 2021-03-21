@@ -1,0 +1,162 @@
+﻿@model SFBCPanel.Models.CustomerRegBankinfo
+
+@{
+    ViewBag.Title = "CustInfo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<section class="content">
+    <div class="row">
+        <!-- Left col -->
+        <section class="col-md-12 connectedSortable">
+            <!-- Own Transfer -->
+            <div class="box box-info">
+                <h2>Update Customer</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Update Customer information
+                </ol>
+                @if (ViewBag.SuccessMessage != null)
+                {
+                    <div class="alert alert-success" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <strong>Success!</strong> @ViewBag.SuccessMessage
+                    </div>
+                }
+                @if (ViewBag.FailedMessage != null)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <strong>Failed!</strong> @ViewBag.FailedMessage
+                    </div>
+                }
+
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-10">
+
+                            @using (Html.BeginForm(new { id = "form" }))
+                            {
+                                @Html.AntiForgeryToken()
+
+                                <div class="form-horizontal">
+                                    @Html.ValidationSummary(true)
+
+                                    <div class="form-group">
+                                        <label class="control-label col-md-4">Username or ID</label>
+                                        <div class="col-md-6">
+                                            @Html.TextBoxFor(model => model.placeholder, new { @class = "form-control ", @placeholder = "..." })
+                                        </div>
+                                        <div class="col-xs-2">
+                                            <input id="loadbutton" value="Load" type="submit" class="btn btn btn-md btn-block btn-flat" formaction="@Url.Action("GetCustomerData","UpdateCustomer")" style="color:white;font-size:small" />
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Branch, new { @class = "control-label col-md-4 text-left" })
+                                        <div class="col-md-8">
+                                            @Html.DropDownListFor(model => model.BranchCode, Model.Branches, new { @class = "form-control ", @placeholder = "Branch..." })
+                                            @*@Html.DropDownList("BranchList", (IEnumerable<SelectListItem>)ViewBag.branchList, "-- Select Branch --", new { @class = "form-control ", @placeholder = "Branch..." })*@
+                                            @* @Html.EditorFor(model => model.Branch)*@
+                                            @Html.ValidationMessageFor(model => model.BranchCode)
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Currency, new { @class = "control-label col-md-4 text-left" })
+                                        <div class="col-md-8">
+                                            @Html.DropDownListFor(model => model.CurrencyCode, Model.Currencies, new { @class = "form-control ", @placeholder = "Branch..." })
+                                            @* @Html.DropDownList("CurrencyList", (IEnumerable<SelectListItem>)ViewBag.CurrencyList, "-- Select Currency --", new { @class = "form-control select2", @placeholder = "Branch..." })*@
+                                            @*@Html.EditorFor(model => model.Currency)*@
+                                            @Html.ValidationMessageFor(model => model.CurrencyCode)
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.AccountType, new { @class = "control-label col-md-4 text-left" })
+                                        <div class="col-md-8">
+                                            @Html.DropDownListFor(model => model.AccountTypecode, Model.AccTypes, new { @class = "form-control ", @placeholder = "Branch..." })
+                                            @*@Html.DropDownList("AccTypeList", (IEnumerable<SelectListItem>) ViewBag.AccTypesList, "-- Select Account Type --", new {@class = "form-control ", @placeholder = "Branch..."})*@
+                                            @*@Html.EditorFor(model => model.AccountType)*@
+                                            @Html.ValidationMessageFor(model => model.AccountTypecode)
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.AccountNumber, new { @class = "control-label col-md-4 text-left" })
+                                        <div class="col-md-8">
+                                            @Html.TextBoxFor(model => model.AccountNumber, new { @class = "form-control ", @placeholder = "Account #...", @maxlength = "7", @id = "accountnumber", @type = "number", @Value = (Model.AccountNumber == null) ? "0" : Model.AccountNumber.ToString() })
+                                            @Html.ValidationMessageFor(model => model.AccountNumber)
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.category, new { @class = "control-label col-md-4" })
+
+                                        <div class="col-md-8">
+                                            <p>
+                                                @if (Model.Branch != null)
+                                                {
+                                                    foreach (var a in Model.catgories)
+                                                    {
+                                                        if (Model.CategoryCode == a.Value)
+                                                        {
+                                                            @Html.RadioButtonFor(b => b.CategoryCode, a.Value, new { @class = "radio-inline radio", @id = "mustbechecked" }) @a.Text
+                                                        }
+                                                        else
+                                                        {
+                                                            @Html.RadioButtonFor(b => b.CategoryCode, a.Value, new { @class = "radio-inline radio" }) @a.Text
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    foreach (var a in Model.catgories)
+                                                    {
+                                                        @Html.RadioButtonFor(b => b.CategoryCode, a.Value, new { @class = "radio-inline radio" }) @a.Text
+                                                    }
+                                                }
+
+                                            </p>
+                                            @Html.ValidationMessageFor(model => model.CategoryCode)
+
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-xs-57 col-xs-offset-6">
+                                            <input type="submit" onclick="submitanddisable()" formaction="@Url.Action("CustInfo","UpdateCustomer")" value="Submit" class="btn btn-lg btn-block btn-flat" style="color:white;font-size:small" />
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+
+<script>
+    radiobtn = document.getElementById("mustbechecked");
+    radiobtn.checked = true;
+    //document.getElementById("accountnumber").value = @Model.AccountNumber;
+    @*$('#accountnumber').val(@Model.AccountNumber);
+    $('#subno').val(@Model.SUBNO);
+    $('#subgl').val(@Model.SUBGL);*@
+</script>
+
+@if (ViewBag.SuccessMessage != null)
+{
+    @*<script type="text/javascript">
+                    window.onload = function () {
+                        alert("@ViewBag.SuccessMessage");
+                    };
+        </script>*@
+    <script>
+        window.setTimeout(function () {
+            $(".alert").fadeTo(500, 0).slideUp(500, function () {
+                $(this).remove();
+            });
+        }, 4000);
+    </script>
+}

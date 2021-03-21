@@ -1,0 +1,684 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>@ViewBag.Title - SSB CPanel</title>
+
+    <!-- Bootstrap CSS CDN -->
+    <link href="~/Content/bootstrap(downloaded).min.css" rel="stylesheet" />
+    <!-- Our Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <!-- Optional Bootstrap theme -->
+    <link rel="stylesheet" href="~/Content/bootstrap-theme.min.css">
+    <!-- Date Picker -->
+    <link href="~/Content/bootstrap-datepicker.css" rel="stylesheet" />
+    <link href="~/Content/mdb.min.css" rel="stylesheet">
+    <script src="~/Content/jquery.min.js"></script>
+    <script src="~/Content/bootstrap.min.js"></script>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/Content/style.css">
+    <link href="~/Images/logo_1.png" rel="shortcut icon" type="image/x-icon" />
+
+    <style rel=stylesheet>
+        .navready {
+            min-height: 100vh;
+            background: #005a49;
+            background-image: url('../../Images/noisy.png');
+        }
+        #englishnavbar ul li a:hover {
+            background-color: #3A88C7;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- Sidebar Holder -->
+        <div class="navready">
+            <nav id="sidebar" style="width:30%;font-size:12px">
+                <div class="sidebar-header">
+                    <a href="@Url.Action("Index", "Home")"><img src="~/Images/logo_1.png" style="width:47%;height:8%;position: relative;left:26%" /></a>
+                </div>
+                @Html.Action("TopMenu", "Home")
+            </nav>
+        </div>
+        <div class="container body-content" style="width:100%;height:100%;overflow-x:hidden;overflow-y:hidden">
+            @RenderBody()
+        </div>
+    </div>
+
+    <!-- jQuery CDN - Slim version (=without AJAX) -->
+    @*<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>*@
+    <!-- Popper.JS -->
+    @*<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>*@
+    <!-- Bootstrap JS -->
+    @*<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>*@
+    <script src="~/Scripts/jquery-1.11.3.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/mdb.js"></script>
+    @* datatables load *@
+    <script src="~/Content/jquery-1.11.3.min.js"></script>
+    <link href="~/Content/jquery.datatables.css" rel="stylesheet" />
+    <script src="~/Content/jquery.datatables.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+        });
+    </script>
+
+    @* scripts *@
+    <script>
+        $(document).ready(function () {
+            $('.dropdown-toggle').dropdown();
+        });
+    </script>
+
+    @*DataValidateLength*@
+    <script language="javascript" type="text/javascript">
+        $(document).ready
+            (
+                function () {
+                    $('input[data_val_length_max]').each
+                        (
+                            function (index) {
+                                $(this).attr('maxlength', $(this).attr('data_val_length_max'));
+                            });
+                });
+    </script>
+
+
+    <script type="text/javascript">
+        (function ($) {
+            $(document).ready(function () {
+                $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    $(this).parent().siblings().removeClass('open');
+                    $(this).parent().toggleClass('open');
+                });
+            });
+        })(jQuery);
+    </script>
+
+    <style>
+        .dropdown-submenu {
+            position: relative;
+        }
+
+            .dropdown-submenu .dropdown-menu {
+                top: 0;
+                left: 100%;
+                margin-top: -1px;
+            }
+    </style>
+
+    <script>
+        var GetFavoriteMeter = function () {
+
+            $("#loadDiv").show();
+            var user_id = Session["UserID"].ToString();
+
+            $.ajax({
+                type: "POST",
+                url: "/ElectricityPayment/GetFavoriteMeter",
+                data: { user_id: user_id },
+                success: function (response) {
+                    $("#myModalBodyDiv").html(response);
+
+                    $("#myModal").modal("show");
+
+                }
+
+
+            });
+
+
+        }
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+
+            $.fn.datepicker.defaults.format = "mm/dd/yyyy";
+            $('.datepicker').datepicker({
+                startDate: '-3d'
+            });
+            $('#sandbox-container .input-append.date').datepicker({
+
+            });
+            $('#sandbox-container .input-append.date').datepicker({
+                format: "dd/mm/yyyy",
+                clearBtn: true,
+                multidate: false,
+                multidateSeparator: "/"
+            });
+
+        });
+
+    </script>
+
+    <script>
+        $.widget.bridge('uibutton', $.ui.button);
+    </script>
+
+    <script type="text/javascript">
+
+        //setFavouriteMeter
+        function setFavouriteMeter(x) {
+            var meter = $(x).parent().parent().find('td').eq(1).text().trim();
+
+            //alert($(x).parent().parent().find('td').eq(1).text());
+            //$('#meterNo').text(meter);
+            $('#meterNo').val(meter);
+
+            $("#myModal").modal('hide');
+        }
+        //setFavouriteCard
+        function setFavouriteCard(x) {
+            var card = $(x).parent().parent().find('td').eq(1).text().trim();
+
+            if ('#ToCardNo')
+                $('#cardNo').val(card);
+
+
+            $("#myModal").modal('hide');
+
+
+            var exp = $(x).parent().parent().find('td').eq(2).text().trim();
+
+            var month = exp.substring(2, 4);
+            var year = exp.substring(0, 2);
+            //if (month == '02') {
+            //    alert('feb');
+            //    //$('#Mymonth').find('option[value="2"]').attr('selected', 'selected');
+            //    //$('#Mymonth option[value=02]').attr('selected', 'selected');//.val("February");
+            //    $("#Mymonth select").val("02");
+            //}
+
+            //alert(month);
+            //alert(year);
+        }
+
+        //setFavouriteCard
+        function setFavouriteCardTo(x) {
+            var card = $(x).parent().parent().find('td').eq(1).text().trim();
+
+            //alert($(x).parent().parent().find('td').eq(1).text());
+            //$('#meterNo').text(meter);
+            $('#ToCardNo').val(card);
+
+            $("#myModal").modal('hide');
+        }
+
+        //setFavouritePhone
+        function setFavouritePhone(x) {
+            var phone = $(x).parent().parent().find('td').eq(1).text().trim();
+
+            //alert($(x).parent().parent().find('td').eq(1).text());
+            //$('#meterNo').text(meter);
+            $('#phoneNo').val(phone);
+
+            $("#myModal").modal('hide');
+        }
+
+
+        $(function () {
+            $('#example1').DataTable({
+                'ordering': false,
+                "aaSorting": []
+            });
+            $('#example3').DataTable();
+            $('#example2').DataTable({
+                'paging': true,
+                'lengthChange': false,
+                'searching': false,
+                'ordering': false,
+                'info': true,
+                'autoWidth': false
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        function isNumberKey(evt) {
+
+            var charCode = (evt.which) ? evt.which : event.keyCode
+
+            if (charCode > 31 && (charCode < 48 || charCode > 57))
+
+                return false;
+
+            return true;
+
+        }
+
+    </script>
+
+    <script type="text/javascript">
+
+        function isNumberKey2(txt, evt) {
+
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if (charCode == 46) {
+                //Check if the text already contains the . character
+                if (txt.value.indexOf('.') === -1) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                if (charCode > 31
+                    && (charCode < 48 || charCode > 57))
+                    return false;
+            }
+            return true;
+        }
+    </script>
+
+    <!----------------------------------------------------->
+    <script>
+        $(function () {
+            $('#salaryTable').DataTable();
+            //$('#salaryTable').columns.adjust().draw();
+        })
+    </script>
+    <!----------------------------------------------------->
+
+    <script>
+        $(function () {
+            /* ChartJS
+             * -------
+             * Here we will create a few charts using ChartJS
+             */
+
+            //--------------
+            //- AREA CHART -
+            //--------------
+
+            // Get context with jQuery - using jQuery's .get() method.
+            var areaChartCanvas = $('#areaChart').get(0).getContext('2d');
+            // This will get the first returned node in the jQuery collection.
+            var areaChart = new Chart(areaChartCanvas);
+            var areaChartData = {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                datasets: [
+                    {
+                        label: 'Electronics',
+                        fillColor: 'rgba(210, 214, 222, 1)',
+                        strokeColor: 'rgba(210, 214, 222, 1)',
+                        pointColor: 'rgba(210, 214, 222, 1)',
+                        pointStrokeColor: '#c1c7d1',
+                        pointHighlightFill: '#fff',
+                        pointHighlightStroke: 'rgba(220,220,220,1)',
+                        data: [65, 59, 80, 81, 56, 55, 40]
+                    },
+                    {
+                        label: 'Digital Goods',
+                        fillColor: 'rgba(60,141,188,0.9)',
+                        strokeColor: 'rgba(60,141,188,0.8)',
+                        pointColor: '#3b8bba',
+                        pointStrokeColor: 'rgba(60,141,188,1)',
+                        pointHighlightFill: '#fff',
+                        pointHighlightStroke: 'rgba(60,141,188,1)',
+                        data: [28, 48, 40, 19, 86, 27, 90]
+                    }
+                ]
+            };
+            var areaChartOptions = {
+                //Boolean - If we should show the scale at all
+                showScale: true,
+                //Boolean - Whether grid lines are shown across the chart
+                scaleShowGridLines: false,
+                //String - Colour of the grid lines
+                scaleGridLineColor: 'rgba(0,0,0,.05)',
+                //Number - Width of the grid lines
+                scaleGridLineWidth: 1,
+                //Boolean - Whether to show horizontal lines (except X axis)
+                scaleShowHorizontalLines: true,
+                //Boolean - Whether to show vertical lines (except Y axis)
+                scaleShowVerticalLines: true,
+                //Boolean - Whether the line is curved between points
+                bezierCurve: true,
+                //Number - Tension of the bezier curve between points
+                bezierCurveTension: 0.3,
+                //Boolean - Whether to show a dot for each point
+                pointDot: false,
+                //Number - Radius of each point dot in pixels
+                pointDotRadius: 4,
+                //Number - Pixel width of point dot stroke
+                pointDotStrokeWidth: 1,
+                //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+                pointHitDetectionRadius: 20,
+                //Boolean - Whether to show a stroke for datasets
+                datasetStroke: true,
+                //Number - Pixel width of dataset stroke
+                datasetStrokeWidth: 2,
+                //Boolean - Whether to fill the dataset with a color
+                datasetFill: true,
+                //String - A legend template
+                legendTemplate:
+                    '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].lineColor%>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>',
+                //Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+                maintainAspectRatio: true,
+                //Boolean - whether to make the chart responsive to window resizing
+                responsive: true
+            };
+
+            //Create the line chart
+            areaChart.Line(areaChartData, areaChartOptions);
+
+            //-------------
+            //- LINE CHART -
+            //--------------
+            var lineChartCanvas = $('#lineChart').get(0).getContext('2d');
+            var lineChart = new Chart(lineChartCanvas);
+            var lineChartOptions = areaChartOptions;
+            lineChartOptions.datasetFill = false;
+            lineChart.Line(areaChartData, lineChartOptions);
+
+            //-------------
+            //- PIE CHART -
+            //-------------
+            // Get context with jQuery - using jQuery's .get() method.
+            var pieChartCanvas = $('#pieChart').get(0).getContext('2d');
+            var pieChart = new Chart(pieChartCanvas);
+            var PieData = [
+                {
+                    value: 700,
+                    color: '#f56954',
+                    highlight: '#f56954',
+                    label: 'Chrome'
+                },
+                {
+                    value: 500,
+                    color: '#00a65a',
+                    highlight: '#00a65a',
+                    label: 'IE'
+                },
+                {
+                    value: 400,
+                    color: '#f39c12',
+                    highlight: '#f39c12',
+                    label: 'FireFox'
+                },
+                {
+                    value: 600,
+                    color: '#00c0ef',
+                    highlight: '#00c0ef',
+                    label: 'Safari'
+                },
+                {
+                    value: 300,
+                    color: '#3c8dbc',
+                    highlight: '#3c8dbc',
+                    label: 'Opera'
+                },
+                {
+                    value: 100,
+                    color: '#d2d6de',
+                    highlight: '#d2d6de',
+                    label: 'Navigator'
+                }
+            ];
+            var pieOptions = {
+                //Boolean - Whether we should show a stroke on each segment
+                segmentShowStroke: true,
+                //String - The colour of each segment stroke
+                segmentStrokeColor: '#fff',
+                //Number - The width of each segment stroke
+                segmentStrokeWidth: 2,
+                //Number - The percentage of the chart that we cut out of the middle
+                percentageInnerCutout: 50, // This is 0 for Pie charts
+                //Number - Amount of animation steps
+                animationSteps: 100,
+                //String - Animation easing effect
+                animationEasing: 'easeOutBounce',
+                //Boolean - Whether we animate the rotation of the Doughnut
+                animateRotate: true,
+                //Boolean - Whether we animate scaling the Doughnut from the centre
+                animateScale: false,
+                //Boolean - whether to make the chart responsive to window resizing
+                responsive: true,
+                // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+                maintainAspectRatio: true,
+                //String - A legend template
+                legendTemplate:
+                    '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<segments.length; i++){%><li><span style="background-color:<%=segments[i].fillColor%>"></span><%if(segments[i].label){%><%=segments[i].label%><%}%></li><%}%></ul>'
+            };
+            //Create pie or douhnut chart
+            // You can switch between pie and douhnut using the method below.
+            pieChart.Doughnut(PieData, pieOptions);
+
+            //-------------
+            //- BAR CHART -
+            //-------------
+            var barChartCanvas = $('#barChart').get(0).getContext('2d');
+            var barChart = new Chart(barChartCanvas);
+            var barChartData = areaChartData;
+            barChartData.datasets[1].fillColor = '#00a65a';
+            barChartData.datasets[1].strokeColor = '#00a65a';
+            barChartData.datasets[1].pointColor = '#00a65a';
+            var barChartOptions = {
+                //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+                scaleBeginAtZero: true,
+                //Boolean - Whether grid lines are shown across the chart
+                scaleShowGridLines: true,
+                //String - Colour of the grid lines
+                scaleGridLineColor: 'rgba(0,0,0,.05)',
+                //Number - Width of the grid lines
+                scaleGridLineWidth: 1,
+                //Boolean - Whether to show horizontal lines (except X axis)
+                scaleShowHorizontalLines: true,
+                //Boolean - Whether to show vertical lines (except Y axis)
+                scaleShowVerticalLines: true,
+                //Boolean - If there is a stroke on each bar
+                barShowStroke: true,
+                //Number - Pixel width of the bar stroke
+                barStrokeWidth: 2,
+                //Number - Spacing between each of the X value sets
+                barValueSpacing: 5,
+                //Number - Spacing between data sets within X values
+                barDatasetSpacing: 1,
+                //String - A legend template
+                legendTemplate:
+                    '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].fillColor%>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>',
+                //Boolean - whether to make the chart responsive
+                responsive: true,
+                maintainAspectRatio: true
+            };
+            barChartOptions.datasetFill = false;
+            barChart.Bar(barChartData, barChartOptions);
+        })
+    </script>
+
+    <!----------------------------------------------------->
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2').select2();
+
+            //Datemask dd/mm/yyyy
+            $('#datemask').inputmask('dd/mm/yyyy', { 'placeholder': 'dd/mm/yyyy' });
+            //Datemask2 mm/dd/yyyy
+            $('#datemask2').inputmask('mm/dd/yyyy', { 'placeholder': 'mm/dd/yyyy' });
+            //Money Euro
+            $('[data-mask]').inputmask();
+
+            //Date range picker
+            $('#reservation').daterangepicker();
+            //Date range picker with time picker
+            $('#reservationtime')
+                .daterangepicker({ timePicker: true, timePickerIncrement: 30, format: 'MM/DD/YYYY h:mm A' });
+            //Date range as a button
+            $('#daterange-btn').daterangepicker(
+                {
+                    ranges: {
+                        'Today': [moment(), moment()],
+                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                        'This Month': [moment().startOf('month'), moment().endOf('month')],
+                        'Last Month': [
+                            moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')
+                        ]
+                    },
+                    startDate: moment().subtract(29, 'days'),
+                    endDate: moment()
+                },
+                function (start, end) {
+                    $('#daterange-btn span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+                }
+            );
+
+            ////Date picker
+            //$('#datepicker').datepicker({
+            //    minDate: 0,
+            //    maxDate: "+4Y",
+            //    numberOfMonths: 2,
+            //    dateFormat: "dd/mm/yy",
+            //    autoclose: true
+
+            //});
+
+            //From Date picker
+            $('#datepicker').datepicker({
+                format: "dd/mm/yyyy",
+                autoclose: true
+            });
+            //To Date picker
+            $('#Todatepicker').datepicker({
+                format: "dd/mm/yyyy",
+                autoclose: true
+            });
+
+            //iCheck for checkbox and radio inputs
+            $('input[type="checkbox"].minimal, input[type="radio"].minimal').iCheck({
+                checkboxClass: 'icheckbox_minimal-blue',
+                radioClass: 'iradio_minimal-blue'
+            });
+            //Red color scheme for iCheck
+            $('input[type="checkbox"].minimal-red, input[type="radio"].minimal-red').iCheck({
+                checkboxClass: 'icheckbox_minimal-red',
+                radioClass: 'iradio_minimal-red'
+            });
+            //Flat red color scheme for iCheck
+            $('input[type="checkbox"].flat-red, input[type="radio"].flat-red').iCheck({
+                checkboxClass: 'icheckbox_flat-green',
+                radioClass: 'iradio_flat-green'
+            });
+
+            //Colorpicker
+            $('.my-colorpicker1').colorpicker();
+            //color picker with addon
+            $('.my-colorpicker2').colorpicker();
+
+            //Timepicker
+            $('.timepicker').timepicker({
+                showInputs: false
+            });
+        })
+    </script>
+
+    <!----------------------------------------------------->
+    <script type="text/javascript">
+        //Disable autocomplete throughout the site
+        $(document).ready(function () {
+            // alert("hi");
+            $("input:text,form").attr("autocomplete", "off");
+            $("input:password,form").attr("autocomplete", "off");
+            $("input:TextBoxFor,form").attr("autocomplete", "off");
+        })
+    </script>
+
+    <!----------------------------------------------------->
+    <!-- Scripts for Own Transfer-->
+    <!----------------------------------------------------->
+    <!--ON CLICK SUBMIT BUTTON -->
+
+    <script type="text/javascript">
+        $(document).on('invalid-form.validate', 'form', function () {
+            var button = $(this).find('input[type="submit"]');
+            setTimeout(function () {
+                button.removeAttr('disabled');
+            }, 1);
+        });
+        $(document).on('submit', 'form', function () {
+            var button = $(this).find('input[type="submit"]');
+            setTimeout(function () {
+                button.attr('disabled', 'disabled');
+            }, 0);
+        });
+        function submitanddisable() {
+            $("#form").submit();
+            this.disable = "disable";
+        }
+    </script>
+
+    <script type="text/javascript">
+        window.onbeforeunload = function () {
+
+            $("#periodCheck").click(function () {
+                $("#NoOfTransDropDown").attr("disabled", true);
+            });
+
+            $("#noOfTransCheck").click(function () {
+                $("#NoOfTransDropDown").attr("disabled", false);
+            });
+
+        }
+        window.setTimeout(function() {
+            $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                $(this).remove(); 
+            });
+        }, 4000);
+    </script>
+
+    @*<script src="~/Scripts/jquery.min.js"></script>*@
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    @*<script src="~/Content/bower_components/jquery/dist/jquery.min.js"></script>*@
+    @*<script>
+            $.widget.bridge('uibutton', $.ui.button);
+        </script>*@
+
+    <!-- daterangepicker -->
+    @*<script src="~/Scripts/moment.min.js"></script>*@
+    <script src="~/Scripts/daterangepicker.js"></script>
+    <!-- datepicker -->
+    <script src="~/Scripts/bootstrap-datepicker.min.js"></script>
+
+    <!-- Bootstrap WYSIHTML5 -->
+    @*<script src="~/Scripts/bootstrap3-wysihtml5.all.min.js"></script>*@
+    <!-- Slimscroll -->
+    @*<script src="~/Scripts/jquery.slimscroll.min.js"></script>*@
+    <!-- FastClick -->
+    <script src="~/Scripts/fastclick.js"></script>
+    <!-- iCheck 1.0.1 -->
+    @*<script src="~/Content/plugins/iCheck/icheck.min.js"></script>*@
+    @*<script src="~/Content/plugins/iCheck/icheck.js"></script>*@
+    <!-- AdminLTE for demo purposes -->
+    @*<script src="~/Content/dist/js/demo.js"></script>*@
+    <!-- DataTables -->
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/dataTables.bootstrap.min.js"></script>
+    @*<script src="~/Content/custom.min.js"></script>*@
+    @*<link href="~/content/jquery.datatables.css" rel="stylesheet" />*@
+    <script src="~/content/jquery.datatables.js"></script>
+    @*<script src="~/Scripts/additional-methods.js"></script>
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>*@
+
+
+
+    @* scripts *@
+
+    @RenderSection("scripts", required: false)
+    <link rel="stylesheet" href="~/Content/style.css">
+</body>
+</html>

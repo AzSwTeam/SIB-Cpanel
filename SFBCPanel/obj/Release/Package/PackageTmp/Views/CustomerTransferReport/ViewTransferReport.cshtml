@@ -1,0 +1,161 @@
+﻿@model IEnumerable<SFBCPanel.Models.CustomerTransferReportViewModel>
+
+
+    <header>
+
+        @*<script src="~/Content/jquery-1.11.3.min.js"></script>*@
+        <script src="~/Content/jquery.dataTables.js"></script>
+        <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+
+        <script>
+            $(document).ready(function () {
+                var table = $('#example').DataTable();
+            });
+        </script>
+    </header>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <h2>Reports</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Customer Transfer Report
+                </ol>
+                <div class="box-body">
+                    <div class="table-responsive">
+                        <table id="example" class="display nowrap" style="font-size:small">
+                            <thead>
+                                <tr>
+                                    <th style="font-size:small">
+                                        @Html.DisplayNameFor(model => model.TranDate)
+                                    </th>
+                                    <th style="font-size:small">
+                                        @Html.DisplayNameFor(model => model.TranFromAccount)
+                                    </th>
+                                    <th style="font-size:small">
+                                        @Html.DisplayNameFor(model => model.TranToAccount)
+                                    </th>
+                                    <th style="font-size:small">
+                                        @Html.DisplayNameFor(model => model.TranReqAmount)
+                                    </th>
+                                    <th style="font-size:small;">
+                                        @Html.DisplayNameFor(model => model.TranResult)
+                                    </th>
+                                    <th style="font-size:small">
+                                        @Html.DisplayNameFor(model => model.TranStatus)
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    string[] reqString;
+
+                                    if (item.TranFullReq.Contains(','))
+                                    {
+                                        reqString = item.TranFullReq.Split(',');
+                                        item.TranFromAccount = reqString[0];
+                                        item.TranToAccount = reqString[1];
+                                        item.TranReqAmount = reqString[2];
+                                    }
+                                    if (item.TranStatus == "Secussfully")
+                                    {
+                                        <tr class="label-success">
+                                            <td style="font-size:small">
+                                                @Html.DisplayFor(modelItem => item.TranDate)
+                                            </td>
+                                            <td style="font-size:small">
+                                                @Html.DisplayFor(modelItem => item.TranFromAccount)
+                                            </td>
+                                            <td style="font-size:small">
+                                                @Html.DisplayFor(modelItem => item.TranToAccount)
+                                            </td>
+                                            @*<td>
+                                        @Html.DisplayFor(modelItem => item.tranName)
+                                    </td>*@
+                                            <td style="font-size:small">
+                                                @Html.DisplayFor(modelItem => item.TranReqAmount)
+                                            </td>
+                                            <td style="font-size:small">
+                                                @Html.DisplayFor(modelItem => item.TranResult)
+                                            </td>
+                                            <td style="font-size:small">
+                                                @Html.DisplayFor(modelItem => item.TranStatus)
+                                            </td>
+                                        </tr>
+                                    }
+                                    else
+                                    {
+                                        <tr class="label-danger">
+                                            <td style="font-size:small">
+                                                @Html.DisplayFor(modelItem => item.TranDate)
+                                            </td>
+                                            <td style="font-size:small">
+                                                @Html.DisplayFor(modelItem => item.TranFromAccount)
+                                            </td>
+                                            <td style="font-size:small">
+                                                @Html.DisplayFor(modelItem => item.TranToAccount)
+                                            </td>
+                                            @*<td>
+                                        @Html.DisplayFor(modelItem => item.tranName)
+                                    </td>*@
+                                            <td style="font-size:small">
+                                                @Html.DisplayFor(modelItem => item.TranReqAmount)
+                                            </td>
+                                            <td style="font-size:small">
+                                                @Html.DisplayFor(modelItem => item.TranResult)
+                                            </td>
+                                            <td style="font-size:small">
+                                                @Html.DisplayFor(modelItem => item.TranStatus)
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/Scripts/jquery-3.3.1.js"></script>
+    <script src="~/Scripts/jquery.dataTables.min.js"></script>
+
+    @*<script type="text/javascript">
+            $(document).ready(function() {
+            $('#example1').DataTable( {
+                initComplete: function () {
+                    this.api().columns().every( function () {
+                        var column = this;
+                        var select = $('<select><option value=""></option></select>')
+                            .appendTo( $(column.footer()).empty() )
+                            .on( 'change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+
+                                column
+                                    .search( val ? '^'+val+'$' : '', true, false )
+                                    .draw();
+                            } );
+
+                        column.data().unique().sort().each( function ( d, j ) {
+                            select.append( '<option value="'+d+'">'+d+'</option>' )
+                        } );
+                    } );
+                }
+            } );
+        } );
+        </script>*@
+
+    @*<script type="text/javascript">
+            function showselection() {
+                var value = document.getElementById("typeselector").value;
+                console.log(value);
+                //check for counter or customeraa
+
+            }
+        </script>*@
+</section>

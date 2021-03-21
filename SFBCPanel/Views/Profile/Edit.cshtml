@@ -1,0 +1,151 @@
+﻿@model SFBCPanel.Models.CPanel_ProfileManagement
+
+
+<header>
+    @*<script src="~/Content/jquery-1.11.3.min.js"></script>*@
+    <script src="~/Content/jquery.dataTables.js"></script>
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+
+    @*<script>
+            $(document).ready(function () {
+                var table = $('#example').DataTable();
+                table.paging = false;
+            });
+        </script>*@
+
+    <script>
+        $(document).ready(function () {
+            $('#example').DataTable({
+                "paging": false,
+                "ordering": false,
+                "info": false
+            });
+        });
+    </script>
+
+</header>
+
+<section class="content">
+    <div class="row">
+        <!-- Left col -->
+        <section class="col-md-12 connectedSortable">
+            <!-- Own Transfer -->
+            <div class="box box-info">
+                <h2>Profiles Management</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    Add New Profile
+                </ol>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-10 col-md-offset-1">
+
+                            @using (Html.BeginForm())
+                            {
+                                @Html.AntiForgeryToken()
+
+                                <div class="form-horizontal">
+
+                                    @Html.ValidationSummary(true)
+
+
+                                    @*<div class="form-group">
+                                            @Html.LabelFor(model => model.category, new { @class = "control-label col-md-2" })
+                                            <div class="col-md-10">
+                                                @Html.DropDownListFor(model => model.menu_category, Model.catgories, new { @class = "form-control ", onchange = @"form.submit();", @placeholder = "Profile Name #..." })
+                                                @Html.ValidationMessageFor(model => model.menu_category)
+                                            </div>
+                                        </div>*@
+                                    @if (Model.menu_category != null)
+                                    {
+                                        @*<div class="form-group">
+                                                @Html.LabelFor(model => model.profilename, new { @class = "control-label col-md-2" })
+                                                <div class="col-md-10">
+                                                    @Html.TextBoxFor(model => model.profilename, new { @class = "form-control ", @placeholder = "Profile Name #..." })
+                                                    @Html.ValidationMessageFor(model => model.profilename)
+                                                </div>
+                                            </div>*@
+                                        <div class="row col-md-12">
+                                            <h3>
+                                                Profile being edied : @Model.profilename
+                                            </h3>
+                                            <div class="table-responsive text-center">
+                                                <table id="example" class="display nowrap" style="font-size:small">
+                                                    <thead>
+
+                                                        <tr>
+                                                            <th></th>
+                                                            <th style="font-size:small">
+                                                                MenuItem EN-Name
+                                                            </th>
+                                                            <th style="font-size:small">
+                                                                MenuItem AR-Name
+                                                            </th>
+
+                                                            <th style="font-size:small">MainMenu EN-Name</th>
+                                                            <th style="font-size:small">MainMenu AR-Name</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @for (int idx = 0; idx < Model.pages.Count; idx++)
+                                                        {
+
+
+                                                            <tr>
+                                                                <th style="font-size:small">
+                                                                    @Html.HiddenFor(x => Model.pages[idx].menuid)
+                                                                    @Html.HiddenFor(x => Model.pages[idx].menuparentid)
+                                                                    @Html.CheckBoxFor(x => Model.pages[idx].IsSelected)
+                                                                    @Html.HiddenFor(x => Model.pages[idx].IsSelected)
+                                                                </th>
+                                                                <th style="font-size:small">
+                                                                    @Html.DisplayFor(x => Model.pages[idx].menuname)
+                                                                    @Html.HiddenFor(x => Model.pages[idx].menuname)
+                                                                </th>
+                                                                <th style="font-size:small">
+                                                                    @Html.DisplayFor(x => Model.pages[idx].menuname_ar)
+                                                                    @Html.HiddenFor(x => Model.pages[idx].menuname_ar)
+                                                                </th>
+
+
+                                                                <th style="font-size:small">
+                                                                    @Html.DisplayFor(x => Model.pages[idx].Parent_menuname)
+                                                                    @Html.HiddenFor(x => Model.pages[idx].Parent_menuname)
+                                                                </th>
+                                                                <th style="font-size:small">
+                                                                    @Html.DisplayFor(x => Model.pages[idx].Parent_menuname_ar)
+                                                                    @Html.HiddenFor(x => Model.pages[idx].Parent_menuname_ar)
+                                                                </th>
+                                                            </tr>
+
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                                <br />
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <br />
+                                        <div class="form-group">
+                                            <div class="col-xs-60 col-xs-offset-4">
+                                                <input type="submit" onclick="submitanddisable()" formaction="DoEdit" value="Update Profile" class="btn btn-lg btn-flat btn-block" style="color:white;font-size:small" />
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</section>
+@if (ViewBag.SuccessMessage != null)
+{
+    <script type="text/javascript">
+                window.onload = function () {
+                    alert("@ViewBag.SuccessMessage");
+                };
+    </script>
+}

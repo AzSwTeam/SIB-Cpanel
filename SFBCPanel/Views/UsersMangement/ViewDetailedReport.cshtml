@@ -1,0 +1,217 @@
+﻿@model SFBCpanel.Models.UserDetailsModel
+
+@{
+    ViewBag.Title = "ViewDetailedReport";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap" rel="stylesheet">
+
+<style>
+
+    .name {
+        font-size: 30px;
+        border-bottom: 2px solid #888;
+        margin-bottom: 20px;
+    }
+
+    .name:first-letter {
+        font-size: 300%;
+    }
+
+</style>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12"> 
+            <!-- TABLE: USerLog -->
+            <div class="box box-info">
+                <h2>Users Management</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    User Complete Details
+                </ol>
+                <div class="box-body col-md-10 col-md-offset-1 text-center">
+                    <div class="name" style="color:#24295E">@Model.user_name</div>
+                    <div class="panel-body" style="font-size:medium">
+                        <div class="row">
+                            <div class="col-lg-11 col-md-12 col-md-offset-2">
+                                <div class="col-lg-9 col-md-9">
+                                    <ul class="nav nav-tabs">
+                                        <li class="active"><a data-toggle="tab" href="#Summery" class="text-success"><i class="fa fa-indent"></i> Summery</a></li>
+                                        <li><a data-toggle="tab" href="#Contact" class="text-success"><i class="fa fa-bookmark-o"></i> Contact Info</a></li>
+                                        <li><a data-toggle="tab" href="#Address" class="text-success"><i class="fa fa-home"></i> Address</a></li>
+                                    </ul>
+                                    <div class="tab-content" style="font-size:20px">
+                                        <div id="Summery" class="tab-pane fade in active">
+                                            <div class="table-responsive panel">
+                                                <table class="table">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="text-success"><i class="glyphicon glyphicon-info-sign"></i> User ID</td>
+                                                            <td>@Model.user_id</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-success"><i class="glyphicon glyphicon-user"></i> Username</td>
+                                                            <td>@Model.user_log</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-success"><i class="fa fa-list-ol"></i> Default Account</td>
+                                                            <td>@Model.defult_account</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-success"><i class="fa fa-book"></i> Language</td>
+                                                            <td>Arabic</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-success"><i class="fa fa-group"></i> Category</td>
+                                                            @if (Model.category.ToString() == "1")
+                                                            {
+                                                                <td>Personal</td>
+                                                            }
+                                                            else if (Model.category.ToString() == "2")
+                                                            {
+                                                                <td>Corporate Operator</td>
+                                                            }
+                                                            else if (Model.category.ToString() == "3")
+                                                            {
+                                                                <td>Corporate Authorizater</td>
+                                                            }
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-success"><i class="fa fa-user"></i> Status</td>
+                                                            @if (Model.login_status != null)
+                                                            {
+                                                                if (Model.login_status.ToString() == "1")
+                                                                {
+                                                                    <td>Online</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td>Offline</td>
+                                                                }
+                                                            }
+                                                        </tr>
+
+                                                        <tr>
+                                                            <td class="text-success"><i class="glyphicon glyphicon-time"></i> Last Login</td>
+                                                            <td>
+                                                                @Model.last_login
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <div id="Address" class="tab-pane fade">
+                                            <div class="table-responsive panel">
+                                                <table class="table">
+                                                    <tbody>
+
+                                                        <tr>
+                                                            <td class="text-success"><i class="fa fa-home"></i> Address</td>
+                                                            <td>
+                                                                @Model.user_address
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div id="Contact" class="tab-pane fade">
+                                            <div class="table-responsive panel">
+                                                <table class="table">
+                                                    <tbody>
+
+                                                        <tr>
+                                                            <td class="text-success"><i class="fa fa-envelope-o"></i> Email ID</td>
+                                                            <td>@Model.user_email</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-success"><i class="glyphicon glyphicon-phone"></i> Mobile Number</td>
+                                                            <td>@Model.user_mobile
+                                                            <td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-success"><i class="glyphicon glyphicon-print"></i> Fax</td>
+                                                            <td>@Model.user_fax</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-success"><i class="glyphicon glyphicon-user"></i> Full Name</td>
+                                                            <td>@Model.user_name</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-success"><i class="glyphicon glyphicon-edit"></i> Account Status</td>
+                                                            @if (Model.login_status != null)
+                                                            {
+                                                                if (Model.user_status.ToString() == "A")
+                                                                {
+                                                                    <td>Active</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td>Not active</td>
+                                                                }
+                                                            }
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-success"><i class="glyphicon glyphicon-time"></i> Last Login ip</td>
+                                                            <td>@Model.last_login_ip</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-success"><i class="glyphicon glyphicon-remove-sign"></i> Failed Logins</td>
+                                                            <td>@Model.faild_login</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-success"><i class="fa fa-user"></i> Emergency Contact Person</td>
+                                                            @if (Model.login_status != null)
+                                                            {
+                                                                if (Model.role_id.ToString() == "1")
+                                                                {
+                                                                    <td>Admin</td>
+                                                                }
+                                                                else if (Model.role_id.ToString() == "2")
+                                                                {
+                                                                    <td>User</td>
+                                                                }
+                                                                else if (Model.role_id.ToString() == "3")
+                                                                {
+                                                                    <td>Corporate</td>
+                                                                }
+                                                            }
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-success"><i class="glyphicon glyphicon-remove-circle"></i> Last Unsuccessful login</td>
+                                                            <td>@Model.last_unssessful_login</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="text-success"><i class="glyphicon glyphicon-folder-close"></i> Company</td>
+                                                            <td>@Model.company_name</td>
+                                                        </tr>
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*  *@
+
+                    <div class="box-footer">
+                        <div class="form-group">
+                            <div class="col-xs-4 col-xs-offset-4">
+                                <a href="@Url.Action("UsersDetails","UsersMangement")"><input value="Back" class="btn btn-lg" style="background:#24295E;width:50%;color:white;font-size:small" /></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

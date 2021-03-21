@@ -1,0 +1,277 @@
+﻿@*@model SFBCPanel.Models.custinfo
+
+@{
+    ViewBag.Title = "New Account";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}*@
+
+@model SFBCPanel.Models.CustomerRegBankinfo
+
+@{
+    ViewBag.Title = "New Account";
+}
+
+<section class="content">
+    <div class="box-header with-border">
+        <h3 class="box-title my-box-header"></h3>
+    </div>
+    <h2>Customer Management</h2><br />
+    <ol class="breadcrumb" style="font-size:medium">
+        Add customer account
+    </ol>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            @if (ViewData["Success"] != null)
+            {
+                <div class="alert alert-success" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <strong>Success!</strong>
+                    @ViewData["Success"].ToString()
+                </div>
+
+            }
+            @if (ViewData["Fail"] != null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <strong>Fail!</strong>
+                    @ViewData["Fail"].ToString()
+                </div>
+            }
+            <div class="box box-info">
+                <div class="box-body">
+                    <div class="table-responsive">
+                        @using (Html.BeginForm())
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.ValidationSummary(true)
+                            <strong><label>Customer Information</label></strong>
+                            <table id="example1" class="display table-bordered table-hover border-top">
+                                @if (Model.CustomerID != null)
+                                {
+                                    <tr>
+                                        <th style="font-size:small">
+                                            @Html.DisplayNameFor(model => model.CustomerID)
+                                        </th>
+                                        <td style="font-size:small">
+                                            @Html.DisplayFor(model => model.CustomerID)
+                                        </td>
+                                    </tr>
+                                }
+                                @if (Model.CustomerName != null)
+                                {
+                                    <tr>
+                                        <th style="font-size:small">
+                                            @Html.DisplayNameFor(model => model.CustomerName)
+                                        </th>
+                                        <td style="font-size:small">
+                                            @Html.DisplayFor(model => model.CustomerName)
+                                        </td>
+                                    </tr>
+                                }
+                                @if (Model.customernameArabic != null)
+                                {
+                                    <tr>
+                                        <th style="font-size:small">
+                                            @Html.DisplayNameFor(model => model.customernameArabic)
+                                        </th>
+                                        <td style="font-size:small">
+                                            @Html.DisplayFor(model => model.customernameArabic)
+                                        </td>
+                                    </tr>
+                                }
+                                @if (Model.CustomerPhone != null)
+                                {
+                                    <tr>
+                                        <th style="font-size:small">
+                                            @Html.DisplayNameFor(model => model.CustomerPhone)
+                                        </th>
+                                        <td style="font-size:small">
+                                            @Html.DisplayFor(model => model.CustomerPhone)
+                                        </td>
+                                    </tr>
+                                }
+                                @if (Model.address != null)
+                                {
+                                    <tr>
+                                        <th style="font-size:small">
+                                            @Html.DisplayNameFor(model => model.address)
+                                        </th>
+                                        <td style="font-size:small">
+                                            @Html.DisplayFor(model => model.address)
+                                        </td>
+                                    </tr>
+                                }
+
+                            </table>
+                            <br />
+                            <div class="form-group">
+                                <strong>
+                                    @Html.LabelFor(model => model.AccountNumber, new { @class = "control-label col-md-4 text-left" })
+                                </strong><br />
+                                @Html.DropDownList("AccountNumber", (IEnumerable<SelectListItem>)ViewBag.CustomerAccounts, new { @class = "form-control", @placeholder = "Enter Account Number...", required = "true" })
+                                <strong>
+                                    @*@Html.ValidationMessageFor(model => model.CustomerAccounts)*@
+                                    @*@Html.ValidationMessageFor(model => model.FromAccount)*@
+                                </strong><br />
+                            </div>
+
+                            @*<div class="form-group">
+                        @Html.LabelFor(model => model.Branch, new { @class = "control-label col-md-4 text-left" })
+                        <div class="col-md-8">
+                            @Html.DropDownListFor(model => model.BranchCode, Model.Branches, new { @class = "form-control ", @placeholder = "Branch..." })
+                            @*Html.DropDownList("BranchList", (IEnumerable<SelectListItem>)ViewBag.branchList, "-- Select Branch --", new { @class = "form-control ", @placeholder = "Branch..." })*@
+                            @* @Html.EditorFor(model => model.Branch)
+                                @Html.ValidationMessageFor(model => model.BranchCode)
+                            </div>
+                        </div>*@
+                            <br />
+                            <div class="form-group">
+                                <div class="col-xs-5 col-xs-offset-5">
+
+                                    @if (ViewBag.msg != null)
+                                    {
+                                        <input type="submit" value="Add" name="Command" d="Add" class="btn btn-block btn-flat" />
+                                    }
+                                    else
+                                    {
+                                        <input type="submit" value="Check" name="Command" d="Check" class="btn btn-block btn-flat" />
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@*<section class="content">
+    <div class="row">
+        <section class="">
+            <div class="row col-md-12 connectedSortable">
+                <h2>Customers Management</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    New Customer Account
+                </ol>
+            </div>
+            <div class="box box-info">
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-2">
+                            <div class="info-box-content">
+                                <strong>
+                                    <span class="info-box-text">Name</span> :
+                                </strong>
+                                <span class="info-box-text">@ViewBag.name</span>
+                            </div>
+                            <br />
+                            <div class="info-box-content">
+                                <strong>
+                                    <span class="info-box-text">UserName</span> :
+                                </strong>
+                                <span class="info-box-text">@ViewBag.username</span>
+                            </div>
+                            @if (ViewBag.msg != null)
+                            {
+                                <br />
+                                <div class="info-box-content">
+                                    <strong>
+                                        <span class="info-box-text">Account Customer Name : </span>
+                                    </strong>
+                                    <span class="info-box-text">@ViewBag.msg</span>
+                                </div>
+                            }
+                            @using (Html.BeginForm("newCustomerAccount", "AddAccount", FormMethod.Post, new { id = "form" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <div class="form-horizontal">
+                                    @Html.ValidationSummary(true)
+
+                                    <br />
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Branch, new { @class = "col-md-2" })
+                                        <div class="col-md-8">
+                                            @Html.DropDownListFor(model => model.BranchCode, Model.Branches, null, new { @class = "form-control ", @placeholder = "Branch...", id = "Branch" })
+                                            @*Html.DropDownList("BranchList", (IEnumerable<SelectListItem>)ViewBag.branchList, "-- Select Branch --", new { @class = "form-control ", @placeholder = "Branch..." })*@
+@* @Html.EditorFor(model => model.Branch)
+            @Html.ValidationMessageFor(model => model.BranchCode)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.AccountType, new { @class = "col-md-2" })
+        <div class="col-md-8">
+            @Html.DropDownListFor(model => model.AccountTypecode, Model.AccTypes, "-- Select Account Type --", new { @class = "form-control ", @placeholder = "Branch...", id = "acttype" })
+            @*Html.DropDownList("AccTypeList", (IEnumerable<SelectListItem>) ViewBag.AccTypesList, "-- Select Account Type --", new {@class = "form-control ", @placeholder = "Branch..."})*@
+@*@Html.EditorFor(model => model.AccountType)
+            @Html.ValidationMessageFor(model => model.AccountTypecode)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Currency, new { @class = "col-md-2" })
+        <div class="col-md-8">
+            @Html.DropDownListFor(model => model.CurrencyCode, Model.Currencies, "-- Select Currency --", new { @class = "form-control ", @placeholder = "currency...", id = "curr" })
+            @* @Html.DropDownList("CurrencyList", (IEnumerable<SelectListItem>)ViewBag.CurrencyList, "-- Select Currency --", new { @class = "form-control select2", @placeholder = "Branch..." })*@
+@*@Html.EditorFor(model => model.Currency)
+                                                @Html.ValidationMessageFor(model => model.CurrencyCode)
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            @Html.LabelFor(model => model.AccountNumber, new { @class = "col-md-2" })
+                                            <div class="col-md-8">
+                                                @Html.TextBoxFor(model => model.AccountNumber, new { @class = "form-control ", @placeholder = "Account #...", @maxlength = "7", @id = "accountnumber", @Value = (Model.AccountNumber == null) ? "" : Model.AccountNumber.ToString() })
+                                                @Html.ValidationMessageFor(model => model.AccountNumber)
+                                            </div>
+                                        </div>
+                                        <br />
+                                        <div class="form-group">
+                                            <div class="col-xs-7 col-xs-offset-5">
+                                                <input type="submit" value="Check" name="Command" d="Check" class="btn btn-block btn-flat" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            @if (ViewBag.msg != null)
+                                            {
+                                                <div class="col-xs-7 col-xs-offset-5">
+                                                    <input type="submit" value="Add" name="Command" d="Add" class="btn btn-block btn-flat" />
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </section>*@
+
+@section Scripts{
+    <script type="text/javascript">
+        var getCustName = function () {
+            var branch = $('#Branch').val();
+            var acttype = $('#acttype').val();
+            var curr = $('#curr').val();
+            var act = $('#act').val();
+            var accountnumber = '13' + branch + acttype + curr + act;
+            alert(accountnumber);
+            /*alert(branch);
+            alert(acttype);
+            alert(curr);
+            alert(act);*/
+
+            $.ajax({
+
+                type: "POST",
+                url: "/AddAccount/checknewCustomerAccount",
+                data: { accountnumber: accountnumber },
+                success: function (response) {
+                    alert('hello');
+                    alert(response);
+                }
+            });
+        }
+    </script>
+}
