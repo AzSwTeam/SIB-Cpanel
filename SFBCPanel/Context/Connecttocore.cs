@@ -25,7 +25,7 @@ namespace SFBCPanel.Context
             try
             {
                 //using (StreamReader sr = new StreamReader("C:\\Users\\Shaikh\\Desktop\\SIBCPanel\\SFBCPanel\\Configuration\\SIBconfiguration.txt"))
-                using (StreamReader sr = new StreamReader("C:\\inetpub\\wwwroot\\SSBCPanel\\Configuration\\SIBconfiguration.txt"))
+                using (StreamReader sr = new StreamReader("C:\\Users\\admin\\Desktop\\dev\\sibcpanel\\SFBCPanel\\Configuration\\SIBconfiguration"))//C:\\inetpub\\wwwroot\\SSBCPanel\\Configuration\\SIBconfiguration.txt
                 {
                     string line;
                     while ((line = sr.ReadLine()) != null)
