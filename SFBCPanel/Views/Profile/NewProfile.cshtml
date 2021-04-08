@@ -1,21 +1,26 @@
 ﻿@model SFBCPanel.Models.Profilemangement
 
-    <header>
-        @*<script src="~/Content/jquery-1.11.3.min.js"></script>*@
-        <script src="~/Content/jquery.dataTables.js"></script>
-        <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+@{
+    ViewBag.Title = "NewProfile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 
-        <script>
-            $(document).ready(function () {
-                var table = $('#example').DataTable();
-            });
-        </script>
-    </header>
+<!--<header>-->
+    @*<script src="~/Content/jquery-1.11.3.min.js"></script>*@
+    <!--<script src="~/Content/jquery.dataTables.js"></script>
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+
+    <script>
+        $(document).ready(function () {
+            var table = $('#example').DataTable();
+        });
+    </script>
+</header>-->
 
 <section class="content">
-    <div class="row">
+    <div class="row" ">
         <!-- Left col -->
-        <h2>Customer Profiles Management</h2><br />
+        <h2 style="margin-left:10px">Customer Profiles Management</h2><br />
         <ol class="breadcrumb" style="font-size:medium">
             Add New Profile
         </ol>
@@ -112,18 +117,16 @@
                                             </div>
                                         </div>
                                         <br />
+                                        <br />
                                         <div class="form-group">
-                                            <div class="col-xs-5 col-xs-offset-5">
+                                            <div class="col-xs-57 col-xs-offset-7">
 
-                                                <input type="submit" value="Submit" formaction="Addprofile" class="btn btn-danger btn-block btn-flat" />
+                                                <input type="submit" value="Submit" formaction="Addprofile" class="btn btn-md btn-flat btn-block" style="color:white; font-size:small" />
 
                                             </div>
                                         </div>
 
                                     }
-
-
-
 
 
                                 </div>

@@ -143,7 +143,7 @@ namespace SFBCPanel.Controllers
 
 
             model.Branches = ds.PopulateBranchsForAdmins();
-            model.Roles = ds.PopulatecpanelProfiles();
+            model.Roles = ds.PopulatecpanelProfiles(userbranch);
 
 
 
@@ -158,15 +158,22 @@ namespace SFBCPanel.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    int _records = ds.insert(insertmodel);
-                    if (_records > 0)
+                    if (ds.checkadminusernameavailability(insertmodel.user_name))
                     {
-                        TempData["success"] = "User Added successfully";
-                        return RedirectToAction("Users", "User");
+                        int _records = ds.insert(insertmodel);
+                        if (_records > 0)
+                        {
+                            TempData["success"] = "User Added successfully";
+                            return RedirectToAction("Users", "User");
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("", "Can Not Insert");
+                        }
                     }
                     else
                     {
-                        ModelState.AddModelError("", "Can Not Insert");
+                        ModelState.AddModelError("", "Username already taken");
                     }
                 }
             }

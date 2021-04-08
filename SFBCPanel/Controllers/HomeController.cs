@@ -65,6 +65,8 @@ namespace SFBCPanel.Controllers
             List<TransactionStatusesModel> transactionsstatuses = new List<TransactionStatusesModel>();
             transactionsstatuses = ds.GetTransactionStatusesDetails(branchcode);
             return View(transactionsstatuses);
+
+
         }
 
         public ActionResult NumberOfAccounts()

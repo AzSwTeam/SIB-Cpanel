@@ -37,7 +37,8 @@ namespace SFBCPanel.Models
 
     public class userlist {
 
-             public int user_id { get; set; }
+
+            public int user_id { get; set; }
             
             [Display(Name =  "Name")]
             public string name { get; set; }

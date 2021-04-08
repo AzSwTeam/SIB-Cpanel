@@ -15,7 +15,7 @@ namespace SFBSPancel.Controllers
     public class AddAccountController : Controller
     {
         DataSource ds = new DataSource();
-        //
+        Connecttocore core = new Connecttocore();
         // GET: /AddAcount/
         public ActionResult Add()
         {
@@ -93,7 +93,7 @@ namespace SFBSPancel.Controllers
                 if (ModelState.IsValid)
                 {
                     //String Accountnumber = "13" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
-                    //String Accountnumber = "18" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
+                    String Accountnumber = "18" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
                     String response = ds.custregcheck2(model.cif, model.CategoryCode);
                     if (response.Equals("This Account is Already exist"))
                     {
@@ -166,9 +166,9 @@ namespace SFBSPancel.Controllers
         {
             CustomerRegBankinfo model = new CustomerRegBankinfo();
 
-            //Session["Accountold"] = "";
-            //Session["Accountold"] = Account;
-            //String CategoryCode = Session["modelCategoryCode"].ToString();
+            Session["Accountold"] = "";
+            Session["Accountold"] = cif;//Account
+            String CategoryCode = "1";//Session["modelCategoryCode"].ToString();
             string AccountNumber1, AccountType, BranchName, Currency;
 
             custinfo infomodel = ds.getcustinfo("", "", "", "", "", cif);
@@ -232,23 +232,23 @@ namespace SFBSPancel.Controllers
                     Session["Accountoldname"] = name;
                     Session["Accountoldusername"] = "";
                     Session["Accountoldusername"] = username;
-                    //Session["modelCategoryCode"] = CategoryCode;
+                    Session["modelCategoryCode"] = CategoryCode;
 
 
-                    //String userbranch = Session["user_branch"].ToString();
-                    //if (name != "")
-                    //{
-                    //    model = ds.GetUserRegistrationData(username);
+                    String userbranch = Session["user_branch"].ToString();
+                    if (name != "")
+                    {
+                        model = ds.GetUserRegistrationData(username);
 
-                    //    model.Branches = ds.PopulateBranchs(model.BranchCode, username);
-                    //    model.AccTypes = ds.PopulateAccountTypes(username);
-                    //    model.Currencies = ds.PopulateCurrencies();
-                    //}
+                        model.Branches = ds.PopulateBranchs(model.BranchCode, username);
+                        model.AccTypes = ds.PopulateAccountTypes(username);
+                        model.Currencies = ds.PopulateCurrencies();
+                    }
 
-                    //model.Branches = ds.PopulateBranchs(userbranch);
-                    //model.AccTypes = ds.PopulateAccountTypes();
-                    //model.Currencies = ds.PopulateCurrencies();
-                    //model.catgories = ds.GetGatgories();
+                    model.Branches = ds.PopulateBranchs(userbranch);
+                    model.AccTypes = ds.PopulateAccountTypes();
+                    model.Currencies = ds.PopulateCurrencies();
+                    model.catgories = ds.GetGatgories();
 
 
                     return View(model);
@@ -283,8 +283,8 @@ namespace SFBSPancel.Controllers
         [HttpPost]
         public ActionResult newCustomerAccount(CustomerRegBankinfo model, string command)
         {
-            //String CategoryCode = Session["modelCategoryCode"].ToString();
-            //model.CategoryCode = CategoryCode;
+            String CategoryCode = Session["modelCategoryCode"].ToString();
+            model.CategoryCode = CategoryCode;
 
             ViewBag.name = Session["Accountoldname"].ToString();
             ViewBag.username = Session["Accountoldusername"].ToString();
@@ -348,30 +348,30 @@ namespace SFBSPancel.Controllers
                     String userbranch = Session["user_branch"].ToString();
 
 
-                    //model.Branches = ds.PopulateBranchs(userbranch);
-                    //model.AccTypes = ds.PopulateAccountTypes();
-                    //model.Currencies = ds.PopulateCurrencies();
+                    model.Branches = ds.PopulateBranchs(userbranch);
+                    model.AccTypes = ds.PopulateAccountTypes();
+                    model.Currencies = ds.PopulateCurrencies();
 
-                    //var selectedBranch = model.Branches.Find(p => p.Value == model.BranchCode.ToString());
-                    //var selectedAccType = model.AccTypes.Find(p => p.Value == model.AccountTypecode.ToString());
-                    //var selectedCurrency = model.Currencies.Find(p => p.Value == model.CurrencyCode.ToString());
-                    //if (selectedBranch != null)
-                    //{
-                    //    selectedBranch.Selected = true;
+                    var selectedBranch = model.Branches.Find(p => p.Value == model.BranchCode.ToString());
+                    var selectedAccType = model.AccTypes.Find(p => p.Value == model.AccountTypecode.ToString());
+                    var selectedCurrency = model.Currencies.Find(p => p.Value == model.CurrencyCode.ToString());
+                    if (selectedBranch != null)
+                    {
+                        selectedBranch.Selected = true;
 
-                    //}
-                    //if (selectedAccType != null)
-                    //{
-                    //    selectedAccType.Selected = true;
+                    }
+                    if (selectedAccType != null)
+                    {
+                        selectedAccType.Selected = true;
 
-                    //}
-                    //if (selectedCurrency != null)
-                    //{
-                    //    selectedCurrency.Selected = true;
+                    }
+                    if (selectedCurrency != null)
+                    {
+                        selectedCurrency.Selected = true;
 
-                    //}
+                    }
                     //String Accountnumber = "13" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
-                    //String Accountnumber = "18" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
+                    String Accountnumber = "18" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
 
                     List<int> userids = ds.getaccountsids(Session["Accountold"].ToString());
 
@@ -436,6 +436,101 @@ namespace SFBSPancel.Controllers
                 ModelState.AddModelError("", "Please check one of buttons");
                 return View(model);
             }
+
+
+            //String CategoryCode = Session["modelCategoryCode"].ToString();
+            //model.CategoryCode = CategoryCode;
+
+            //ViewBag.name = Session["Accountoldname"].ToString();
+
+            //ViewBag.username = Session["Accountoldusername"].ToString();
+            //if (command == "Check")
+            //{
+            //    String name = checknewCustomerAccount(model);
+            //    if (name != "No Customer Found")
+            //    {
+            //        // do stuff  
+            //        ViewBag.msg = name;
+            //    }
+            //    else
+            //        ModelState.AddModelError("", name);
+            //    return View(model);
+            //}
+            //else
+            //    if (command == "Add")
+            //{
+
+
+            //    String message;
+            //    //  account model;
+            //    try
+            //    {
+            //        String userbranch = Session["user_branch"].ToString();
+
+
+            //        model.Branches = ds.PopulateBranchs(userbranch);
+            //        model.AccTypes = ds.PopulateAccountTypes();
+            //        model.Currencies = ds.PopulateCurrencies();
+
+            //        var selectedBranch = model.Branches.Find(p => p.Value == model.BranchCode.ToString());
+            //        var selectedAccType = model.AccTypes.Find(p => p.Value == model.AccountTypecode.ToString());
+            //        var selectedCurrency = model.Currencies.Find(p => p.Value == model.CurrencyCode.ToString());
+            //        if (selectedBranch != null)
+            //        {
+            //            selectedBranch.Selected = true;
+
+            //        }
+            //        if (selectedAccType != null)
+            //        {
+            //            selectedAccType.Selected = true;
+
+            //        }
+            //        if (selectedCurrency != null)
+            //        {
+            //            selectedCurrency.Selected = true;
+
+            //        }
+
+
+            //        if (ModelState.IsValidField("BranchCode") && ModelState.IsValidField("AccountTypecode") && ModelState.IsValidField("CurrencyCode") && ModelState.IsValidField("AccountNumber"))
+            //        {
+            //            //String Accountnumber = "13" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
+            //            String Accountnumber = "18" + model.BranchCode + model.AccountTypecode + model.AccountNumber + model.SUBNO + model.CurrencyCode + model.SUBGL;
+
+            //            String result2 = ds.addnewacount(Session["Accountold"].ToString(), Accountnumber, CategoryCode);
+            //            String res = " " + Accountnumber.Substring(11, 7) + " : " + result2;
+
+            //            string custname = Session["Accountoldname"].ToString();//ds.getcustomerfullname(Accountnumber);
+            //            //string usershorthand = "11" + model.BranchCode + model.AccountNumber;
+            //            string usershorthand = model.AccountNumber;
+            //            string adminbranch = ds.getbranchnameenglish(Session["user_branch"].ToString());
+            //            ds.insertadminslog(Session["UserId"].ToString(), Session["user_name"].ToString(), adminbranch, Session["user_roleid"].ToString(), Session["user_status"].ToString(), "Account link request", usershorthand + " - " + custname, DateTime.Now.ToString());
+
+            //            Session["addaccountresult"] = res;
+            //            return RedirectToAction("Add");
+            //            // return RedirectToAction(actionName: "newCustomerAccount", routeValues: new { Account = Accountnumber });
+
+            //        }
+            //        else
+            //        {
+            //            message = "All Fields are required ";
+            //            ModelState.AddModelError("", "Something is missing" + message);
+
+            //        }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        message = "Please Contact for Support";
+            //        ModelState.AddModelError("", "Something is missing" + message);
+
+            //    }
+            //    return View(model);
+            //}
+            //else
+            //{
+            //    ModelState.AddModelError("", "Please check one of buttons");
+            //    return View(model);
+            //}
         }
 
 
@@ -451,48 +546,48 @@ namespace SFBSPancel.Controllers
                 UserDetailsModel user = ds.GetUserDetails(model.cif);
                 string response = ds.checkaccountifbound(model.AccountNumber,user.user_id.ToString());
                 return response;
-                //String userbranch = Session["user_branch"].ToString();
+                String userbranch = Session["user_branch"].ToString();
 
 
-                //model.Branches = ds.PopulateBranchs(userbranch);
-                //model.AccTypes = ds.PopulateAccountTypes();
-                //model.Currencies = ds.PopulateCurrencies();
-                //model.catgories = ds.GetGatgories();
+                model.Branches = ds.PopulateBranchs(userbranch);
+                model.AccTypes = ds.PopulateAccountTypes();
+                model.Currencies = ds.PopulateCurrencies();
+                model.catgories = ds.GetGatgories();
 
-                //var selectedBranch = model.Branches.Find(p => p.Value == model.BranchCode.ToString());
-                //var selectedAccType = model.AccTypes.Find(p => p.Value == model.AccountTypecode.ToString());
-                //var selectedCurrency = model.Currencies.Find(p => p.Value == model.CurrencyCode.ToString());
-                ////     var selectedcategory = model.catgories.Find(p => p.Value == model.CategoryCode.ToString());
-                //if (selectedBranch != null)
-                //{
-                //    selectedBranch.Selected = true;
+                var selectedBranch = model.Branches.Find(p => p.Value == model.BranchCode.ToString());
+                var selectedAccType = model.AccTypes.Find(p => p.Value == model.AccountTypecode.ToString());
+                var selectedCurrency = model.Currencies.Find(p => p.Value == model.CurrencyCode.ToString());
+                //     var selectedcategory = model.catgories.Find(p => p.Value == model.CategoryCode.ToString());
+                if (selectedBranch != null)
+                {
+                    selectedBranch.Selected = true;
 
-                //}
-                //if (selectedAccType != null)
-                //{
-                //    selectedAccType.Selected = true;
+                }
+                if (selectedAccType != null)
+                {
+                    selectedAccType.Selected = true;
 
-                //}
-                //if (selectedCurrency != null)
-                //{
-                //    selectedCurrency.Selected = true;
+                }
+                if (selectedCurrency != null)
+                {
+                    selectedCurrency.Selected = true;
 
-                //}
+                }
                 //if (selectedcategory != null)
                 //{
                 //    selectedcategory.Selected = true;
 
                 //}
 
-                //String CategoryCode = Session["modelCategoryCode"].ToString();
-                //model.CategoryCode = CategoryCode;
+                String CategoryCode = Session["modelCategoryCode"].ToString();
+                model.CategoryCode = CategoryCode;
 
-                //while (model.AccountNumber.ToString().Length != 7)
-                //{
-                //    model.AccountNumber = "0" + model.AccountNumber;
-                //}
-                ////String Accountnumber = "13" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
-                //String Accountnumber = "18" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
+                while (model.AccountNumber.ToString().Length != 7)
+                {
+                    model.AccountNumber = "0" + model.AccountNumber;
+                }
+                //String Accountnumber = "13" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
+                String Accountnumber = "18" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
 
 
                 //String response = Connecttocore.GetCustinfo(model.AccountNumber);
@@ -997,26 +1092,24 @@ namespace SFBSPancel.Controllers
             }
             return View();
         }
-        //[HttpPost]
-        //public ActionResult CustomerAccounts(accountsresult model)
-        //{
-        //    String result = "", res = "";
-        //    List<addaccount> lHob = new List<addaccount>();
-        //    lHob = model.accountSelected;
-        //    foreach (var item in lHob)
-        //    {
-        //        if (item.IsSelected == true)
-        //        {
-        //            result = ds.addnewacount(Session["Accountold"].ToString(), item.AccountNumbercomplete, Session["modelCategoryCode"].ToString());
-        //            res += " " + item.AccountNumbercomplete + " : " + result;
+        [HttpPost]
+        public ActionResult CustomerAccounts(accountsresult model)
+        {
+            String result = "", res = "";
+            List<addaccount> lHob = new List<addaccount>();
+            lHob = model.accountSelected;
+            foreach (var item in lHob)
+            {
+                if (item.IsSelected == true)
+                {
+                    result = ds.addnewacount(Session["Accountold"].ToString(), item.AccountNumbercomplete, Session["modelCategoryCode"].ToString());
+                    res += " " + item.AccountNumbercomplete + " : " + result;
 
-        //        }
-        //        Session["addaccountresult"] = res;
-        //    }
-        //    return RedirectToAction("Add");
-        //}
-
-
+                }
+                Session["addaccountresult"] = res;
+            }
+            return RedirectToAction("Add");
+        }
         public ActionResult Authorizer()
         {
             if (Session["authresult"] != null)

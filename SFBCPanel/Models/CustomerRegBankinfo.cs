@@ -35,13 +35,13 @@ namespace SFBCPanel.Models
         [Display(Name = "Customer Card")]
         public String CustomerCard { get; set; }
 
-        [Required]
+        //[Required]
         public String BranchCode { get; set; }
 
-        [Required]
+       // [Required]
         public String AccountTypecode { get; set; }
 
-        [Required]
+        //[Required]
         public String CurrencyCode { get; set; }
 
         [RegularExpression("[^0-9]", ErrorMessage = "Must be numeric")]

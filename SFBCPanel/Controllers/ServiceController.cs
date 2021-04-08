@@ -55,6 +55,14 @@ namespace SFBCPanel.Controllers
         [HttpPost]
         public ActionResult Add(SFBCPanel.Models.ServiceInsertModel insertmodel)
         {
+            if (Session["user_name"] == null)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+            if (Session["user_branch"] == null)
+            {
+                return RedirectToAction("Login", "Login");
+            }
             if (ModelState.IsValid)
             {
                 int _records = ds.insertservice(insertmodel);
@@ -73,6 +81,14 @@ namespace SFBCPanel.Controllers
         [HttpGet]
         public ActionResult Edit(int id)
         {
+            if (Session["user_name"] == null)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+            if (Session["user_branch"] == null)
+            {
+                return RedirectToAction("Login", "Login");
+            }
 
             ServiceUpdateModel model;
             model = ds.getServiccedata(id);
@@ -83,7 +99,15 @@ namespace SFBCPanel.Controllers
 
         [HttpPost]
         public ActionResult Edit(SFBCPanel.Models.ServiceUpdateModel updatemodel, int id)
-        {   
+        {
+            if (Session["user_name"] == null)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+            if (Session["user_branch"] == null)
+            {
+                return RedirectToAction("Login", "Login");
+            }
             updatemodel.statuses = ds.Populatecpanelstatuses();
 
             var selectedstatus = updatemodel.statuses.Find(p => p.Value == updatemodel.service_status_code.ToString());
@@ -114,6 +138,14 @@ namespace SFBCPanel.Controllers
 
         public ActionResult Delete(int id)
         {
+            if (Session["user_name"] == null)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+            if (Session["user_branch"] == null)
+            {
+                return RedirectToAction("Login", "Login");
+            }
             int records = ds.deleteservice(id);
             if (records > 0)
             {

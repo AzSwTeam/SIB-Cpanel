@@ -828,7 +828,9 @@ namespace SIBCPanel.Context
             List<userlist> users = new List<userlist>();
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("SELECT user_name, user_id,r.name,b.branch_name   FROM security_master u , branchs b ,cpanel_rolemaster r where u.roleid=r.roleid and u.user_branch=b.branch_code and u.user_stat = 'A'", con);
+                //OracleCommand cmd = new OracleCommand("SELECT user_name, user_id,r.name,b.branch_name   FROM security_master u , branchs b ,cpanel_rolemaster r where u.roleid=r.roleid and u.user_branch=b.branch_code and u.user_stat = 'A'", con);
+                //OracleCommand cmd = new OracleCommand("SELECT user_name, user_id, r.name, b.branch_name, decode(user_stat, 'A', 'Active', 'DE', 'Deleted', 'D', 'Deactive') as user_status FROM security_master u, branchs b, cpanel_rolemaster r where u.roleid = r.roleid and u.user_branch = b.branch_code", con);
+                OracleCommand cmd = new OracleCommand("SELECT user_name, user_id,r.name,b.branch_name,decode(user_stat,'A','Active','DE','Deleted','D','Deactive') as user_status FROM security_master u, branchs b, cpanel_rolemaster r where u.roleid = r.roleid and u.user_stat = 'A'", con);
                 if (con.State == ConnectionState.Closed)
                 { con.Open(); }
 
@@ -1456,6 +1458,39 @@ namespace SIBCPanel.Context
             }
             return customer;
 
+        }
+
+
+        public Boolean checkadminusernameavailability(string username)
+        {
+            Boolean result = true;
+            int count = 1;
+
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+
+                string query = "select count(user_log) as count from security_master where user_log = '" + username + "'";
+
+                using (OracleCommand cmd = new OracleCommand(query))
+                {
+                    cmd.Connection = con;
+                    con.Open();
+                    using (OracleDataReader sdr = cmd.ExecuteReader())
+                    {
+                        while (sdr.Read())
+                        {
+                            count = int.Parse(sdr["count"].ToString());
+                        }
+                    }
+                    con.Close();
+                }
+            }
+
+            if (count > 0)
+            {
+                result = false;
+            }
+            return result;
         }
 
         public List<AtmCardModel> GetCardsRequests(String bracode)
@@ -2519,6 +2554,42 @@ namespace SIBCPanel.Context
 
             return items;
         }
+        internal List<SelectListItem> PopulatecpanelProfiles(string user_branch)
+        {
+            List<SelectListItem> items = new List<SelectListItem>();
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                string query = "";
+                if (user_branch == "000")
+                {
+                    query = "select roleid,name  from cpanel_rolemaster where active='1'";
+                }
+                else
+                {
+                    query = "select roleid,name  from cpanel_rolemaster where active='1' and name <> 'Admin'";
+                }
+
+                using (OracleCommand cmd = new OracleCommand(query))
+                {
+                    cmd.Connection = con;
+                    con.Open();
+                    using (OracleDataReader sdr = cmd.ExecuteReader())
+                    {
+                        while (sdr.Read())
+                        {
+                            items.Add(new SelectListItem
+                            {
+                                Text = sdr["name"].ToString(),
+                                Value = sdr["roleid"].ToString()
+                            });
+                        }
+                    }
+                    con.Close();
+                }
+            }
+            return items;
+        }
+
 
         internal List<SelectListItem> PopulateProfiles(int userid)
         {
@@ -3705,6 +3776,87 @@ namespace SIBCPanel.Context
             return res.ToString();
         }
 
+        public String addnewacount(String act, String account, String category)
+        {
+            String lblconfirm = "System Error", user_id = null;
+            bool FLAG;
+            OracleCommand cmd;
+            OracleDataReader dr;
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                try
+                {
+                    cmd = new OracleCommand("select acc_no from user_acc_link  where acc_no='" + account + "' and CATOGRY='" + category + "'", con);
+                    OracleCommand cmd2;
+                    OracleCommand cmd_acc_lnk;
+                    con.Open();
+                    dr = cmd.ExecuteReader();
+                    if (dr.Read())
+                    {
+                        FLAG = false;
+                        lblconfirm = "These Account Already exist";
+                        con.Close();
+                        return lblconfirm;
+                    }
+                    else
+                    {
+                        FLAG = true;
+                    }
+
+                    if (FLAG == true)
+                    {
+
+                        string query = "select user_id,user_name from users where DEF_ACC='" + act + "'and CATOGRY='" + category + "'";
+
+                        OracleCommand cmd3 = new OracleCommand(query, con);
+                        OracleDataReader drr = cmd3.ExecuteReader();
+                        if (drr.Read())
+                        {
+                            user_id = drr[0].ToString();
+                        }
+                        cmd = new OracleCommand("select count(*) from user_acc_link where acc_no='" + account + "' and user_id='" + user_id + "'", con);
+                        dr = cmd.ExecuteReader();
+                        dr.Read();
+                        int counter;
+                        counter = Convert.ToInt32(dr[0].ToString());
+                        dr.Close();
+                        cmd.Dispose();
+                        if (counter == 0)
+                        {
+                            String dp_branch, dp_acc_tybe, dp_acc_curr;
+                            dp_acc_tybe = account.Substring(5, 5);
+                            dp_branch = account.Substring(2, 3);
+                            dp_acc_curr = account.Substring(10, 3);
+                            String sql2 = "select  nvl(max (acc_id),0) from user_acc_link where user_id=" + user_id;
+                            cmd2 = new OracleCommand(sql2, con);
+                            dr = cmd2.ExecuteReader();
+                            dr.Read();
+                            int ACC_ID;
+                            ACC_ID = Convert.ToInt32(dr[0].ToString());
+                            dr.Close();
+                            cmd2.Dispose();
+                            ACC_ID = ACC_ID + 1;
+                            cmd_acc_lnk = new OracleCommand("INSERT INTO user_acc_link (BRANCH_CODE,ACT_TYPE,USER_ID,ACC_NO,ACC_STS,ACC_CURR,ACC_LANG,ACC_STATUS,ACC_ID,CATOGRY) values ('"
+                                             + dp_branch + "','" + dp_acc_tybe + "','" + user_id + "','" + account + "','P','" + dp_acc_curr + "','AR','P','" + ACC_ID + "',  '" + category + "')", con);
+                            cmd_acc_lnk.ExecuteNonQuery();
+                            lblconfirm = "Account Added Successfully";
+                        }
+                        else
+                        {
+                            lblconfirm = "These Account Already exist";
+                        }
+                        con.Close();
+                    }
+
+
+                }
+                catch (Exception ex)
+                {
+                    lblconfirm = "System Error";
+                }
+            }
+            return lblconfirm;
+        }
 
         public custinfo getcustinfo(String branchcode, String acttype, String acc_no, String acc_curr, String category, String accountnumber)
         {
@@ -3909,7 +4061,7 @@ namespace SIBCPanel.Context
             using (OracleConnection con = new OracleConnection(conString))
             {
 
-                string query = "select  t.menuid ,t.menuname,t.menu_ar_name , tm.menuname  parnet_name,tm.menu_ar_name parnet_name_ar,tm.menuid  parnet_id from (select  menu_ar_name,  menuname,menuid  from tbl_menumaster where MENUPARENTId=0  ) tm ,tbl_menumaster t    where t.MENUPARENTID<>0 and t.menuparentid=tm.menuid  and menu_category in ('" + categoryid + "','0')  order by menuid ,menuparentid";
+                string query = "select  t.menuid ,t.menuname,t.menu_ar_name , tm.menuname  parnet_name,tm.menu_ar_name parnet_name_ar,tm.menuid  parnet_id from (select  menu_ar_name,  menuname,menuid  from tbl_menumaster where MENUPARENTId=0  ) tm ,tbl_menumaster t    where t.MENUPARENTID<>0 and t.menuparentid=tm.menuid  and menu_category in ('" + categoryid + "','1')  order by menuid ,menuparentid";
                 using (OracleCommand cmd = new OracleCommand(query))
                 {
                     cmd.Connection = con;
@@ -3960,11 +4112,11 @@ namespace SIBCPanel.Context
                         if (sdr.HasRows)
                         {
 
-                            //items.Add(new SelectListItem
-                            //{
-                            //    Text = "-- Select Customer category --",
-                            //    Value = "0",
-                            //});
+                            items.Add(new SelectListItem
+                            {
+                                Text = "-- Select Customer category --",
+                                Value = "0",
+                            });
                             while (sdr.Read())
                             {
 
@@ -5545,7 +5697,9 @@ namespace SIBCPanel.Context
             string authorizorname = IdOrName + "A";
             using (OracleConnection con = new OracleConnection(conString))
             {
+
                 string query = "select * from users where user_log = '" + IdOrName + "' or user_log = '" + operatorname + "' or user_log = '" + authorizorname + "'";
+                //string query = "select * from users where user_id = '" + int.Parse(IdOrName) + "'";
                 OracleCommand cmd = new OracleCommand(query, con);
                 con.Open();
                 using (IDataReader dataReader = cmd.ExecuteReader())

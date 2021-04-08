@@ -57,7 +57,7 @@ namespace Cpanel.Controllers
                 model.AccTypes = ds.PopulateAccountTypes();
                 model.Currencies = ds.PopulateCurrencies();
                 model.catgories = ds.GetGatgories();
-                //model.catgories.RemoveAt(0);
+                model.catgories.RemoveAt(0);
                 var selectedBranch = model.Branches.Find(p => p.Value == model.BranchCode.ToString());
                 var selectedAccType = model.AccTypes.Find(p => p.Value == model.AccountTypecode.ToString());
                 var selectedCurrency = model.Currencies.Find(p => p.Value == model.CurrencyCode.ToString());

@@ -90,7 +90,6 @@ namespace SIBCPanel.Controllers
                 Session["menu_category"] = model.menu_category;
                 List<pageparameter> items = new List<pageparameter>();
                 items = ds.PopulateCustomerProfilemangement(model.menu_category);
-
                 model.pages = items;
                 return View(model);
             }

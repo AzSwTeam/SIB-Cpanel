@@ -18,7 +18,7 @@
         <div class="col-md-auto ">
             <!-- TABLE: LATEST Transactions -->
             <div class="box box-info">
-                <h2>Customers Profile Informations</h2><br />
+                <h2 style="margin-left:10px">Customers Profile Informations</h2><br />
                 <ol class="breadcrumb" style="font-size:medium">
                     All Profiles
                 </ol>
@@ -68,12 +68,12 @@
                                                         @Html.ActionLink("Update", "Edit", new { roleid = item.role_id }, new { @class = "btn btn-success btn-block btn-flat" })
                                                     </td>
                                                     <td class="col-md-3">@Html.ActionLink("View", "View", new { id = item.role_id }, new { @class = "btn btn-warning btn-block btn-flat" })</td>
-<td class="col-md-2"> @Html.ActionLink("Delete", "Delete", new { roleid = item.role_id }, new { @class = "btn btn-danger btn-block btn-flat" })</td>
-</tr>
-</table>
-</td>
-</tr>
-}
+                                                    <td class="col-md-2"> @Html.ActionLink("Delete", "Delete", new { roleid = item.role_id }, new { @class = "btn btn-danger btn-block btn-flat" })</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -87,8 +87,8 @@
 
 
                                     <div class="form-group">
-                                        <div class="col-xs-4 col-xs-offset-7">
-                                            <input type="submit" value="Create New Profile" class="btn btn-primary btn-block btn-flat" />
+                                        <div class="col-xs-57 col-xs-offset-7">
+                                            <input type="submit" value="Create New Profile" class="btn btn-md btn-flat btn-block" style="color:white;font-size:small"/>
                                         </div>
                                     </div>
                                 }
