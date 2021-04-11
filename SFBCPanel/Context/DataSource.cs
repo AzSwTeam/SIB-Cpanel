@@ -4136,6 +4136,52 @@ namespace SIBCPanel.Context
 
         }
 
+
+        public List<SelectListItem> GetGatgorieses()
+
+        {
+            List<SelectListItem> items = new List<SelectListItem>();
+
+
+
+            int i = 0;
+
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                string query = " select  cat_id,cat_name from category";
+                using (OracleCommand cmd = new OracleCommand(query))
+                {
+                    cmd.Connection = con;
+                    con.Open();
+                    using (OracleDataReader sdr = cmd.ExecuteReader())
+                    {
+                        if (sdr.HasRows)
+                        {
+
+                            //items.Add(new SelectListItem
+                            //{
+                            //    Text = "-- Select Customer category --",
+                            //    Value = "0",
+                            //});
+                            while (sdr.Read())
+                            {
+
+                                items.Add(new SelectListItem
+                                {
+                                    Text = sdr[1].ToString(),
+                                    Value = sdr[0].ToString()
+                                });
+                            }
+                        }
+                    }
+                    con.Close();
+                }
+            }
+
+            return items;
+
+        }
+
         public String deleteaccount(String act, String account, String category)
         {
             String lblconfirm = "System Error", user_id = null;
