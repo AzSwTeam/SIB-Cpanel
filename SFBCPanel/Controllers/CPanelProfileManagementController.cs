@@ -104,7 +104,7 @@ namespace SFBCPanel.Controllers
 
             CPanel_ProfileManagement model = new CPanel_ProfileManagement();
 
-            model.catgories = data.CPanel_GetGatgories();
+            model.catgories = data.GetGatgories();
             return View(model);
         }
 
@@ -123,7 +123,7 @@ namespace SFBCPanel.Controllers
             {
                 return RedirectToAction("Login", "Login");
             }
-            model.catgories = data.CPanel_GetGatgories();
+            model.catgories = data.GetGatgories();
             var selectedcategory = model.catgories.Find(p => p.Value == model.menu_category.ToString());
             if (selectedcategory != null)
             {

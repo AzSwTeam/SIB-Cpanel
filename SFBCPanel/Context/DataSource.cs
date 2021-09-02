@@ -793,7 +793,7 @@ namespace SIBCPanel.Context
 
                 if (status != "0")
                     sqlstatus = "  and user_status = '" + status + "'";
-                string query = "select user_name,b.branch_name||'-'||t.act_name||'-'||c.curr_name||'-'||SUBSTR(def_acc,14),status_name from  users,branchs b ,act_types t , currency c,customerstatus where  c.CURR_STS='1' and     SUBSTR(def_acc,3,3)=b.branch_code and   SUBSTR(def_acc,6,5)=t.act_type_code and SUBSTR(def_acc,11,3)=c.CURR_CODE  and user_status=status_code   " +
+                string query = "select user_name,b.branch_name||'-'||t.act_name||'-'||c.curr_name||'-'||SUBSTR(def_acc,14),status_name , b.branch_name from  users,branchs b ,act_types t , currency c,customerstatus where  c.CURR_STS='1' and     SUBSTR(def_acc,3,3)=b.branch_code and   SUBSTR(def_acc,6,5)=t.act_type_code and SUBSTR(def_acc,11,3)=c.CURR_CODE  and user_status=status_code   " +
            " " + sqlbranch + sqlcategory + sqlstatus;
 
                 OracleCommand cmd = new OracleCommand(query, con);
@@ -812,6 +812,7 @@ namespace SIBCPanel.Context
                             CustomerName = dr[0].ToString(),
                             AccountNumber = dr[1].ToString(),
                             //user_id = Convert.ToInt32(dr[1].ToString()),
+                            Branch = dr[3].ToString(),
                             CustStatus = dr[2].ToString(),
 
 
@@ -1369,7 +1370,7 @@ namespace SIBCPanel.Context
             }
             else
             {
-                query1 = "select c.request_id,branch_name||'-'||curr_name||'-'||act_name||'-'|| SUBSTR(c.account_no,14) account_no,c.requested_size,c.req_date,u.user_name from cheque_reqs c,users u,branchs, currency,act_types where req_status='process' and u.user_id=c.user_id  and branchs.branch_code=SUBSTR(c.account_no,3,3) and act_types.act_type_code=SUBSTR(c.account_no,6,5) and currency.CURR_STS='1' and  currency.curr_code=SUBSTR(c.account_no,11,3)  order by c.request_id";
+                query1 = "select c.request_id,branch_name||'-'||curr_name||'-'||act_name||'-'|| SUBSTR(c.account_no,14) account_no,c.requested_size,c.req_date,u.user_name from cheque_reqs c,users u,branchs, currency,act_types where req_status='process' and u.user_id=c.user_id  and branchs.branch_code=SUBSTR(c.account_no,3,3) and act_types.act_type_code=SUBSTR(c.account_no,6,5) and currency.CURR_STS='1' and  currency.curr_code=SUBSTR(c.account_no,11,3) order by c.request_id";
             }
 
             using (OracleConnection con = new OracleConnection(conString))
@@ -3870,7 +3871,8 @@ namespace SIBCPanel.Context
             // " from users u, tbl_rolemaster m  where u.roleid=m.roleid and u.DEF_ACC='13" + branchcode + acttype + acc_curr + acc_no + "' and  catogry ='"+category+"'";
             string operatornumber = accountnumber + "O";
             string authorizornumber = accountnumber + "A";
-            String query1 = "select * from users,tbl_rolemaster where users.ROLEID = tbl_rolemaster.roleid and user_log = '" + accountnumber + "' or def_acc = '" + accountnumber + "' or user_log = '" + operatornumber + "' or user_log = '" + authorizornumber + "'";
+           // String query1 = "select * from users,tbl_rolemaster where users.ROLEID = tbl_rolemaster.roleid and user_log = '" + accountnumber + "' or def_acc = '" + accountnumber + "' or user_log = '" + operatornumber + "' or user_log = '" + authorizornumber + "'";
+            String query1 = "select * from users,tbl_rolemaster where users.ROLEID = tbl_rolemaster.roleid and user_log = '" + accountnumber + "' or def_acc = '" + accountnumber + "'";
 
 
             using (OracleConnection con = new OracleConnection(conString))
@@ -4091,6 +4093,9 @@ namespace SIBCPanel.Context
         }
 
 
+        
+
+
         public List<SelectListItem> GetGatgories()
 
         {
@@ -4117,52 +4122,6 @@ namespace SIBCPanel.Context
                                 Text = "-- Select Customer category --",
                                 Value = "0",
                             });
-                            while (sdr.Read())
-                            {
-
-                                items.Add(new SelectListItem
-                                {
-                                    Text = sdr[1].ToString(),
-                                    Value = sdr[0].ToString()
-                                });
-                            }
-                        }
-                    }
-                    con.Close();
-                }
-            }
-
-            return items;
-
-        }
-
-
-        public List<SelectListItem> GetGatgorieses()
-
-        {
-            List<SelectListItem> items = new List<SelectListItem>();
-
-
-
-            int i = 0;
-
-            using (OracleConnection con = new OracleConnection(conString))
-            {
-                string query = " select  cat_id,cat_name from category";
-                using (OracleCommand cmd = new OracleCommand(query))
-                {
-                    cmd.Connection = con;
-                    con.Open();
-                    using (OracleDataReader sdr = cmd.ExecuteReader())
-                    {
-                        if (sdr.HasRows)
-                        {
-
-                            //items.Add(new SelectListItem
-                            //{
-                            //    Text = "-- Select Customer category --",
-                            //    Value = "0",
-                            //});
                             while (sdr.Read())
                             {
 
@@ -4456,7 +4415,10 @@ namespace SIBCPanel.Context
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = "select (select branch_name from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_name,(select curr_name from currency where curr_code =  SUBSTR(def_acc,21,2)) as currency_name, (select act_name from act_types where ACT_TYPE_CODE = SUBSTR(def_acc,6,6)) as account_type,SUBSTR(def_acc,11,7) as account_number, (select cat_name from category where cat_id = users.catogry) as category_name,user_name,user_log,user_email,user_mobile,decode(user_status,'A','Active','D','Deactive','R','Rejected','P','Pending','DE','Deleted','U','Unauthorized') as user_status,last_login,wrong_password from users where user_id = '" + int.Parse(idorname) + "' or user_log = '" + idorname + "' or user_mobile = '" + idorname + "' or  SUBSTR(users.def_acc,14,5) = '" + idorname + "'";
+                //string query = "select (select branch_name from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_name,(select curr_name from currency where curr_code =  SUBSTR(def_acc,21,2)) as currency_name, (select act_name from act_types where ACT_TYPE_CODE = SUBSTR(def_acc,6,6)) as account_type,SUBSTR(def_acc,11,7) as account_number, (select cat_name from category where cat_id = users.catogry) as category_name,user_name,user_log,user_email,user_mobile,decode(user_status,'A','Active','D','Deactive','R','Rejected','P','Pending','DE','Deleted','U','Unauthorized') as user_status,last_login,wrong_password from users where user_id = '" + int.Parse(idorname) + "' or user_log = '" + idorname + "' or user_mobile = '" + idorname + "' or  SUBSTR(users.def_acc,14,5) = '" + idorname + "'";
+              //  string query = "select (select branch_name from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_name,(select curr_name from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_name, (select act_name from act_types where ACT_TYPE_CODE = SUBSTR(def_acc,6,5)) as account_type,SUBSTR(def_acc,14,7) as account_number, (select cat_name from category where cat_id = users.catogry) as category_name,user_name,user_log,user_email,user_mobile,decode(user_status,'A','Active','D','Deactive','R','Rejected','P','Pending','DE','Deleted','U','Unauthorized') as user_status,last_login,wrong_password from users where user_id = '" + int.Parse(idorname) + "' or user_log = '" + idorname + "' or user_mobile = '" + idorname + "' or  SUBSTR(users.def_acc,14,5) = '" + idorname + "'";
+                string query = "select (select branch_name  from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_name,(select curr_name from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_name, (select act_name from act_types where ACT_TYPE_CODE = SUBSTR(def_acc,6,5)) as account_type,SUBSTR(def_acc,14,7) as account_number, (select cat_name from category where cat_id = users.catogry) as category_name,user_name,user_log,user_email,user_mobile,decode(user_status,'A','Active','D','Deactive','R','Rejected','P','Pending','DE','Deleted','U','Unauthorized') as user_status,last_login,wrong_password from users where  user_log = '" + idorname + "' ";
+
                 OracleCommand cmd = new OracleCommand(query, con);
                 con.Open();
                 using (IDataReader dataReader = cmd.ExecuteReader())
@@ -5114,7 +5076,7 @@ namespace SIBCPanel.Context
             return items;
         }
 
-        public List<SelectListItem> PopulateBranchs(string branchcode, string idorusername)
+        public List<SelectListItem> PopulateBranchs(string branch, string idorusername)
         {
             List<SelectListItem> items = new List<SelectListItem>();
             //char[] chararray = idorusername.ToCharArray();
@@ -5149,7 +5111,9 @@ namespace SIBCPanel.Context
             //{
             using (OracleConnection con = new OracleConnection(conString))
             {
-                string query = " select distinct branchs.branch_code,branchs.branch_name from branchs left outer join users on branchs.branch_code = SUBSTR(users.def_acc,3,3) where branchs.branch_sts = '1' and branchs.BRANCH_CODE_NO ='" + branchcode + "' and user_log = '" + idorusername + "' or user_mobile = '" + idorusername + "' or SUBSTR(users.def_acc,14,5) = '" + idorusername + "'";
+                //string query = " select distinct branchs.branch_code,branchs.branch_name from branchs left outer join users on branchs.branch_code = SUBSTR(users.def_acc,3,3) where branchs.branch_sts = '1' and branchs.BRANCH_CODE_NO ='" + branchcode + "' and user_log = '" + idorusername + "' or user_mobile = '" + idorusername + "' or SUBSTR(users.def_acc,14,5) = '" + idorusername + "'";
+                string query = " select distinct branchs.branch_code,branchs.branch_name from branchs left outer join users on branchs.branch_code = SUBSTR(users.def_acc,3,3) where branchs.branch_sts = '1' and branchs.BRANCH_NAME ='" + branch + "' and user_log = '" + idorusername + "' or user_mobile = '" + idorusername + "' or SUBSTR(users.def_acc,14,5) = '" + idorusername + "'";
+
                 using (OracleCommand cmd = new OracleCommand(query))
                 {
                     cmd.Connection = con;
@@ -5296,7 +5260,7 @@ namespace SIBCPanel.Context
                 using (OracleConnection con = new OracleConnection(conString))
                 {
                     string query = "select (select branch_code from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_code, (select branch_name from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_name, (select curr_code from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_code, (select curr_name from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_name, SUBSTR(def_acc,6,5) as account_type_code,(select act_name from act_types where ACT_TYPE_CODE = SUBSTR(def_acc,6,5)) as account_type,SUBSTR(def_acc,14,7) as account_number, (select cat_id from category where cat_id = users.catogry) as category_id,(select cat_name from category where cat_id = users.catogry) as category_name ,(select user_name from users where user_log = '" + idorname + "' or user_mobile = '" + idorname + "' or SUBSTR(users.def_acc,14,5) = '" + idorname + "') as user_name from users where user_log = '" + idorname + "' or user_mobile = '" + idorname + "' or SUBSTR(users.def_acc,14,5) = '" + idorname + "'";
-
+                    //string query = "select user_name,def_acc as account_number from users where user_log = '" + idorname + "'";
                     OracleCommand cmd = new OracleCommand(query, con);
                     con.Open();
                     using (IDataReader dataReader = cmd.ExecuteReader())
@@ -5390,20 +5354,23 @@ namespace SIBCPanel.Context
                 using (OracleConnection con = new OracleConnection(conString))
                 {
                     //string query = "select (select branch_code from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_code, (select branch_name from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_name, (select curr_code from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_code, (select curr_name from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_name, SUBSTR(def_acc,6,5) as account_type_code,(select act_name from act_types where ACT_TYPE_CODE = SUBSTR(def_acc,6,5)) as account_type,SUBSTR(def_acc,11,7) as account_number, (select cat_id from category where cat_id = users.catogry) as category_id,(select cat_name from category where cat_id = users.catogry) as category_name from users where user_id = '" + int.Parse(idorname) + "'";
-                    string query = "select (select branch_code from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_code,(select branch_name from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_name,(select curr_code from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_code,(select curr_name from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_name, SUBSTR(def_acc,6,5) as account_type_code,(select act_name from act_types where ACT_TYPE_CODE = SUBSTR(def_acc,6,5)) as account_type,SUBSTR(def_acc,14,7) as account_number, (select cat_id from category where cat_id = users.catogry) as category_id,(select cat_name from category where cat_id = users.catogry) as category_name from users where user_id = '" + idorname + "' or user_mobile = '" + idorname + "' or  SUBSTR(users.def_acc,14,7) = '" + idorname + "' or user_log = '" + idorname + "'";
+                    //string query = "select (select branch_code from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_code,(select branch_name from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_name,(select curr_code from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_code,(select curr_name from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_name, SUBSTR(def_acc,6,5) as account_type_code,(select act_name from act_types where ACT_TYPE_CODE = SUBSTR(def_acc,6,5)) as account_type,SUBSTR(def_acc,14,7) as account_number, (select cat_id from category where cat_id = users.catogry) as category_id,(select cat_name from category where cat_id = users.catogry) as category_name from users where user_id = '" + idorname + "' or user_mobile = '" + idorname + "' or  SUBSTR(users.def_acc,14,7) = '" + idorname + "' or user_log = '" + idorname + "'";
+                    string query = "select user_name, def_acc as account_number from users where user_id = '" + idorname + "' or user_mobile = '" + idorname + "' or  SUBSTR(users.def_acc,14,7) = '" + idorname + "' or user_log = '" + idorname + "'";
+
                     OracleCommand cmd = new OracleCommand(query, con);
                     con.Open();
                     using (IDataReader dataReader = cmd.ExecuteReader())
                     {
                         while (dataReader.Read())
                         {
-                            usermodel.BranchCode = dataReader["branch_code"].ToString();
-                            usermodel.Branch = dataReader["branch_name"].ToString();
-                            usermodel.CurrencyCode = dataReader["currency_code"].ToString();
-                            usermodel.Currency = dataReader["currency_name"].ToString();
-                            usermodel.AccountTypecode = dataReader["account_type_code"].ToString();
-                            usermodel.AccountType = dataReader["account_type"].ToString();
+                            //usermodel.BranchCode = dataReader["branch_code"].ToString();
+                            //usermodel.Branch = dataReader["branch_name"].ToString();
+                            //usermodel.CurrencyCode = dataReader["currency_code"].ToString();
+                            //usermodel.Currency = dataReader["currency_name"].ToString();
+                            //usermodel.AccountTypecode = dataReader["account_type_code"].ToString();
+                            //usermodel.AccountType = dataReader["account_type"].ToString();
                             usermodel.AccountNumber = dataReader["account_number"].ToString();
+                            usermodel.CustomerName = dataReader["user_name"].ToString();
                             usermodel.CustomerID = idorname;
                         }
                     }
@@ -5415,6 +5382,7 @@ namespace SIBCPanel.Context
                 using (OracleConnection con = new OracleConnection(conString))
                 {
                     string query = "select (select branch_code from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_code, (select branch_name from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_name, (select curr_code from currency where curr_code =  SUBSTR(def_acc,21,2)) as currency_code, (select curr_name from currency where curr_code =  SUBSTR(def_acc,21,2)) as currency_name, SUBSTR(def_acc,6,6) as account_type_code,(select act_name from act_types where ACT_TYPE_CODE = SUBSTR(def_acc,6,6)) as account_type,SUBSTR(def_acc,12,7) as account_number, (select cat_id from category where cat_id = users.catogry) as category_id,(select cat_name from category where cat_id = users.catogry) as category_name,SUBSTR(def_acc,19,2) as subno, SUBSTR(def_acc,23,3) as subgl from users where user_log = '" + idorname + "'";
+                   
                     //string query = "select (select branch_code from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_code, (select branch_name from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_name, (select curr_code from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_code, (select curr_name from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_name, SUBSTR(def_acc,6,5) as account_type_code,(select act_name from act_types where ACT_TYPE_CODE = SUBSTR(def_acc,6,5)) as account_type,SUBSTR(def_acc,11,7) as account_number, (select cat_id from category where cat_id = users.catogry) as category_id,(select cat_name from category where cat_id = users.catogry) as category_name from users where user_log = '" + idorname + "'";
                     OracleCommand cmd = new OracleCommand(query, con);
                     con.Open();
@@ -5431,6 +5399,7 @@ namespace SIBCPanel.Context
                             usermodel.AccountNumber = dataReader["account_number"].ToString();
                             usermodel.SUBNO = dataReader["SUBNO"].ToString();
                             usermodel.SUBGL = dataReader["SUBGL"].ToString();
+                             usermodel.CustomerName = dataReader["user_name"].ToString();
                             usermodel.CustomerID = idorname;
                         }
                     }

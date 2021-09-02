@@ -3,7 +3,7 @@
 @model  SFBCPanel.Models.CustomerReportModel
 
 @{
-    ViewBag.Title = "Credit API Reports";
+    ViewBag.Title = "Customers By Admin Reports";
     Layout = "~/Views/Shared/_Layout.cshtml";
     List<CustomerReportModel> customers = Session["customersbyadmin"] as List<CustomerReportModel>;
 }
@@ -113,7 +113,7 @@
                             <br />
                         </div>
                         <div class="col-xs-57 col-xs-offset-6" style="position:relative;right:9%">
-                            <input type="submit" onclick="submitanddisable()" formaction="@Url.Action("savecustomersbyadminsreport", "CustomerReport")" value="Print report" class="btn btn-lg" style="color:white;font-size:small" />
+                            <input type="submit" onclick="submitanddisable()" formaction="@Url.Action("savecustomersbyadminsreport", "CustomerReport")" value="Print report" class="btn btn-lg" style="background-color: #256B5E; color:white; font-size: small" />
                         </div>
                     }
                 </div>

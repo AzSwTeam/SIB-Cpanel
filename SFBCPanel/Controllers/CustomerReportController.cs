@@ -127,11 +127,13 @@ namespace SFBCpanel.Controllers
                 model = new Custreport();
                 String userbranch = Session["user_branch"].ToString();
                 model = ds.GetCustomerReportData(passedmodel.Branch);
-                model.catgories = ds.GetGatgories();
+                //model.catgories = ds.GetGatgories();
                 model.CustomerStatus = ds.PopulateCustStatus(passedmodel.Branch);
-                model.Branches = ds.PopulateBranchs(model.BranchCode, passedmodel.Branch);
+                //model.Branches = ds.PopulateBranchs(model.BranchCode, passedmodel.Branch);
+                model.Branches = ds.PopulateBranchs(model.Branch, passedmodel.Branch);
                 model.catgories = ds.GetGatgories();
-                //model.catgories.RemoveAt(0);
+                //model.catgories = ds.GetGatgories( passedmodel.Branch);
+                model.catgories.RemoveAt(0);
                 return View("CustomersReport", model);
             }
             else

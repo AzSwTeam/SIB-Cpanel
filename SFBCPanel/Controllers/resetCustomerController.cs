@@ -37,7 +37,7 @@ namespace Cpanel.Controllers
             model.Branches = ds.PopulateBranchs(userbranch);
             model.AccTypes = ds.PopulateAccountTypes();
             model.Currencies = ds.PopulateCurrencies();
-            model.catgories = ds.GetGatgorieses();
+            model.catgories = ds.GetGatgories();
 
             Session["regmodel"] = model;
             return View(model);
@@ -56,7 +56,7 @@ namespace Cpanel.Controllers
                 model.Branches = ds.PopulateBranchs(userbranch);
                 model.AccTypes = ds.PopulateAccountTypes();
                 model.Currencies = ds.PopulateCurrencies();
-                model.catgories = ds.GetGatgorieses();
+                model.catgories = ds.GetGatgories();
                 model.catgories.RemoveAt(0);
                 var selectedBranch = model.Branches.Find(p => p.Value == model.BranchCode.ToString());
                 var selectedAccType = model.AccTypes.Find(p => p.Value == model.AccountTypecode.ToString());
@@ -236,7 +236,7 @@ namespace Cpanel.Controllers
                 model.AccTypes = ds.PopulateAccountTypes(passedmodel.Branch);
                 model.Currencies = ds.PopulateCurrencies(model.CurrencyCode);
 
-                model.catgories = ds.GetGatgorieses();
+                model.catgories = ds.GetGatgories();
                 return View("ResetCust", model);
             }
             else
@@ -252,7 +252,7 @@ namespace Cpanel.Controllers
                 model.Branches = ds.PopulateBranchs(userbranch);
                 model.AccTypes = ds.PopulateAccountTypes();
                 model.Currencies = ds.PopulateCurrencies();
-                model.catgories = ds.GetGatgorieses();
+                model.catgories = ds.GetGatgories();
                 return View("ResetCust", model);
             }
             

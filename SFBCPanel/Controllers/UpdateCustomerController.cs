@@ -69,31 +69,31 @@ namespace Cpanel.Controllers
                 model.Currencies = ds.PopulateCurrencies();
                 model.catgories = ds.GetGatgories();
                 //model.catgories.RemoveAt(0);
-                var selectedBranch = model.Branches.Find(p => p.Value == model.BranchCode.ToString());
-                var selectedAccType = model.AccTypes.Find(p => p.Value == model.AccountTypecode.ToString());
-                var selectedCurrency = model.Currencies.Find(p => p.Value == model.CurrencyCode.ToString());
-                var selectedcategory = model.catgories.Find(p => p.Value == model.CategoryCode.ToString());
+                //var selectedBranch = model.Branches.Find(p => p.Value == model.BranchCode.ToString());
+                //var selectedAccType = model.AccTypes.Find(p => p.Value == model.AccountTypecode.ToString());
+                //var selectedCurrency = model.Currencies.Find(p => p.Value == model.CurrencyCode.ToString());
+                //var selectedcategory = model.catgories.Find(p => p.Value == model.CategoryCode.ToString());
 
-                if (selectedBranch != null)
-                {
-                    selectedBranch.Selected = true;
+                //if (selectedBranch != null)
+                //{
+                //    selectedBranch.Selected = true;
 
-                }
-                if (selectedAccType != null)
-                {
-                    selectedAccType.Selected = true;
+                //}
+                //if (selectedAccType != null)
+                //{
+                //    selectedAccType.Selected = true;
 
-                }
-                if (selectedCurrency != null)
-                {
-                    selectedCurrency.Selected = true;
+                //}
+                //if (selectedCurrency != null)
+                //{
+                //    selectedCurrency.Selected = true;
 
-                }
-                if (selectedcategory != null)
-                {
-                    selectedcategory.Selected = true;
+                //}
+                //if (selectedcategory != null)
+                //{
+                //    selectedcategory.Selected = true;
 
-                }
+                //}
 
 
                 if (ModelState.IsValidField(model.BranchCode) && ModelState.IsValidField(model.AccountNumber) &&
@@ -218,6 +218,10 @@ namespace Cpanel.Controllers
                    ModelState.IsValidField(model.AccountTypecode) && ModelState.IsValidField(model.CurrencyCode))
 
             {
+
+                //if (ModelState.IsValid)
+
+                //{
                 custinfo infomodel = new custinfo();
                 String fullaccount = "18" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
                 String response;
@@ -316,12 +320,12 @@ namespace Cpanel.Controllers
                 String userbranch = Session["user_branch"].ToString();
                 model = ds.GetUserRegistrationData(passedmodel.placeholder);
 
-                model.Branches = ds.PopulateBranchs(model.BranchCode, passedmodel.placeholder);
-                model.AccTypes = ds.PopulateAccountTypes(passedmodel.placeholder);
-                model.Currencies = ds.PopulateCurrencies(model.CurrencyCode);
+                //model.Branches = ds.PopulateBranchs(model.BranchCode, passedmodel.placeholder);
+                //model.AccTypes = ds.PopulateAccountTypes(passedmodel.placeholder);
+                //model.Currencies = ds.PopulateCurrencies(model.CurrencyCode);
 
-                model.catgories = ds.GetGatgories();
-                model.Channels = ds.Channels();
+                //model.catgories = ds.GetGatgories();
+                //model.Channels = ds.Channels();
                 return RedirectToAction("CustInfo", model);
             }
             else
