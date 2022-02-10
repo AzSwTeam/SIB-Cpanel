@@ -166,6 +166,305 @@ namespace SFBCpanel.Controllers
             return View(customers);
         }
 
+        public ActionResult BillersReport()
+        {
+           
+            List<req_res_model> req_res_data = new List<req_res_model>();
+            req_res_model model = new req_res_model();
+            dynamic requestdata = null, responsedata = null;
+
+            req_res_data = ds.getreq_res_log();
+            Session["billersreport"] = req_res_data;
+            List<SelectListItem> billers = new List<SelectListItem>();
+
+            billers = ds.billers_statuses();
+
+
+            //});
+            Session["bilers"] = billers;
+
+            return View();
+
+        }
+
+        public JsonResult FilteredBillersReport(string fromdate, string todate, string biller)
+        {
+
+
+
+            string formatedFromDate = DateTime.Parse(fromdate).ToString();
+            string formatedtodate = DateTime.Parse(todate).ToString();
+            string[] readyfromdate = formatedFromDate.Split(' ');
+            string[] readytodate = formatedtodate.Split(' ');
+            List<req_res_model> req_res_data = new List<req_res_model>();
+
+
+            req_res_data = ds.getfilteredreq_res_log(fromdate, todate, biller);
+            List<req_res_model> billersreport = new List<req_res_model>();
+
+            billersreport = req_res_data;
+            Session["billersreport"] = billersreport;
+            JsonResult data = Json(new { data = billersreport }, JsonRequestBehavior.AllowGet);
+            data.MaxJsonLength = int.MaxValue;
+            return data;
+        }
+
+        public FileResult SavePDF4()
+        {
+
+
+
+            MemoryStream workStream = new MemoryStream();
+            StringBuilder status = new StringBuilder("");
+            DateTime dTime = DateTime.Now;
+            //file name to be created   
+            string strPDFFileName = string.Format("CustomerCountReport For " /*+ Session["totalbillercustomer"].ToString() */+ dTime.ToString("ddMMMyyyyHHmmss") + "-" + ".pdf");
+            Document doc = new Document();
+            doc.SetMargins(0f, 0f, 0f, 0f);
+            //Create PDF Table with 6 columns  
+            /*PdfPTable tableLayout = new PdfPTable(5);*/
+            PdfPTable tableLayout = new PdfPTable(8);
+            doc.SetMargins(0f, 0f, 0f, 0f);
+            //Create PDF Table  
+
+            //file will created in this path  
+            string strAttachment = Server.MapPath("~/Downloadss/" + strPDFFileName);
+
+            PdfWriter.GetInstance(doc, workStream).CloseStream = false;
+
+            doc.Open();
+
+            //Add Content to PDF   
+
+            doc.Add(Add_Content_To_PDF4(tableLayout));
+
+            // Closing the document  
+            doc.Close();
+
+            byte[] byteInfo = workStream.ToArray();
+            workStream.Write(byteInfo, 0, byteInfo.Length);
+            workStream.Position = 0;
+
+
+            return File(workStream, "application/pdf", strPDFFileName);
+
+        }
+
+        protected PdfPTable Add_Content_To_PDF4(PdfPTable tableLayout)
+        {
+
+
+
+            PdfPTableHeader tableHeader = new PdfPTableHeader();
+
+            string fontpath = Environment.GetEnvironmentVariable("SystemRoot") + "\\fonts\\times.ttf";
+            BaseFont basefont = BaseFont.CreateFont(fontpath, BaseFont.IDENTITY_H, true);
+            float[] headers = { 25, 24, 45, 30, 30, 30, 25, 25 }; //Header Widths  
+            tableLayout.SetWidths(headers); //Set the pdf headers  
+            tableLayout.WidthPercentage = 95; //Set the PDF File witdh percentage  
+            tableLayout.HeaderRows = 1;
+
+            //Add Title to the PDF file at the top  
+
+            //List < Employee > UserLog = _context.UserLog.ToList < Employee > (); 
+            //List<SelectListItem> billers = Session["bilers"] as List<SelectListItem>;
+            //List<CustomerTransferReportViewModel> req_res_data_biller = new List<CustomerTransferReportViewModel>();
+            //req_res_data_biller = (List<CustomerTransferReportViewModel>)Session["billersreport"];
+
+            List<req_res_model> req_res_data_biller = new List<req_res_model>();
+            req_res_data_biller = (List<req_res_model>)Session["billersreport"];
+
+            DateTime dTime = DateTime.Now;
+
+            //paragraphs
+            Paragraph Title = new Paragraph("FCB - NAS ALBAIT MOBILE",
+                new Font(Font.FontFamily.HELVETICA, 8, 1, iTextSharp.text.BaseColor.WHITE));
+            Paragraph Title2 = new Paragraph("Customer Report For " + "bilers".ToString(),
+               new Font(Font.FontFamily.HELVETICA, 8, 1, iTextSharp.text.BaseColor.WHITE));
+            Paragraph Date = new Paragraph("Date: " + dTime.ToString("dd-MMM-yyyy"),
+                new Font(Font.FontFamily.HELVETICA, 5, 1, iTextSharp.text.BaseColor.WHITE));
+            Paragraph Time = new Paragraph("TIME:" + dTime.ToString("HH:mm:ss"),
+                new Font(Font.FontFamily.HELVETICA, 5, 1, iTextSharp.text.BaseColor.WHITE));
+            Paragraph Empty = new Paragraph("Empty",
+            new Font(Font.FontFamily.HELVETICA, 5, 1, iTextSharp.text.BaseColor.WHITE));
+            //Chunk c = new Chunk("Total of Customers Registered : " + Session["totalbillercustomer"].ToString(),
+            //    new Font(Font.FontFamily.HELVETICA, 8, 1, iTextSharp.text.BaseColor.WHITE));
+
+            //Paragraph Total = new Paragraph(c);
+            //Adding Cells
+            Paragraph empty = new Paragraph("\n\n",
+                new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(0, 0, 0)));
+            //Adding Cells
+            
+            tableLayout.AddCell(new PdfPCell(new Phrase(Title))
+            {
+                Colspan = 8,
+                PaddingLeft = 30,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 5,
+                PaddingTop = 5,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_CENTER
+            });
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(Title2))
+            {
+                Colspan = 8,
+                PaddingLeft = 30,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 5,
+                PaddingTop = 5,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_CENTER
+            });
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(Date))
+            {
+                Colspan = 2,
+                PaddingRight = 10,
+                Border = 0,
+                PaddingBottom = 10,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_LEFT
+            });
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(Time))
+            {
+                Colspan = 6,
+                PaddingLeft = 10,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 10,
+                PaddingTop = 5,
+
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_RIGHT
+            });
+
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(empty))
+            {
+                Colspan = 8,
+                PaddingLeft = 60,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 15,
+                PaddingTop = 15,
+                HorizontalAlignment = Element.ALIGN_LEFT
+            });
+
+
+
+            //Add header 
+
+            AddCellToHeader4(tableLayout, "Biller id");
+            AddCellToHeader4(tableLayout, "Transaction date");
+            AddCellToHeader4(tableLayout, "Biller name");
+            //AddCellToHeader4(tableLayout, "Customer name");
+            AddCellToHeader4(tableLayout, "Voucher");
+            AddCellToHeader4(tableLayout, "Bill amount");
+            AddCellToHeader4(tableLayout, "Biller response");
+            AddCellToHeader(tableLayout, "Bank reference");
+            AddCellToHeader4(tableLayout, "Trace number");
+
+            ////Add body  
+
+            foreach (var emp in req_res_data_biller)
+            {
+
+                AddCellToBody4(tableLayout, emp.ID.ToString());
+                AddCellToBody4(tableLayout, emp.TRAN_Data.ToString());
+                AddCellToBody4(tableLayout, emp.Biller_Name.ToString());
+                AddCellToBody4(tableLayout, emp.BILLER_VOUCHER.ToString());
+                AddCellToBody4(tableLayout, emp.BILL_AMOUNT.ToString());
+                AddCellToBody4(tableLayout, emp.BBL_BILLERRESPONSE.ToString());
+                AddCellToBody4(tableLayout, emp.BBL_BNKREFRENCE.ToString());
+                AddCellToBody4(tableLayout, emp.BBL_SYS_TRACENO.ToString());
+
+
+
+            }
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(empty))
+            {
+                Colspan = 4,
+                PaddingLeft = 60,
+                Rowspan = 3,
+                Border = 1,
+                PaddingTop = 20,
+
+                PaddingBottom = 5,
+                HorizontalAlignment = Element.ALIGN_LEFT
+
+            });
+            
+
+            return tableLayout;
+        }
+
+        private static void AddCellToHeader4(PdfPTable tableLayout, string cellText)
+        {
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(cellText, new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(67, 160, 106))))
+            {
+                HorizontalAlignment = Element.ALIGN_LEFT,
+                Padding = 5,
+                Border = Rectangle.BOX,
+                BorderWidth = 1,
+                BorderWidthLeft = 0,
+                BorderWidthRight = 0,
+                BorderWidthTop = 0,
+
+                BackgroundColor = new iTextSharp.text.BaseColor(255, 255, 255)
+            });
+        }
+
+        // Method to add single cell to the body  
+        private static void AddCellToBody4(PdfPTable tableLayout, string cellText)
+        {
+
+            string fontpath = Environment.GetEnvironmentVariable("SystemRoot") + "\\fonts\\times.ttf";
+            BaseFont basefont = BaseFont.CreateFont(fontpath, BaseFont.IDENTITY_H, true);
+
+            const string regex_match_arabic_hebrew = @"[\u0600-\u06FF\u0590-\u05FF]+";
+            if (Regex.IsMatch(cellText, regex_match_arabic_hebrew, RegexOptions.IgnoreCase))
+            {
+                tableLayout.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                tableLayout.AddCell(new PdfPCell(new Phrase(cellText,
+                    new Font(basefont, 8, 1, iTextSharp.text.BaseColor.BLACK)))
+                {
+                    HorizontalAlignment = Element.ALIGN_RIGHT,
+                    Padding = 5,
+                    Border = Rectangle.BOX,
+                    BorderWidth = 1,
+                    BorderWidthLeft = 0,
+                    BorderWidthRight = 0,
+                    BorderWidthTop = 0,
+                    BackgroundColor = new iTextSharp.text.BaseColor(255, 255, 255)
+                });
+            }
+            else
+            {
+                tableLayout.RunDirection = PdfWriter.RUN_DIRECTION_LTR;
+
+                tableLayout.AddCell(new PdfPCell(new Phrase(cellText,
+                    new Font(basefont, 8, 1, iTextSharp.text.BaseColor.BLACK)))
+                {
+                    HorizontalAlignment = Element.ALIGN_LEFT,
+                    Padding = 5,
+                    Border = Rectangle.BOX,
+                    BorderWidth = 1,
+                    BorderWidthLeft = 0,
+                    BorderWidthRight = 0,
+                    BorderWidthTop = 0,
+
+                    BackgroundColor = new iTextSharp.text.BaseColor(255, 255, 255)
+                });
+            }
+        }
+
         public ActionResult ViewReport()
         {
             List<Custreport> accass = new List<Custreport>();

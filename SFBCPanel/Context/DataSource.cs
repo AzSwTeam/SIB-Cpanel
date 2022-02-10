@@ -4444,6 +4444,123 @@ namespace SIBCPanel.Context
             }
         }
 
+        public List<SelectListItem> billers_statuses()
+        {
+            List<SelectListItem> items = new List<SelectListItem>();
+
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                string query = "select bil_name ,bil_billerid from billers_statuses";
+                using (OracleCommand cmd = new OracleCommand(query))
+                {
+                    cmd.Connection = con;
+                    con.Open();
+                    using (OracleDataReader sdr = cmd.ExecuteReader())
+                    {
+                        if (sdr.HasRows)
+                        {
+
+                            items.Add(new SelectListItem
+                            {
+                                Text = " Select Billers ",
+                                Value = "0",
+                            });
+
+                            while (sdr.Read())
+                            {
+                                items.Add(new SelectListItem
+                                {
+                                    //Text = sdr["bil_name"].ToString(),
+                                    //Value = sdr["bil_billerid"].ToString()
+
+                                    Text = sdr["bil_name"].ToString(),
+                                    Value = sdr["bil_billerid"].ToString()
+                                });
+                            }
+                        }
+                    }
+                    con.Close();
+                }
+            }
+
+
+            return items;
+        }
+
+        public List<req_res_model> getreq_res_log()
+        {
+            List<req_res_model> transactions = new List<req_res_model>();
+
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                OracleCommand cmd = new OracleCommand("select BBL_ID,BBL_TRANDATE,BIL_NAME,BBL_BILLERVOUCHER,BBL_BILLAMOUNT,decode(BBL_BILLERRESPONSE,'-1','COMPLETED_FAIL', '-2','TO_BE_REVERSED','-3','REVERSED ','-4','REVERSAL_FAILED','0','COMPLETED_SUCCESFUL','1','TO_BE_PENDDED',BBL_BILLERRESPONSE)  BBL_BILLERRESPONSE,BBL_BNKREFRENCE,BBL_SYS_TRACENO from billers_payment_log inner join billers_statuses on billers_payment_log.BBL_BILLERID = billers_statuses.bil_billerid order by bbl_trandate desc", con);
+                //OracleCommand cmd = new OracleCommand("select * from billers_payment_log inner join billers_statuses on billers_payment_log.BBL_BILLERID = billers_statuses.bil_billerid order by bbl_trandate desc", con);
+
+                con.Open();
+                OracleDataReader dr = cmd.ExecuteReader();
+                //String bnkRefernce;
+                while (dr.Read())
+                {
+
+                    //dynamic jsonRequesrt = JsonConvert.DeserializeObject(dr["bbl_bnkrefrence"].ToString());
+                    //bnkRefernce = jsonRequesrt["reference"];
+
+                    transactions.Add(new req_res_model
+                    {
+                       
+
+                        ID = dr["BBL_ID"].ToString(),
+                        TRAN_Data = dr["BBL_TRANDATE"].ToString(),
+                        Biller_Name = dr["BIL_NAME"].ToString(),
+                        BILLER_VOUCHER = dr["BBL_BILLERVOUCHER"].ToString(),
+                        BILL_AMOUNT = dr["BBL_BILLAMOUNT"].ToString(),
+                        BBL_BILLERRESPONSE = dr["BBL_BILLERRESPONSE"].ToString(),
+                        BBL_BNKREFRENCE = dr["BBL_BNKREFRENCE"].ToString(),
+                        //BBL_BNKREFRENCE = bnkRefernce.ToString(),
+                        BBL_SYS_TRACENO = dr["BBL_SYS_TRACENO"].ToString()
+                    });
+                }
+                dr.Close();
+                con.Close();
+            }
+            return transactions;
+        }
+        public List<req_res_model> getfilteredreq_res_log(string fromdate, string todate, string biller)
+        {
+            string sqlbiller = "";
+
+            List<req_res_model> transactions = new List<req_res_model>();
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                OracleCommand cmd = new OracleCommand("select BBL_ID,BBL_TRANDATE,BIL_NAME,BBL_BILLERVOUCHER,BBL_BILLAMOUNT,decode(BBL_BILLERRESPONSE,'-1','COMPLETED_FAIL', '-2','TO_BE_REVERSED','-3','REVERSED ','-4','REVERSAL_FAILED','0','COMPLETED_SUCCESFUL','1','TO_BE_PENDDED',BBL_BILLERRESPONSE)  BBL_BILLERRESPONSE,BBL_BNKREFRENCE,BBL_SYS_TRACENO from billers_payment_log inner join billers_statuses on billers_payment_log.BBL_BILLERID = billers_statuses.bil_billerid  where BBL_BILLERID = '" + biller + "' and to_date(substr(bbl_trandate,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','yyyy-mm-dd') and to_date(substr(bbl_trandate,0,9),'dd-mon-yy') <= to_date('" + todate + "','yyyy-mm-dd') order by bbl_trandate desc ", con);
+                //OracleCommand cmd = new OracleCommand("select * from billers_payment_log where BBL_BILLERID = '" + biller + "' and to_date(substr(bbl_trandate,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','yyyy-mm-dd') and to_date(substr(bbl_trandate,0,9),'dd-mon-yy') <= to_date('" + todate + "','yyyy-mm-dd') order by bbl_trandate desc ", con);
+
+                con.Open();
+                OracleDataReader dr = cmd.ExecuteReader();
+                //String bnkRefernce;
+                while (dr.Read())
+                {
+
+                    transactions.Add(new req_res_model
+                    {
+
+                        ID = dr["BBL_ID"].ToString(),
+                        TRAN_Data = dr["BBL_TRANDATE"].ToString(),
+                        Biller_Name = dr["BIL_NAME"].ToString(),
+                        BILLER_VOUCHER = dr["BBL_BILLERVOUCHER"].ToString(),
+                        BILL_AMOUNT = dr["BBL_BILLAMOUNT"].ToString(),
+                        BBL_BILLERRESPONSE = dr["BBL_BILLERRESPONSE"].ToString(),
+                        BBL_BNKREFRENCE = dr["BBL_BNKREFRENCE"].ToString(),
+                        // BBL_BNKREFRENCE = bnkRefernce.ToString(),
+                        BBL_SYS_TRACENO = dr["BBL_SYS_TRACENO"].ToString()
+                    });
+                }
+                dr.Close();
+                con.Close();
+            }
+            return transactions;
+        }
+
         public List<String> GetCustomerLinkedAccounts(string CustomerID)
         {
             List<string> stringlist = new List<string>();

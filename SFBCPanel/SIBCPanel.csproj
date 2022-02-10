@@ -206,6 +206,7 @@
     <Compile Include="Models\Loginmodel.cs" />
     <Compile Include="Models\Menu.cs" />
     <Compile Include="Models\Profilemangement.cs" />
+    <Compile Include="Models\req_res_model.cs" />
     <Compile Include="Models\resetpass.cs" />
     <Compile Include="Models\UserDetailsModel.cs" />
     <Compile Include="Models\userModel.cs" />
@@ -273,6 +274,7 @@
     <Content Include="Images\Exit_64px%28white%29.png" />
     <Content Include="Images\Exit_64px.png" />
     <Content Include="Images\logo_1.png" />
+    <Content Include="Images\noisy.png" />
     <Content Include="Images\output-onlinepngtools.png" />
     <Content Include="Images\sfb_logo%28white%29.png" />
     <Content Include="light.js" />
@@ -562,6 +564,7 @@
     <Content Include="Views\CustomerReport\OverviewReport.cshtml" />
     <Content Include="Views\CustomerReport\PortsReport.cshtml" />
     <Content Include="Views\CustomerReport\ViewReport.cshtml" />
+    <Content Include="Views\CustomerReport\BillersReport.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
