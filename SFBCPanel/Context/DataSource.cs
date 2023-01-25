@@ -12,6 +12,10 @@ using SFBCPanel.Models;
 using SFBCPanel;
 using SFBCpanel.Models;
 using SIBCPanel.Models;
+using static iTextSharp.text.pdf.AcroFields;
+using System.Collections;
+using System.Drawing;
+using static System.Data.Entity.Infrastructure.Design.Executor;
 
 namespace SIBCPanel.Context
 {
@@ -27,6 +31,22 @@ namespace SIBCPanel.Context
             using (OracleConnection con = new OracleConnection(conString))
             {
                 string query = "update  cheque_reqs set req_status='" + sts + "'  where request_id=" + id;
+
+                OracleCommand cmd = new OracleCommand(query, con);
+
+                con.Open();
+                int result = -1;
+                result = cmd.ExecuteNonQuery();
+                return result;
+            }
+        }
+
+
+        public int updatefinalsts( string bnkrefrance ,string username)
+        {
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                string query = "update billers_payment_log set bbl_final_status = 'S' , user_reverse = '"+ username + "'  where bbl_bnkrefrence = '" + bnkrefrance+"'";
 
                 OracleCommand cmd = new OracleCommand(query, con);
 
@@ -285,6 +305,160 @@ namespace SIBCPanel.Context
             }
             return lblconfirm;
         }
+        public List<CustomerTransferReportViewModel> GetTransactionPerBranch(string transaction_name, string fromdate, string todate)
+        {
+            string sqldate = "";// sqlbranch = "";
+            //if (fromdate != "")
+            //    sqldate = "  and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm/dd/yyyy') ";
+
+            string sqltransactionname = "";
+            if (transaction_name != "All")
+                sqltransactionname = " and tran_name = '" + transaction_name + "' ";
+
+            List<CustomerTransferReportViewModel> transactions = new List<CustomerTransferReportViewModel>();
+
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                OracleCommand cmd = new OracleCommand("select branch_name,count(tran_amount) as count,sum(tran_amount) as amount from branchs,trans_log inner join users on users.user_id = trans_log.user_id where substr(users.account,3,3) = branch_code and (REGEXP_LIKE(tran_amount, '[0-9]+.[0-9]+')  or  REGEXP_LIKE(tran_amount, '^[[:digit:]]+$')) " + sqltransactionname + " and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm/dd/yyyy') group by branch_name", con);
+                con.Open();
+                OracleDataReader dr = cmd.ExecuteReader();
+
+                while (dr.Read())
+                {
+                    transactions.Add(new CustomerTransferReportViewModel
+                    {
+                        TranResult = dr["branch_name"].ToString(),
+                        CurrencyCode = dr["count"].ToString(),
+                        TranReqAmount = dr["amount"].ToString()
+                    });
+                }
+                dr.Close();
+                con.Close();
+            }
+            return transactions;
+        }
+        public List<CustomerReportModel> GetCustomersByAdmin(string admin, string fromdate, string todate, int PageNumber)
+        {
+            OracleCommand cmd;
+            OracleDataReader dr;
+            String query1;
+            string sqladmin = "";
+            string sqldate = "";
+            string sqlinc = "";
+
+            if (admin != "All")
+                sqladmin = " and created_by = '" + admin + "' ";
+            // if (fromdate != "All" || fromdate != null || todate != "All" || todate != null)
+            if (fromdate != "All" || todate != "All")
+                sqldate = " and to_date(substr(created_date,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','mm/dd/yyyy') and to_date(substr(created_date,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm/dd/yyyy') ";
+
+
+            int offset = PageNumber * 500;
+            sqlinc = " OFFSET " + offset + "  ROWS FETCH NEXT 500 ROWS ONLY ";
+            List<CustomerReportModel> customers = new List<CustomerReportModel>();
+            query1 = "select user_name,user_log,user_email,user_mobile,user_adrs,decode(user_status,'A','Active','U','Authorized','P','Pending','D','Deactive','B','Blocked','DE','Deleted') as status,def_acc,created_by,created_date from users where user_id > 0 " + sqladmin + " " + sqldate + "  " + sqlinc + " ";
+            //query1 = "select U.user_name,U.user_log,U.user_email,U.user_mobile,U.user_adrs,decode(U.user_status, 'A', 'Active', 'U', 'Authorized', 'P', 'Pending', 'D', 'Deactive', 'B', 'Blocked', 'DE', 'Deleted') as status,U.def_acc, S.user_log as created_by,created_date from users U inner join security_master S on U.user_id = S.user_id where U.user_id > 0 " + sqladmin + " " + sqldate + "  " + sqlinc + " ";
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                cmd = new OracleCommand(query1, con);
+
+                con.Open();
+
+                dr = cmd.ExecuteReader();
+                if (dr.HasRows)
+                {
+                    while (dr.Read())
+                    {
+                        customers.Add(new CustomerReportModel
+                        {
+                            CustomerName = dr[0].ToString(),
+                            CustomerLog = dr[1].ToString(),
+                            Email = dr[2].ToString(),
+                            mobile = dr[3].ToString(),
+                            address = dr[4].ToString(),
+                            CustStatus = dr[5].ToString(),
+                            AccountNumber = dr[6].ToString(),
+                            created_by = dr[7].ToString(),
+                            created_date = dr[8].ToString()
+                        });
+                    }
+                }
+            }
+            return customers;
+        }
+
+        public List<CustomerTransferReportViewModel> TotalTransactionsAmountsPerBranch(string branch_code, string fromdate, string todate)
+        {
+            string sqlbranch = "";
+            if (branch_code != "000")
+                sqlbranch = " and substr(users.account,3,3) = '" + branch_code + "'";
+
+            List<CustomerTransferReportViewModel> transactions = new List<CustomerTransferReportViewModel>();
+
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                OracleCommand cmd = new OracleCommand("select tran_name as transaction_type,count(tran_name) as count,sum(tran_amount) as amount from trans_log inner join users on users.user_id = trans_log.user_id where  (REGEXP_LIKE(tran_amount, '[0-9]+.[0-9]+')  or  REGEXP_LIKE(tran_amount, '^[[:digit:]]+$')) " + sqlbranch + " and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm/dd/yyyy') group by tran_name", con);
+
+                //OracleCommand cmd = new OracleCommand("select tran_name as transaction_type,count(tran_name) as count,sum(tran_amount) as amount from trans_log inner join users on users.user_id = trans_log.user_id where  REGEXP_LIKE(tran_amount, '[0-9]+.[0-9]+')  or  REGEXP_LIKE(tran_amount, '^[[:digit:]]+$') " + sqlbranch + " and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm/dd/yyyy') group by tran_name", con);
+
+                con.Open();
+                OracleDataReader dr = cmd.ExecuteReader();
+
+                while (dr.Read())
+                {
+                    transactions.Add(new CustomerTransferReportViewModel
+                    {
+                        TranResult = dr["transaction_type"].ToString(),
+                        CurrencyCode = dr["count"].ToString(),
+                        TranReqAmount = dr["amount"].ToString()
+                    });
+                }
+                dr.Close();
+                con.Close();
+            }
+            return transactions;
+        }
+
+        public List<CustomerTransferReportViewModel> GetCreditAPITransaction(string branch, string status, string fromdate, string todate, int pageNumber)
+        {
+            string sqlbranch = ""; string sqlstatus = ""; /*string sqlsucess = "Secussfully";*/
+
+            if (branch != "000")
+                sqlbranch = " and substr(users.account,3,3) = " + branch + " ";
+            if (status != "All")
+                sqlstatus = " and tran_status = '" + status + "' ";
+            //if (status == "Successful")
+            //    sqlstatus = " and tran_status = '" + sqlsucess + "' ";
+
+            String sqlinc = "";
+            int offset = pageNumber * 500;
+            sqlinc = " OFFSET " + offset + "  ROWS FETCH NEXT 500 ROWS ONLY ";
+            List<CustomerTransferReportViewModel> transactions = new List<CustomerTransferReportViewModel>();
+
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                OracleCommand cmd = new OracleCommand("select distinct trans_log.tran_req,trans_log.tran_resp,trans_log.tran_resp_date,trans_log.tran_status,trans_log.tran_resp_result,trans_log.tran_amount,trans_log.tran_token from branchs,trans_log inner join users on users.user_id = trans_log.user_id where tran_name = 'AccountToCardTransfer' " + sqlbranch + " " + sqlstatus + " and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy')>= to_date('" + fromdate + "','mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm/dd/yyyy')" + sqlinc + "", con);
+                con.Open();
+                OracleDataReader dr = cmd.ExecuteReader();
+
+                while (dr.Read())
+                {
+                    transactions.Add(new CustomerTransferReportViewModel
+                    {
+                        TranFullReq = dr["tran_req"].ToString(),
+                        TranFullResp = dr["tran_resp"].ToString(),
+                        TranDate = dr["tran_resp_date"].ToString(),
+                        TranStatus = dr["tran_status"].ToString(),
+                        TranResult = dr["tran_resp_result"].ToString(),
+                        TranReqAmount = dr["tran_amount"].ToString(),
+                        Tran_FT = dr["tran_token"].ToString()
+                    });
+                }
+                dr.Close();
+                con.Close();
+            }
+            return transactions;
+        }
 
         internal string cpancel_deleteexitingrole(string roleid)
         {
@@ -432,6 +606,285 @@ namespace SIBCPanel.Context
                 }
             }
             return response;
+        }
+
+        public List<req_res_model> getfilteredSDEC(string fromdate, string todate)
+        {
+            string sqlbiller = "";
+
+            List<req_res_model> transactions = new List<req_res_model>();
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                OracleCommand cmd = new OracleCommand("select tran_id,tran_req,tran_resp,user_id,tran_resp_date,tran_name,tran_amount ,tran_token ,TRAN_RESP_RESULT from trans_log where  tran_name in ('SDEC PAY','SDEC')  and tran_resp <> '{}'  and  to_date(substr(tran_resp_date,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','yyyy-mm-dd') and to_date(substr(tran_resp_date,0,9),'dd-mon-yy') <= to_date('" + todate + "','yyyy-mm-dd')  ", con);
+
+                con.Open();
+                OracleDataReader dr = cmd.ExecuteReader();
+                //String bnkRefernce;
+                while (dr.Read())
+                {
+
+                    transactions.Add(new req_res_model
+                    {
+
+                        //ID = dr["tran_id"].ToString(),
+                        TRAN_Data = dr["tran_resp_date"].ToString(),
+                        tran_req = dr["tran_req"].ToString(),
+                        tran_resp = dr["tran_resp"].ToString(),
+                        user_id = dr["user_id"].ToString(),
+                        tran_name = dr["tran_name"].ToString(),
+                        //tran_amount = dr["tran_amount"].ToString(),
+                        tran_resp_result = dr["TRAN_RESP_RESULT"].ToString(),
+                        token = dr["tran_token"].ToString()
+                    });
+                }
+                dr.Close();
+                con.Close();
+            }
+            return transactions;
+        }
+
+        public List<req_res_model> GetPaymentsReportData(string fromdate, string todate , string billerId , string subBillerId ,string status)
+        {
+            string sqlbiller = "";
+
+            List<req_res_model> transactions = new List<req_res_model>();
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                string query = "select distinct* from  billers_payment_log " +
+                    "inner join Billers on billers_payment_log.BBL_BILLERSUBID = Billers.BIL_SUBID ";
+                string whereClause = "";
+                if (!status.Equals("0"))
+                {
+                    if(status.Equals("S"))
+                        whereClause = $"where bbl_final_status = 'S'";
+                    //whereClause = $"where bbl_bnkresponse = '00001' and  bbl_billerresponse = '500'";
+                    //whereClause = $"where BBl_Final_Status ='{status}'";
+                    else
+                        whereClause = $"where bbl_final_status <> 'S' ";
+                   // whereClause = $"where bbl_bnkresponse <> '00001' ";
+                }
+                if (!string.IsNullOrEmpty(todate))
+                {
+                    if (string.IsNullOrEmpty(whereClause))
+                    {
+                        whereClause = $"where  to_date(substr(BBL_TranDate,0,9),'dd-mon-yy') <= to_date('{todate}','yyyy-mm-dd') ";
+                    }
+                    else
+                    {
+                        whereClause += $" and   to_date(substr(BBL_TranDate,0,9),'dd-mon-yy') <= to_date('{todate}','yyyy-mm-dd') ";
+                    }
+                }
+                if (!string.IsNullOrEmpty(fromdate))
+                {
+                    if (string.IsNullOrEmpty(whereClause))
+                    {
+                        whereClause = $" where  to_date(substr(BBL_TranDate,0,9),'dd-mon-yy') >= to_date('{fromdate}','yyyy-mm-dd') ";
+                    }
+                    else
+                    {
+                        whereClause += $" and   to_date(substr(BBL_TranDate,0,9),'dd-mon-yy') >= to_date('{fromdate}','yyyy-mm-dd') ";
+                    }
+                }
+                if (!billerId.Equals("0"))
+                {
+                    if (string.IsNullOrEmpty(whereClause))
+                    {
+                        whereClause = $" where  bbl_billerid = {billerId}";
+                    }
+                    else
+                    {
+                        whereClause += $" and   bbl_billerid = {billerId}";
+                    }
+                }
+                if (!subBillerId.Equals("0"))
+                {
+                    if (string.IsNullOrEmpty(whereClause))
+                    {
+                        whereClause = $" where  BBL_BILLERSUBID = {subBillerId}";
+                    }
+                    else
+                    {
+                        whereClause += $" and   BBL_BILLERSUBID = {subBillerId}";
+                    }
+                }
+                query += whereClause;
+
+
+                OracleCommand cmd = new OracleCommand(query, con);
+
+                con.Open();
+                OracleDataReader dr = cmd.ExecuteReader();
+                //String bnkRefernce;
+                while (dr.Read())
+                {
+
+                    transactions.Add(new req_res_model
+                    {
+
+                        bbl_id = dr["BBL_ID"].ToString(),
+                        TRAN_Data = dr["BBL_TranDate"].ToString(),
+                        BILL_SUB_IB = dr["BBL_BILLERSUBID"].ToString(),
+                        tran_req = dr["BBL_FINAL_STATUS"].ToString(),
+                        tran_resp = dr["BBL_FINAL_STATUS"].ToString(),
+                        user_id = dr["BBL_USERID"].ToString(),
+                        tran_name = dr["BIL_Name"].ToString(),
+                        sub_tran_name = dr["BIL_DESC"].ToString(),
+                        BBL_BILLERREFRENCE = dr["BBL_BILLERREFRENCE"].ToString(),
+                        BILL_AMOUNT = dr["BBL_BILLAMOUNT"].ToString(),
+                        status = dr["BBL_FINAL_STATUS"].ToString(),
+                        token = dr["BBL_BILLERRESPONSE"].ToString(),
+                        BBL_BNKREFRENCE = dr["BBL_BNKREFRENCE"].ToString(),
+                        bbl_bnkresponse = dr["BBL_bnkresponse"].ToString(),
+                        bbl_reversalstatus = dr["bbl_reversalstatus"].ToString(),
+                        VoucherRes = dr["BBL_BILLERVOUCHER"].ToString(),
+                        BBL_SYS_TRACENO = dr["BBL_SYS_TRACENO"].ToString()
+                    });
+                }
+                dr.Close();
+                con.Close();
+            }
+            return transactions;
+        }
+
+        public List<req_res_model> getfilteredZain(string fromdate, string todate, string status)
+        {
+            string sqlbiller = "", sqlstatus = "";
+
+            //if(status != null || status != "All")
+            //if (status != null || status != "All")
+            //sqlstatus = " and tran_status = '" + status + "' ";
+
+            if (status == "Secussfully")
+                sqlstatus = "and bbl_billerresponse ='0'";
+            if (status == "Failed")
+                sqlstatus = "and bbl_billerresponse <>'0'";
+
+            List<req_res_model> transactions = new List<req_res_model>();
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                //OracleCommand cmd = new OracleCommand("select tran_id,tran_req,user_id,tran_resp_date,tran_name,tran_amount ,tran_token ,tran_status,SUBSTR( TRAN_RESP_RESULT , 48,LENGTH(TRAN_RESP_RESULT) -1) as TRAN_RESP_RESULT from trans_log where  tran_name in ('ZAIN PAY','Zain TopUp')  and  to_date(substr(tran_resp_date,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','yyyy-mm-dd') and to_date(substr(tran_resp_date,0,9),'dd-mon-yy') <= to_date('" + todate + "','yyyy-mm-dd') and tran_status = 'Secussfully' ", con);
+                //OracleCommand cmd = new OracleCommand("select tran_id,tran_req,user_id,tran_resp_date,tran_name,tran_amount ,tran_token ,tran_status,SUBSTR( TRAN_RESP_RESULT , 48,LENGTH(TRAN_RESP_RESULT) -1) as TRAN_RESP_RESULT from trans_log where  tran_name in ('ZAIN PAY','Zain TopUp')  and  to_date(substr(tran_resp_date,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','yyyy-mm-dd') and to_date(substr(tran_resp_date,0,9),'dd-mon-yy') <= to_date('" + todate + "','yyyy-mm-dd') "+ sqlstatus + "  and tran_req <> '{}' ", con);
+                OracleCommand cmd = new OracleCommand(" select bbl_trandate , bbl_billamount, bbl_billervoucher,bbl_bnkrefrence , bbl_sys_traceno,bbl_billerresponse ,bbl_bnkresponse ,bbl_userid  from billers_payment_log where bbl_billerid =5 and bbl_billervoucher != 'null'  and  to_date(substr(bbl_trandate,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','yyyy-mm-dd') and to_date(substr(bbl_trandate,0,9),'dd-mon-yy') <= to_date('" + todate + "','yyyy-mm-dd') " + sqlstatus + " ", con);
+
+                con.Open();
+                OracleDataReader dr = cmd.ExecuteReader();
+                //String bnkRefernce;
+                while (dr.Read())
+                {
+
+                    transactions.Add(new req_res_model
+                    {
+
+                        ////ID = dr["tran_id"].ToString(),
+                        //TRAN_Data = dr["tran_resp_date"].ToString(),
+                        //tran_req = dr["tran_req"].ToString(),
+                        ////tran_resp = dr["tran_resp"].ToString(),
+                        //user_id = dr["user_id"].ToString(),
+                        //tran_name = dr["tran_name"].ToString(),
+                        //tran_amount = dr["tran_amount"].ToString(),
+                        //tran_resp_result = dr["TRAN_RESP_RESULT"].ToString(),
+                        //status = dr["tran_status"].ToString(),
+                        //token = dr["tran_token"].ToString()
+
+                        TRAN_Data = dr["bbl_trandate"].ToString(),
+                        //tran_req = dr["tran_req"].ToString(),
+                        BBL_BILLERRESPONSE = dr["bbl_billerresponse"].ToString(),
+                        user_id = dr["bbl_userid"].ToString(),
+                        bbl_billervoucher = dr["bbl_billervoucher"].ToString(),
+                        BBL_BNKREFRENCE = dr["bbl_bnkrefrence"].ToString(),
+                        bbl_billamount = dr["bbl_billamount"].ToString(),
+                        //tran_resp_result = dr["TRAN_RESP_RESULT"].ToString(),
+                        //status = dr["tran_status"].ToString(),
+                        bbl_bnkresponse = dr["bbl_bnkresponse"].ToString(),
+                        bbl_sys_traceno = dr["bbl_sys_traceno"].ToString()
+                    });
+                }
+                dr.Close();
+                con.Close();
+            }
+            return transactions;
+        }
+
+        public List<CustomerTransferReportViewModel> FilteredAccountToAccountPrintTransactions(string branch, string status, string fromdate, string todate)
+        {
+            string sqlbranch = ""; string sqlstatus = ""; String sqlinc = "";
+
+            if (branch != "000")
+                sqlbranch = " and substr(users.account,3,3) = " + branch + " ";
+            if (status != "All")
+                sqlstatus = " and tran_status = '" + status + "' ";
+
+
+
+
+            List<CustomerTransferReportViewModel> transactions = new List<CustomerTransferReportViewModel>();
+
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                OracleCommand cmd = new OracleCommand("select distinct trans_log.tran_req,trans_log.tran_resp,trans_log.tran_resp_date,trans_log.tran_status,trans_log.tran_resp_result,trans_log.tran_amount from branchs,trans_log inner join users on users.user_id = trans_log.user_id where tran_name = 'To Bank Customer Transfer' " + sqlbranch + " " + sqlstatus + " and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm/dd/yyyy') ", con);
+                con.Open();
+                OracleDataReader dr = cmd.ExecuteReader();
+
+
+                while (dr.Read())
+                {
+                    transactions.Add(new CustomerTransferReportViewModel
+                    {
+                        TranFullReq = dr["tran_req"].ToString(),
+                        TranFullResp = dr["tran_resp"].ToString(),
+                        TranDate = dr["tran_resp_date"].ToString(),
+                        TranStatus = dr["tran_status"].ToString(),
+                        TranResult = dr["tran_resp_result"].ToString(),
+                        TranReqAmount = dr["tran_amount"].ToString()
+                    });
+                }
+                dr.Close();
+                con.Close();
+            }
+            return transactions;
+        }
+
+
+        public List<CustomerTransferReportViewModel> FilteredAccountToAccountTransactions(string branch, string status, string fromdate, string todate, int pageNumber)
+        {
+            string sqlbranch = ""; string sqlstatus = ""; String sqlinc = "";
+
+            if (branch != "000")
+                sqlbranch = " and substr(users.account,3,3) = " + branch + " ";
+            if (status != "All")
+                sqlstatus = " and tran_status = '" + status + "' ";
+
+            int offset = pageNumber * 500;
+            sqlinc = " OFFSET " + offset + "  ROWS FETCH NEXT 500 ROWS ONLY ";
+
+
+            List<CustomerTransferReportViewModel> transactions = new List<CustomerTransferReportViewModel>();
+
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                OracleCommand cmd = new OracleCommand("select distinct trans_log.tran_req,trans_log.tran_resp,trans_log.tran_resp_date,trans_log.tran_status,trans_log.tran_resp_result,trans_log.tran_amount from branchs,trans_log inner join users on users.user_id = trans_log.user_id where tran_name = 'To Bank Customer Transfer' " + sqlbranch + " " + sqlstatus + " and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') >= to_date('" + fromdate + "','mm/dd/yyyy') and to_date(substr(TRAN_RESP_DATE,0,9),'dd-mon-yy') <= to_date('" + todate + "','mm/dd/yyyy') " + sqlinc + " ", con);
+                con.Open();
+                OracleDataReader dr = cmd.ExecuteReader();
+
+                while (dr.Read())
+                {
+                    transactions.Add(new CustomerTransferReportViewModel
+                    {
+
+                        TranFullReq = dr["tran_req"].ToString(),
+                        TranFullResp = dr["tran_resp"].ToString(),
+                        TranDate = dr["tran_resp_date"].ToString(),
+                        TranStatus = dr["tran_status"].ToString(),
+                        TranResult = dr["tran_resp_result"].ToString(),
+                        TranReqAmount = dr["tran_amount"].ToString()
+
+
+                    });
+                }
+                dr.Close();
+                con.Close();
+            }
+            return transactions;
         }
 
         public string GetCurrencyName(string CurrencyCode)
@@ -987,13 +1440,13 @@ namespace SIBCPanel.Context
         {
             string sqlbranch = "";
             if (branch_code != "000")
-                sqlbranch = " where substr(users.def_acc,3,3) = '"+branch_code+"' ";
+                sqlbranch = " where substr(users.def_acc,3,3) = '" + branch_code + "' ";
 
             List<CustomerTransferReportViewModel> transactions = new List<CustomerTransferReportViewModel>();
 
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select tran_name as transaction_type,count(tran_name) as count,sum(regexp_substr(tran_amount,'[^SDG]+', 1, level)) as amount from trans_log inner join users on users.user_id = trans_log.user_id "+sqlbranch+" group by tran_name connect by regexp_substr(tran_amount, '[^SDG]+', 1, level) is not null", con);
+                OracleCommand cmd = new OracleCommand("select tran_name as transaction_type,count(tran_name) as count,sum(regexp_substr(tran_amount,'[^SDG]+', 1, level)) as amount from trans_log inner join users on users.user_id = trans_log.user_id " + sqlbranch + " group by tran_name connect by regexp_substr(tran_amount, '[^SDG]+', 1, level) is not null", con);
 
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
@@ -1075,15 +1528,15 @@ namespace SIBCPanel.Context
             if (branch != "000")
                 sqlbranch = " and substr(users.def_acc,3,3) = '" + branch + "' ";
             if (status != "All")
-                sqlstatus = " and tran_status = '"+status+"' ";
+                sqlstatus = " and tran_status = '" + status + "' ";
             if (transaction_name != "All")
-                sqlname = " and tran_name = '"+transaction_name+"' ";
+                sqlname = " and tran_name = '" + transaction_name + "' ";
 
             List<CustomerTransferReportViewModel> transactions = new List<CustomerTransferReportViewModel>();
             using (OracleConnection con = new OracleConnection(conString))
             {
-                OracleCommand cmd = new OracleCommand("select * from trans_log inner join users on trans_log.user_id = users.user_id where users.user_id > 0  " +sqlbranch+ "  "+sqlstatus+"  "+sqlname+"  order by tran_resp_date desc", con);
-                
+                OracleCommand cmd = new OracleCommand("select * from trans_log inner join users on trans_log.user_id = users.user_id where users.user_id > 0  " + sqlbranch + "  " + sqlstatus + "  " + sqlname + "  order by tran_resp_date desc", con);
+
                 con.Open();
                 OracleDataReader dr = cmd.ExecuteReader();
                 while (dr.Read())
@@ -2795,6 +3248,60 @@ namespace SIBCPanel.Context
             return customer;
         }
 
+        public List<PaymentsReportModel> PendingBillerTran()
+        {
+            string sqlbiller = "";
+
+            List<PaymentsReportModel> transactions = new List<PaymentsReportModel>();
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                //string query = "select distinct* from  billers_payment_log " +
+                //    "inner join Billers on billers_payment_log.BBL_BILLERSUBID = Billers.BIL_SUBID ";
+
+               // string query = "select BBL_TranDate,bbl_billamount ,bil_desc, BBL_BNKREFRENCE,BBL_FINAL_STATUS from  billers_payment_log inner join Billers on billers_payment_log.BBL_BILLERSUBID = Billers.BIL_SUBID   and bbl_final_status = 'RR'  and bbl_bnkresponse = '00001' and bbl_billerresponse <>'500'";
+                string query = "select distinct BBL_TranDate,bbl_billamount ,bil_desc, BBL_BNKREFRENCE,BBL_FINAL_STATUS ,bbl_acount_no,bbl_billerid,bbl_billersubid,bbl_channelid, bbl_billervoucher from  billers_payment_log inner join Billers on billers_payment_log.BBL_BILLERSUBID = Billers.BIL_SUBID   and bbl_final_status = 'RR'";
+
+
+
+                OracleCommand cmd = new OracleCommand(query, con);
+
+                con.Open();
+                OracleDataReader dr = cmd.ExecuteReader();
+                //String bnkRefernce;
+                while (dr.Read())
+                {
+
+                    transactions.Add(new PaymentsReportModel
+                    {
+
+                        account_no = dr["bbl_acount_no"].ToString(),
+                        TRAN_Data = dr["BBL_TranDate"].ToString(),
+                        BILL_SUB_IB = dr["BBL_BILLERSUBID"].ToString(),
+                        BillerId = dr["bbl_billerid"].ToString(),
+                        //tran_resp = dr["BBL_FINAL_STATUS"].ToString(),
+                        //user_id = dr["BBL_USERID"].ToString(),
+                        //tran_name = dr["BIL_Name"].ToString(),
+                        sub_tran_name = dr["BIL_DESC"].ToString(),
+                        channelid = dr["bbl_channelid"].ToString(),
+                        BILL_AMOUNT = dr["BBL_BILLAMOUNT"].ToString(),
+                        status = dr["BBL_FINAL_STATUS"].ToString(),
+                        //token = dr["BBL_BILLERRESPONSE"].ToString(),
+                        BBL_BNKREFRENCE = dr["BBL_BNKREFRENCE"].ToString(),
+                        //bbl_bnkresponse = dr["BBL_bnkresponse"].ToString(),
+                        //bbl_reversalstatus = dr["bbl_reversalstatus"].ToString(),
+                        VoucherRes = dr["BBL_BILLERVOUCHER"].ToString(),
+                        //BBL_SYS_TRACENO = dr["BBL_SYS_TRACENO"].ToString()
+                    });
+                }
+            
+                dr.Close();
+                con.Close();
+               
+            }
+            return transactions;
+
+        }
+
         public int insertadminslog(string userid, string username, string branch, string userrole, string userstatus, string action, string actiononuser, string timestamp)
         {
             int result = -1;
@@ -3005,6 +3512,26 @@ namespace SIBCPanel.Context
             return result;
         }
 
+        public int updateBillerstatusfoereverse(String tran_id , string username)
+        {
+            OracleCommand cmd;
+            int result = -1;
+            string status = "RR";
+
+            String query1;
+            //query1 = "update billers_payment_log set bbl_final_status = '" + status + "'  where bbl_bnkrefrence ='" + tran_id + "' and bbl_bnkresponse = '00001' and bbl_billerresponse <>'500'";
+
+            query1 = "update billers_payment_log set bbl_final_status = '"+ status+ "' , user_authorize = '"+username+"'  where bbl_bnkrefrence ='" + tran_id + "' and bbl_final_status <> 'S' ";
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                cmd = new OracleCommand(query1, con);
+
+                con.Open();
+                result = cmd.ExecuteNonQuery();
+            }
+            return result;
+        }
+
         public List<Custreport> getbranchcustomers(string branchcode)
         {
             using (OracleConnection con = new OracleConnection(conString))
@@ -3043,6 +3570,35 @@ namespace SIBCPanel.Context
                         customers.Add(obj);
                     }
                     return customers;
+                }
+            }
+        }
+
+        public List<PaymentsReportModel> getstatusbnkbilloftran(string tranid,string servicecode)
+        {
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                string query;
+                
+
+                query = "select bbl_bnkresponse,bbl_billerresponse from  billers_payment_log where bbl_bnkrefrence = '" + tranid + "' and bbl_billersubid = '"+servicecode+"'";
+
+                OracleCommand cmd = new OracleCommand(query, con);
+
+                con.Open();
+
+                List<PaymentsReportModel> transts = new List<PaymentsReportModel>();
+                using (IDataReader dataReader = cmd.ExecuteReader())
+                {
+                    while (dataReader.Read())
+                    {
+                        PaymentsReportModel obj = new PaymentsReportModel();
+                        obj.bnk_response = dataReader["bbl_bnkresponse"].ToString();
+                        obj.biller_response = dataReader["bbl_billerresponse"].ToString();
+                        
+                        transts.Add(obj);
+                    }
+                    return transts;
                 }
             }
         }
@@ -3871,7 +4427,7 @@ namespace SIBCPanel.Context
             // " from users u, tbl_rolemaster m  where u.roleid=m.roleid and u.DEF_ACC='13" + branchcode + acttype + acc_curr + acc_no + "' and  catogry ='"+category+"'";
             string operatornumber = accountnumber + "O";
             string authorizornumber = accountnumber + "A";
-           // String query1 = "select * from users,tbl_rolemaster where users.ROLEID = tbl_rolemaster.roleid and user_log = '" + accountnumber + "' or def_acc = '" + accountnumber + "' or user_log = '" + operatornumber + "' or user_log = '" + authorizornumber + "'";
+            // String query1 = "select * from users,tbl_rolemaster where users.ROLEID = tbl_rolemaster.roleid and user_log = '" + accountnumber + "' or def_acc = '" + accountnumber + "' or user_log = '" + operatornumber + "' or user_log = '" + authorizornumber + "'";
             String query1 = "select * from users,tbl_rolemaster where users.ROLEID = tbl_rolemaster.roleid and user_log = '" + accountnumber + "' or def_acc = '" + accountnumber + "'";
 
 
@@ -4093,7 +4649,7 @@ namespace SIBCPanel.Context
         }
 
 
-        
+
 
 
         public List<SelectListItem> GetGatgories()
@@ -4416,7 +4972,7 @@ namespace SIBCPanel.Context
             using (OracleConnection con = new OracleConnection(conString))
             {
                 //string query = "select (select branch_name from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_name,(select curr_name from currency where curr_code =  SUBSTR(def_acc,21,2)) as currency_name, (select act_name from act_types where ACT_TYPE_CODE = SUBSTR(def_acc,6,6)) as account_type,SUBSTR(def_acc,11,7) as account_number, (select cat_name from category where cat_id = users.catogry) as category_name,user_name,user_log,user_email,user_mobile,decode(user_status,'A','Active','D','Deactive','R','Rejected','P','Pending','DE','Deleted','U','Unauthorized') as user_status,last_login,wrong_password from users where user_id = '" + int.Parse(idorname) + "' or user_log = '" + idorname + "' or user_mobile = '" + idorname + "' or  SUBSTR(users.def_acc,14,5) = '" + idorname + "'";
-              //  string query = "select (select branch_name from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_name,(select curr_name from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_name, (select act_name from act_types where ACT_TYPE_CODE = SUBSTR(def_acc,6,5)) as account_type,SUBSTR(def_acc,14,7) as account_number, (select cat_name from category where cat_id = users.catogry) as category_name,user_name,user_log,user_email,user_mobile,decode(user_status,'A','Active','D','Deactive','R','Rejected','P','Pending','DE','Deleted','U','Unauthorized') as user_status,last_login,wrong_password from users where user_id = '" + int.Parse(idorname) + "' or user_log = '" + idorname + "' or user_mobile = '" + idorname + "' or  SUBSTR(users.def_acc,14,5) = '" + idorname + "'";
+                //  string query = "select (select branch_name from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_name,(select curr_name from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_name, (select act_name from act_types where ACT_TYPE_CODE = SUBSTR(def_acc,6,5)) as account_type,SUBSTR(def_acc,14,7) as account_number, (select cat_name from category where cat_id = users.catogry) as category_name,user_name,user_log,user_email,user_mobile,decode(user_status,'A','Active','D','Deactive','R','Rejected','P','Pending','DE','Deleted','U','Unauthorized') as user_status,last_login,wrong_password from users where user_id = '" + int.Parse(idorname) + "' or user_log = '" + idorname + "' or user_mobile = '" + idorname + "' or  SUBSTR(users.def_acc,14,5) = '" + idorname + "'";
                 string query = "select (select branch_name  from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_name,(select curr_name from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_name, (select act_name from act_types where ACT_TYPE_CODE = SUBSTR(def_acc,6,5)) as account_type,SUBSTR(def_acc,14,7) as account_number, (select cat_name from category where cat_id = users.catogry) as category_name,user_name,user_log,user_email,user_mobile,decode(user_status,'A','Active','D','Deactive','R','Rejected','P','Pending','DE','Deleted','U','Unauthorized') as user_status,last_login,wrong_password from users where  user_log = '" + idorname + "' ";
 
                 OracleCommand cmd = new OracleCommand(query, con);
@@ -4507,7 +5063,7 @@ namespace SIBCPanel.Context
 
                     transactions.Add(new req_res_model
                     {
-                       
+
 
                         ID = dr["BBL_ID"].ToString(),
                         TRAN_Data = dr["BBL_TRANDATE"].ToString(),
@@ -5499,7 +6055,7 @@ namespace SIBCPanel.Context
                 using (OracleConnection con = new OracleConnection(conString))
                 {
                     string query = "select (select branch_code from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_code, (select branch_name from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_name, (select curr_code from currency where curr_code =  SUBSTR(def_acc,21,2)) as currency_code, (select curr_name from currency where curr_code =  SUBSTR(def_acc,21,2)) as currency_name, SUBSTR(def_acc,6,6) as account_type_code,(select act_name from act_types where ACT_TYPE_CODE = SUBSTR(def_acc,6,6)) as account_type,SUBSTR(def_acc,12,7) as account_number, (select cat_id from category where cat_id = users.catogry) as category_id,(select cat_name from category where cat_id = users.catogry) as category_name,SUBSTR(def_acc,19,2) as subno, SUBSTR(def_acc,23,3) as subgl from users where user_log = '" + idorname + "'";
-                   
+
                     //string query = "select (select branch_code from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_code, (select branch_name from branchs where branch_code = SUBSTR(users.def_acc,3,3)) as branch_name, (select curr_code from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_code, (select curr_name from currency where curr_code =  SUBSTR(def_acc,11,3)) as currency_name, SUBSTR(def_acc,6,5) as account_type_code,(select act_name from act_types where ACT_TYPE_CODE = SUBSTR(def_acc,6,5)) as account_type,SUBSTR(def_acc,11,7) as account_number, (select cat_id from category where cat_id = users.catogry) as category_id,(select cat_name from category where cat_id = users.catogry) as category_name from users where user_log = '" + idorname + "'";
                     OracleCommand cmd = new OracleCommand(query, con);
                     con.Open();
@@ -5516,7 +6072,7 @@ namespace SIBCPanel.Context
                             usermodel.AccountNumber = dataReader["account_number"].ToString();
                             usermodel.SUBNO = dataReader["SUBNO"].ToString();
                             usermodel.SUBGL = dataReader["SUBGL"].ToString();
-                             usermodel.CustomerName = dataReader["user_name"].ToString();
+                            usermodel.CustomerName = dataReader["user_name"].ToString();
                             usermodel.CustomerID = idorname;
                         }
                     }
@@ -6029,51 +6585,112 @@ namespace SIBCPanel.Context
             }
 
         }
+        internal List<PaymentBillers> GetBillersDescData()
+        {
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                string query = "select Bil_SubId , BIL_Desc from Billers";
+
+                OracleCommand cmd = new OracleCommand(query, con);
+
+                con.Open();
+
+                List<PaymentBillers> list = new List<PaymentBillers>();
+                using (IDataReader dataReader = cmd.ExecuteReader())
+                {
+                    while (dataReader.Read())
+                    {
+                        PaymentBillers _PaymentBillers = new PaymentBillers();
+                        if (dataReader["Bil_SubId"] != DBNull.Value)
+                        {
+                            _PaymentBillers.Biller_Dec_Id = int.Parse(dataReader["Bil_SubId"].ToString());
+                            _PaymentBillers.Biller_Dec_Name = dataReader["BIL_Desc"].ToString();
+                        }
+                        list.Add(_PaymentBillers);
+                    }
+
+                    return list;
+
+                }
+
+            }
+        }
+        internal List<PaymentBillers> GetBillersData()
+        {
+            using (OracleConnection con = new OracleConnection(conString))
+            {
+                string query = "select distinct Bil_BillerId , bil_name from Billers ";
+
+                OracleCommand cmd = new OracleCommand(query, con);
+
+                con.Open();
+
+                List<PaymentBillers> list = new List<PaymentBillers>();
+                using (IDataReader dataReader = cmd.ExecuteReader())
+                {
+
+                    while (dataReader.Read())
+                    {
+                        PaymentBillers _PaymentBillers = new PaymentBillers();
+                        if (dataReader["Bil_BillerId"] != DBNull.Value)
+                        {
+                            _PaymentBillers.BillerId = int.Parse(dataReader["Bil_BillerId"].ToString());
+                            _PaymentBillers.BillerName = (string)dataReader["Bil_Name"].ToString();
+                        }
+                        list.Add(_PaymentBillers);
+                    }
+                    return list;
+
+                }
+
+            }
+           
     }//class
-    public class Encryptor
-    {
-
-        public static string v;
-
-        private static TripleDESCryptoServiceProvider des = new TripleDESCryptoServiceProvider();
-
-        private static char[] ekey = "jaaaoiuyndfghjytewsdaaaa".ToCharArray();
-
-        private static byte[] Key
+        public class Encryptor
         {
-            get
+
+            public static string v;
+
+            private static TripleDESCryptoServiceProvider des = new TripleDESCryptoServiceProvider();
+
+            private static char[] ekey = "jaaaoiuyndfghjytewsdaaaa".ToCharArray();
+
+            private static byte[] Key
             {
-                return Encoding.Default.GetBytes(ekey);
-                // Return Encoding.Default.GetBytes(WindowsIdentity.GetCurrent.Name.PadRight(24, Chr(0)))
+                get
+                {
+                    return Encoding.Default.GetBytes(ekey);
+                    // Return Encoding.Default.GetBytes(WindowsIdentity.GetCurrent.Name.PadRight(24, Chr(0)))
+                }
             }
-        }
 
-        public static byte[] Vector
-        {
-            get
+            public static byte[] Vector
             {
-                return Encoding.Default.GetBytes("fjhksjf9iufjsoifhihfsgdsgsg");
+                get
+                {
+                    return Encoding.Default.GetBytes("fjhksjf9iufjsoifhihfsgdsgsg");
+                }
             }
-        }
 
-        public static string Encrypt(string Text)
-        {
-            return Encryptor.Transform(Text, des.CreateEncryptor(Key, Vector));
-        }
+            public static string Encrypt(string Text)
+            {
+                return Encryptor.Transform(Text, des.CreateEncryptor(Key, Vector));
+            }
 
-        public static string Decrypt(string encryptedText)
-        {
-            return Encryptor.Transform(encryptedText, des.CreateDecryptor(Key, Vector));
-        }
+            public static string Decrypt(string encryptedText)
+            {
+                return Encryptor.Transform(encryptedText, des.CreateDecryptor(Key, Vector));
+            }
 
-        private static string Transform(string Text, ICryptoTransform CryptoTransform)
-        {
-            MemoryStream stream = new MemoryStream();
-            CryptoStream cryptoStream = new CryptoStream(stream, CryptoTransform, CryptoStreamMode.Write);
-            byte[] Input = Encoding.Default.GetBytes(Text);
-            cryptoStream.Write(Input, 0, Input.Length);
-            cryptoStream.FlushFinalBlock();
-            return Encoding.Default.GetString(stream.ToArray());
+            private static string Transform(string Text, ICryptoTransform CryptoTransform)
+            {
+                MemoryStream stream = new MemoryStream();
+                CryptoStream cryptoStream = new CryptoStream(stream, CryptoTransform, CryptoStreamMode.Write);
+                byte[] Input = Encoding.Default.GetBytes(Text);
+                cryptoStream.Write(Input, 0, Input.Length);
+                cryptoStream.FlushFinalBlock();
+                return Encoding.Default.GetString(stream.ToArray());
+            }
         }
     }
 }

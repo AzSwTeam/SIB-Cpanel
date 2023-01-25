@@ -159,13 +159,8 @@
     qrcode.makeCode(qrtext);
 
     function makeCode() {
-        var elText = document.getElementById("accountselector");
-
-        if (!elText.value) {
-            alert("Input a text");
-            elText.focus();
-            return;
-        }
-        qrcode.makeCode(elText.value);
+        customeraccount = document.getElementById("accountselector").value;
+        qrtext = '{"no":"' + customeraccount + '","name":"' + customername + '","amount":"0"}';
+        qrcode.makeCode(qrtext);
     }
 </script>

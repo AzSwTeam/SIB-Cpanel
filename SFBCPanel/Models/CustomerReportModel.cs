@@ -52,5 +52,6 @@ namespace SFBCPanel.Models
 
         [Display(Name = "Account Number")]
         public string AccountNumber { get; set; }
+        public string created_date { get; set; }
     }
 }

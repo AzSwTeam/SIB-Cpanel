@@ -14,7 +14,7 @@ namespace SFBCPanel.Models
         public List<SelectListItem> Currencies { get; set; }
         public List<SelectListItem> catgories { get; set; }
         /*public List<channel> Channels { get; set; }*/
-
+        public string alsocustomername { get; set; }
         public string SUBNO { get; set; }
         public string SUBGL { get; set; }
         [Display(Name = "Customer Branch")]
@@ -65,6 +65,8 @@ namespace SFBCPanel.Models
 
         [Display(Name = "To Account")]
         public String TranToAccount { get; set; }
+        [Display(Name = "Transaction FT")]
+        public String Tran_FT { get; set; }
 
         [Display(Name = "Transfer Amount")]
         public String TranReqAmount { get; set; }

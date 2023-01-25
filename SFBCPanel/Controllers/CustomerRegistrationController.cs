@@ -403,14 +403,17 @@ namespace SFBCpanel.Controllers
                 {
                     message = "This customer is registered already.";
                     Session["message"] = message;
-                    ViewBag.SuccessMessage = message;
-                    return View(model);
+                    // ViewBag.SuccessMessage = message;
+                    //return View(model);
+                    return RedirectToAction("Registration");
                 }
                 else
                 {
-                    message = "This customer is registered already.";
-                    ModelState.AddModelError("", message);
-                    return View(model);
+                    message = "please check customer and information.";
+                    Session["message"] = message;
+                    //ModelState.AddModelError("", message);
+                    //return View(model);
+                    return RedirectToAction("Registration");
                 }
             }
             else

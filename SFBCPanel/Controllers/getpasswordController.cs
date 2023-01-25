@@ -89,7 +89,9 @@ namespace Cpanel.Controllers
 
                     String fullaccount = "18" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
                     Session["getpasswordfullaccount"] = fullaccount;
-                    infomodel = ds.getcustinfo(model.BranchCode, model.AccountTypecode, model.AccountNumber, model.CurrencyCode, model.CategoryCode, fullaccount);
+                    //infomodel = ds.getcustinfo(model.BranchCode, model.AccountTypecode, model.AccountNumber, model.CurrencyCode, model.CategoryCode, fullaccount);
+                    infomodel = ds.getcustinfo(model.BranchCode, model.AccountTypecode, model.AccountNumber, model.CurrencyCode, model.CategoryCode, model.Branch);
+
                     response = infomodel.lblconfirm;
                     if (response.Equals("This Account is Already exist") && infomodel.status.ToString().Equals("U"))
                     {
@@ -195,7 +197,7 @@ namespace Cpanel.Controllers
                 String userbranch = Session["user_branch"].ToString();
                 model = ds.GetUserinfoData(passedmodel.Branch);
                 model.Branches = ds.PopulateBranchs(model.BranchCode);
-                model.AccTypes = ds.PopulateAccountTypes(passedmodel.Branch);
+                model.AccTypes = ds.PopulateAccountTypes(model.CustomerID);
                 model.Currencies = ds.PopulateCurrencies(model.CurrencyCode);
 
                 model.catgories = ds.GetGatgories();

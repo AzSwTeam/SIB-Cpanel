@@ -125,31 +125,39 @@ namespace SFBCpanel.Controllers
                         {
 
                             message = "This Customer Account Is Not Authorized";
+                            Session["deresult"] = "This Customer Account Is Not Authorized";
                             ModelState.AddModelError("", message);
-                            return View(model);
+                            //return View(model);
+                            return RedirectToAction("DeActiveCustomer");
                         }
 
                         else if (infomodel.status.ToString().Equals("R"))
                         {
                             message = "This Customer Account Is Rejected";
+                            Session["deresult"] = "This Customer Account Is Rejected";
                             ModelState.AddModelError("", message);
-                            return View(model);
+                            // return View(model);
+                            return RedirectToAction("DeActiveCustomer");
 
                         }
 
                         else if (infomodel.status.ToString().Equals("D"))
                         {
                             message = "This Customer Account Is Deleted or Deactivated";
+                            Session["deresult"] = "This Customer Account Is Deleted or Deactivated";
                             ModelState.AddModelError("", message);
-                            return View(model);
+                            //return View(model);
+                            return RedirectToAction("DeActiveCustomer");
 
 
                         }
                         else if (infomodel.status.ToString().Equals("S"))
                         {
                             message = "This Customer Account Is Stoped";
+                            Session["deresult"] = "This Customer Account Is Stoped";
                             ModelState.AddModelError("", message);
-                            return View(model);
+                            //return View(model);
+                            return RedirectToAction("DeActiveCustomer");
 
 
 
@@ -161,8 +169,10 @@ namespace SFBCpanel.Controllers
                     else
                     {
                         message = "Sorry this account Not Registered ";
+                        Session["deresult"] = "Sorry this account Not Registered ";
                         ModelState.AddModelError("", message);
-                        return View(model);
+                        //return View(model);
+                        return RedirectToAction("DeActiveCustomer");
                     }
                 }
                 else
@@ -191,8 +201,8 @@ namespace SFBCpanel.Controllers
                 String userbranch = Session["user_branch"].ToString();
                 model = ds.GetUserRegistrationData(passedmodel.Branch);
 
-                model.Branches = ds.PopulateBranchs(model.BranchCode, passedmodel.Branch);
-                model.AccTypes = ds.PopulateAccountTypes(passedmodel.Branch);
+                model.Branches = ds.PopulateBranchs(model.Branch, model.CustomerID);
+                model.AccTypes = ds.PopulateAccountTypes(model.CustomerID);
                 model.Currencies = ds.PopulateCurrencies(model.CurrencyCode);
 
                 model.catgories = ds.GetGatgories();

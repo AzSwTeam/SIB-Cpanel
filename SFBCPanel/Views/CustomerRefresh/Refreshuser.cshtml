@@ -12,6 +12,14 @@
     <ol class="breadcrumb" style="font-size:medium">
         Customer Regstration Bank Information
     </ol>
+
+    @if (ViewBag.SuccessMessage != null)
+    {
+        <div class="alert alert-success" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>Success!</strong> @ViewBag.SuccessMessage
+        </div>
+    }
     <div class="row">
         <div class="col-md-8 col-md-offset-2">
             <!-- TABLE: LATEST Transactions -->

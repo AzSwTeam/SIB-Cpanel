@@ -1,0 +1,283 @@
+﻿@model SFBCPanel.Models.PaymentsReportModel
+@using SFBCPanel.Models;
+
+@{
+    ViewBag.Title = "Payments Biller Reports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //List<req_res_model> billersreport = Session["billersreport"] as List<req_res_model>;
+
+    //List<SelectListItem> billers = Session["bilers"] as List<SelectListItem>;
+}
+
+<header>
+    <script src="~/Content/jquery.dataTables.js"></script>
+    <script src="~/Content/jquery-1.11.3.min.js"></script>
+    <script src="~/Content//bootstrap.min.js"></script>
+    <link href="~/Content/jquery.dataTables.css" rel="stylesheet" />
+    <style>
+
+        * {
+            overflow-y: visible;
+        }
+
+        td {
+            font-size: small !important;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            var table = $('#example').DataTable();
+        });
+    </script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            $("#BillerId").change(function () {
+                $("#SubBillersId").empty();
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("GetStates")', // we are calling json method
+                    dataType: 'json',
+                    data: { id: $("#BillerId").val() },
+                    success: function (states) {
+                        // states contains the JSON formatted list
+                        // of states passed from the controller
+
+                        $("#SubBillersId").append('<option value="' + "0" + '">' + "Select State" + '</option>');
+                        debugger;
+                        $.each(states, function (i, state) {
+                            $("#State").append('<option value="' + state.Value + '">' + state.Text + '</option>');
+                            // here we are adding option for States
+                        });
+                    },
+                    error: function (ex) {
+                        alert('Failed to retrieve states.' + ex);
+                    }
+                });
+                return false;
+            })
+        });
+
+    </script>
+</header>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <h2>Billers report</h2><br />
+                <ol class="breadcrumb" style="font-size:medium">
+                    All billers transactions report
+                </ol>
+
+                @if (ViewBag.SuccessMessage != null)
+                {
+                    <div class="alert alert-success" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <strong>Success!</strong> @ViewBag.SuccessMessage
+                    </div>
+                }
+                <div class="box-body">
+                    @using (Html.BeginForm("PaymentsReport"))
+                    {
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="form-group">
+                                <label class="control-label col-md-2" style="margin-top:0.5%">from date</label>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="date" name="fromdate" id="fromdate">
+                                </div>
+                                <label class="control-label col-md-2" style="margin-top:0.5%">to date</label>
+                                <div class="col-md-3">
+                                    <input class="form-control" type="date" name="todate" id="todate">
+                                </div>
+                                <br /><br />
+                                <label class="control-label col-md-2" style="margin-top:0.5%">Biller</label>
+                                <div class="col-md-4">
+
+                                    @Html.DropDownListFor(model => Model.BillerId, Model.Billers, new { @class = "form-control ", @placeholder = "Biller...", @id = "biller" })
+
+                                </div>
+                                <br /><br />
+                                <label class="control-label col-md-2" style="margin-top:0.5%">Biller Services</label>
+                                <div class="col-md-4">
+
+                                    @Html.DropDownListFor(model => Model.SubBillersId, Model.SubBillers, new { @class = "form-control ", @placeholder = "SubBiller...", @id = "Subbiller" })
+
+                                </div>
+                                <br /><br />
+                                <label class="control-label col-md-2" style="margin-top:0.5%">Status</label>
+                                <div class="col-md-4">
+
+                                    @Html.DropDownListFor(model => Model.transactions_statusesId, Model.transactions_statuses, new { @class = "form-control ", @placeholder = "transactions...", @id = "transactions" })
+
+                                </div>
+                                <br />
+                                <br />
+                                <br />
+                                <div class="col-md-12 col-md-offset-5">
+                                    <input class="btn btn-md" type="submit" style="color:white;font-size:small" value="Filter" />
+                                </div>
+                                <br /><br />
+                            </div>
+                            <table id="example" class="display nowrap" style="font-size:small">
+                                <thead>
+
+
+
+                                    <tr>
+
+                                        <th style="font-size:small">
+                                            Tran date
+                                        </th>
+
+                                        <th style="font-size:small">
+                                            Biller name
+                                        </th>
+
+                                        <th style="font-size:small">
+                                            Voucher
+                                        </th>
+                                        <th style="font-size:small">
+                                            Amount
+                                        </th>
+                                        <th style="font-size:small">
+                                            Biller Response
+                                        </th>
+                                        <th style="font-size:small">
+                                            Bank Reference
+                                        </th>
+                                        <th style="font-size:small">
+                                            Biller Trace No
+                                        </th>
+
+                                        <th style="font-size:small">
+                                            Biller Sub ID
+                                        </th>
+                                        <th style="font-size:small">
+                                            Details
+                                        </th>
+
+                                    </tr>
+                                </thead>
+                                <tbody id="tablebody">
+                                    @foreach (var transaction in Model.transactions)
+                                    {
+
+
+
+                                        <tr>
+
+                                            <td style="font-size:small">
+                                                @transaction.TRAN_Data
+                                            </td>
+
+                                            <td style="font-size:small">
+                                                @transaction.tran_name
+                                            </td>
+
+                                            <td style="font-size:small">
+                                                @transaction.VoucherRes
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.BILL_AMOUNT
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.BBL_BILLERREFRENCE
+                                            </td>
+
+                                            <td style="font-size:small">
+                                                @transaction.BBL_BNKREFRENCE
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.BBL_SYS_TRACENO
+                                            </td>
+                                            <td style="font-size:small">
+                                                @transaction.BILL_SUB_IB
+                                            </td>
+                                            <td style="font-size:small">
+                                                @Html.ActionLink("Details", "PaymentsReportDetails", new { service_code = transaction.BILL_SUB_IB, tran_id = transaction.BBL_BNKREFRENCE }, new { @class = "btn btn-block btn-flat", value = "Details" })
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <br />
+                            <br />
+                        </div>
+                    }
+                    <br />
+                </div>
+            </div>
+        </div>
+    </div>
+    @*<div class="col-xs-57 col-xs-offset-6" style="position:relative;right:9%">
+            <input type="submit" onclick="submitanddisable()" formaction="@Url.Action("CreatebillerPdf", "CustomerReport")" value="Print report" class="btn btn-lg" style="color:white;font-size:small" />
+        </div>*@
+
+    @*<div class="box-footer">
+        <p>
+            @using (Html.BeginForm("SavePDF4", "CustomerReport"))
+            {
+                <br />
+                <div class="form-group">
+                    <div class="col-xs-4 col-xs-offset-5">
+                        <input type="submit" value="Print" class="btn btn-block btn-flat" style="color:white;font-size:small" />
+                    </div>
+                </div>
+            }
+        </p>
+    </div>*@
+    <br />
+    <br />
+</section>
+
+<script>
+    $("#filterbutton").on("click", function () {
+        if ($("#fromdate").val() == "" || $("#todate").val() == "") {
+            alert("Please select date filter");
+        } else {
+            $('#overlay').show();
+            $.ajax({
+                type: 'Post',
+                cache: false,
+                url: '/CustomerReport/PaymentsReport',
+                dataType: 'json',
+                data: {
+                    fromdate: $("#fromdate").val(),
+                    todate: $("#todate").val(),
+                    biller: $("#biller").val()
+                },
+                contentType: 'application/json',
+                success: function (result) {
+                    $("#example").dataTable().fnClearTable();
+                    $.each(result, function (status, data) {
+                        $.each(data, function (innerstatus, innerdata) {
+                            var data = [];
+                            //data.push(innerdata.bbl_id);
+                            //data.push(innerdata.bbl_trandate);
+                            //data.push(innerdata.bil_name);
+                            //data.push(innerdata.bbl_customername);
+                            //data.push(innerdata.bbl_billervoucher);
+                            //data.push(innerdata.bbl_billamount);
+                            //data.push(innerdata.bbl_sys_traceno);
+                            //data.push(innerdata.bbl_response);
+                            //data.push(innerdata.bbl_bnkresponse);
+
+                            data.push(innerdata.ID);
+                            data.push(innerdata.TRAN_Data);
+                            data.push(innerdata.Biller_Name);
+                            data.push(innerdata.BILLER_VOUCHER);
+                            data.push(innerdata.BILL_AMOUNT);
+                            data.push(innerdata.BBL_BILLERRESPONSE);
+                            data.push(innerdata.BBL_BNKREFRENCE);
+                            data.push(innerdata.BBL_SYS_TRACENO);
+                            $("#example").dataTable().fnAddData(data);
+                        });
+                    });
+                    $('#overlay').hide();
+                }
+            });
+        }
+    });
+</script>

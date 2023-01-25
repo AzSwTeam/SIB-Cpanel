@@ -124,23 +124,29 @@ namespace Cpanel.Controllers
                         {
 
                             message = "This Customer Account Is Not Authorized";
+                            Session["acresult"] = "This Customer Account Is Not Authorized";
                             ModelState.AddModelError("", message);
-                            return View(model);
+                            //return View(model);
+                            return RedirectToAction("ActiveCustomer");
                         }
 
                         else if (infomodel.status.ToString().Equals("R"))
                         {
                             message = "This Customer Account Is Rejected";
+                            Session["acresult"]  = "This Customer Account Is Rejected";
                             ModelState.AddModelError("", message);
-                            return View(model);
+                            // return View(model);
+                            return RedirectToAction("ActiveCustomer");
 
                         }
 
                         else if (infomodel.status.ToString().Equals("A"))
                         {
                             message = "This Customer Account Is  activated already";
+                            Session["acresult"] = "This Customer Account Is  activated already";
                             ModelState.AddModelError("", message);
-                            return View(model);
+                            //return View(model);
+                            return RedirectToAction("ActiveCustomer");
                         }
 
 
@@ -148,13 +154,16 @@ namespace Cpanel.Controllers
                     else
                     {
                         message = "Sorry this account Not Registered ";
+                        Session["acresult"] = "Sorry this account Not Registered ";
                         ModelState.AddModelError("", message);
-                        return View(model);
+                        //return View(model);
+                        return RedirectToAction("ActiveCustomer");
                     }
                 }
                 else
                 {
                     message = "All Fields are required ";
+                    Session["acresult"] = "All Fields are required ";
                     ModelState.AddModelError("", "Something is missing" + message);
 
                 }
@@ -178,8 +187,8 @@ namespace Cpanel.Controllers
                 String userbranch = Session["user_branch"].ToString();
                 model = ds.GetUserRegistrationData(passedmodel.Branch);
 
-                model.Branches = ds.PopulateBranchs(model.BranchCode, passedmodel.Branch);
-                model.AccTypes = ds.PopulateAccountTypes(passedmodel.Branch);
+                model.Branches = ds.PopulateBranchs(model.Branch, model.CustomerID);
+                model.AccTypes = ds.PopulateAccountTypes(model.CustomerID);
                 model.Currencies = ds.PopulateCurrencies(model.CurrencyCode);
 
                 model.catgories = ds.GetGatgories();

@@ -365,8 +365,8 @@ namespace SFBCPanel.Controllers
                 model = ds.GetUserRegistrationData(passedmodel.Branch);
 
                 //model.CustomerName = 
-                model.Branches = ds.PopulateBranchs(model.BranchCode, passedmodel.Branch);
-                model.AccTypes = ds.PopulateAccountTypes(passedmodel.Branch);
+                model.Branches = ds.PopulateBranchs(model.Branch, model.CustomerID);
+                model.AccTypes = ds.PopulateAccountTypes(model.CustomerID);
                 model.Currencies = ds.PopulateCurrencies(model.CurrencyCode);
 
                 model.catgories = ds.GetGatgories();
@@ -394,7 +394,9 @@ namespace SFBCPanel.Controllers
         {
             if (Session["refreshaccountresult"] != null)
             {
-                ViewBag.msg = Session["refreshaccountresult"].ToString();
+                ViewBag.SuccessMessage = Session["refreshaccountresult"].ToString();
+       
+                Session["refreshaccountresult"] = null;
             }
             CustomerRegBankinfo model = new CustomerRegBankinfo();
             //model.CustomerID = Session["CustID"].ToString();

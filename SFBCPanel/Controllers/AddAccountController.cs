@@ -64,11 +64,11 @@ namespace SFBSPancel.Controllers
                 model.AccTypes = ds.PopulateAccountTypes();
                 model.Currencies = ds.PopulateCurrencies();
                 model.catgories = ds.GetGatgories();
-                //model.catgories.RemoveAt(0);
+                model.catgories.RemoveAt(0);
                 //var selectedBranch = model.Branches.Find(p => p.Value == model.BranchCode.ToString());
                 //var selectedAccType = model.AccTypes.Find(p => p.Value == model.AccountTypecode.ToString());
                 //var selectedCurrency = model.Currencies.Find(p => p.Value == model.CurrencyCode.ToString());
-                //var selectedcategory = model.catgories.Find(p => p.Value == model.CategoryCode.ToString());
+                var selectedcategory = model.catgories.Find(p => p.Value == model.CategoryCode.ToString());
                 //if (selectedBranch != null)
                 //{
                 //    selectedBranch.Selected = true;
@@ -84,16 +84,16 @@ namespace SFBSPancel.Controllers
                 //    selectedCurrency.Selected = true;
 
                 //}
-                //if (selectedcategory != null)
-                //{
-                //    selectedcategory.Selected = true;
+                if (selectedcategory != null)
+                {
+                    selectedcategory.Selected = true;
 
-                //}
+                }
 
                 if (ModelState.IsValid)
                 {
                     //String Accountnumber = "13" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
-                    String Accountnumber = "18" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
+                    //String Accountnumber = "18" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
                     String response = ds.custregcheck2(model.cif, model.CategoryCode);
                     if (response.Equals("This Account is Already exist"))
                     {

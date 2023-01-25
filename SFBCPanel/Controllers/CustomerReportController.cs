@@ -13,6 +13,10 @@ using SFBCPanel.Context;
 using SFBCPanel.Models;
 using SIBCPanel.Context;
 using Newtonsoft.Json.Linq;
+using System.Data.OracleClient;
+using System.Data;
+using Microsoft.Ajax.Utilities;
+using System.Web.Services.Description;
 
 namespace SFBCpanel.Controllers
 {
@@ -168,7 +172,7 @@ namespace SFBCpanel.Controllers
 
         public ActionResult BillersReport()
         {
-           
+
             List<req_res_model> req_res_data = new List<req_res_model>();
             req_res_model model = new req_res_model();
             dynamic requestdata = null, responsedata = null;
@@ -223,7 +227,7 @@ namespace SFBCpanel.Controllers
             doc.SetMargins(0f, 0f, 0f, 0f);
             //Create PDF Table with 6 columns  
             /*PdfPTable tableLayout = new PdfPTable(5);*/
-            PdfPTable tableLayout = new PdfPTable(8);
+            PdfPTable tableLayout = new PdfPTable(9);
             doc.SetMargins(0f, 0f, 0f, 0f);
             //Create PDF Table  
 
@@ -259,9 +263,9 @@ namespace SFBCpanel.Controllers
 
             string fontpath = Environment.GetEnvironmentVariable("SystemRoot") + "\\fonts\\times.ttf";
             BaseFont basefont = BaseFont.CreateFont(fontpath, BaseFont.IDENTITY_H, true);
-            float[] headers = { 25, 24, 45, 30, 30, 30, 25, 25 }; //Header Widths  
+            float[] headers = { 25, 24, 45, 30, 30, 30, 25, 25 ,25 }; //Header Widths  
             tableLayout.SetWidths(headers); //Set the pdf headers  
-            tableLayout.WidthPercentage = 95; //Set the PDF File witdh percentage  
+            tableLayout.WidthPercentage = 100; //Set the PDF File witdh percentage  
             tableLayout.HeaderRows = 1;
 
             //Add Title to the PDF file at the top  
@@ -277,13 +281,14 @@ namespace SFBCpanel.Controllers
             DateTime dTime = DateTime.Now;
 
             //paragraphs
-            Paragraph Title = new Paragraph("FCB - NAS ALBAIT MOBILE",
+            Paragraph Title = new Paragraph("SIB - Rabih" + "\n\n" + "Payments Report For Bilers",
                 new Font(Font.FontFamily.HELVETICA, 8, 1, iTextSharp.text.BaseColor.WHITE));
-            Paragraph Title2 = new Paragraph("Customer Report For " + "bilers".ToString(),
+            
+            Paragraph Title2 = new Paragraph("",
                new Font(Font.FontFamily.HELVETICA, 8, 1, iTextSharp.text.BaseColor.WHITE));
             Paragraph Date = new Paragraph("Date: " + dTime.ToString("dd-MMM-yyyy"),
                 new Font(Font.FontFamily.HELVETICA, 5, 1, iTextSharp.text.BaseColor.WHITE));
-            Paragraph Time = new Paragraph("TIME:" + dTime.ToString("HH:mm:ss"),
+            Paragraph Time = new Paragraph("TIME:" + dTime.ToString("HH:mm:ss") + "\n\n",
                 new Font(Font.FontFamily.HELVETICA, 5, 1, iTextSharp.text.BaseColor.WHITE));
             Paragraph Empty = new Paragraph("Empty",
             new Font(Font.FontFamily.HELVETICA, 5, 1, iTextSharp.text.BaseColor.WHITE));
@@ -295,7 +300,7 @@ namespace SFBCpanel.Controllers
             Paragraph empty = new Paragraph("\n\n",
                 new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(0, 0, 0)));
             //Adding Cells
-            
+
             tableLayout.AddCell(new PdfPCell(new Phrase(Title))
             {
                 Colspan = 8,
@@ -319,7 +324,6 @@ namespace SFBCpanel.Controllers
                 BackgroundColor = new BaseColor(67, 160, 106),
                 HorizontalAlignment = Element.ALIGN_CENTER
             });
-
             tableLayout.AddCell(new PdfPCell(new Phrase(Date))
             {
                 Colspan = 2,
@@ -329,7 +333,6 @@ namespace SFBCpanel.Controllers
                 BackgroundColor = new BaseColor(67, 160, 106),
                 HorizontalAlignment = Element.ALIGN_LEFT
             });
-
             tableLayout.AddCell(new PdfPCell(new Phrase(Time))
             {
                 Colspan = 6,
@@ -342,65 +345,84 @@ namespace SFBCpanel.Controllers
                 BackgroundColor = new BaseColor(67, 160, 106),
                 HorizontalAlignment = Element.ALIGN_RIGHT
             });
-
-
-            tableLayout.AddCell(new PdfPCell(new Phrase(empty))
+            tableLayout.AddCell(new PdfPCell(new Phrase(Title2))
             {
                 Colspan = 8,
-                PaddingLeft = 60,
+                PaddingLeft = 30,
                 Rowspan = 1,
                 Border = 0,
-                PaddingBottom = 15,
-                PaddingTop = 15,
-                HorizontalAlignment = Element.ALIGN_LEFT
+                PaddingBottom = 5,
+                PaddingTop = 5,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_CENTER
             });
-
-
+            //tableLayout.AddCell(new PdfPCell(new Phrase(empty))
+            //{
+            //    Colspan = 8,
+            //    PaddingLeft = 60,
+            //    Rowspan = 1,
+            //    Border = 0,
+            //    PaddingBottom = 15,
+            //    PaddingTop = 15,
+            //    HorizontalAlignment = Element.ALIGN_LEFT
+            //});
 
             //Add header 
 
-            AddCellToHeader4(tableLayout, "Biller id");
-            AddCellToHeader4(tableLayout, "Transaction date");
+            AddCellToHeader4(tableLayout, "B_Id");
+            AddCellToHeader4(tableLayout, "Date");
             AddCellToHeader4(tableLayout, "Biller name");
-            //AddCellToHeader4(tableLayout, "Customer name");
             AddCellToHeader4(tableLayout, "Voucher");
             AddCellToHeader4(tableLayout, "Bill amount");
-            AddCellToHeader4(tableLayout, "Biller response");
-            AddCellToHeader(tableLayout, "Bank reference");
-            AddCellToHeader4(tableLayout, "Trace number");
+            AddCellToHeader4(tableLayout, "Biller Ref");
+            AddCellToHeader(tableLayout, "Bank Ref");
+            AddCellToHeader4(tableLayout, "System Ref");
+            AddCellToHeader4(tableLayout, " Status");
+
 
             ////Add body  
 
             foreach (var emp in req_res_data_biller)
             {
 
-                AddCellToBody4(tableLayout, emp.ID.ToString());
+                AddCellToBody4(tableLayout, emp.bbl_id.ToString());
                 AddCellToBody4(tableLayout, emp.TRAN_Data.ToString());
-                AddCellToBody4(tableLayout, emp.Biller_Name.ToString());
-                AddCellToBody4(tableLayout, emp.BILLER_VOUCHER.ToString());
+                AddCellToBody4(tableLayout, emp.sub_tran_name.ToString());
+                AddCellToBody4(tableLayout, emp.VoucherRes.ToString());
                 AddCellToBody4(tableLayout, emp.BILL_AMOUNT.ToString());
-                AddCellToBody4(tableLayout, emp.BBL_BILLERRESPONSE.ToString());
+                AddCellToBody4(tableLayout, emp.BBL_BILLERREFRENCE.ToString());
                 AddCellToBody4(tableLayout, emp.BBL_BNKREFRENCE.ToString());
                 AddCellToBody4(tableLayout, emp.BBL_SYS_TRACENO.ToString());
+                if (emp.status.ToLower().Equals("s"))
+                {
+                    AddCellToBody4(tableLayout, "Succeeded");
+                }
+                else if (emp.status.ToLower().Equals("f"))
+                {
+                    AddCellToBody4(tableLayout, "Failed");
+                }
+                else
+                {
+                    AddCellToBody4(tableLayout, emp.status);
+                }
 
 
 
             }
 
-            tableLayout.AddCell(new PdfPCell(new Phrase(empty))
-            {
-                Colspan = 4,
-                PaddingLeft = 60,
-                Rowspan = 3,
-                Border = 1,
-                PaddingTop = 20,
+            //tableLayout.AddCell(new PdfPCell(new Phrase(empty))
+            //{
+            //    Colspan = 4,
+            //    PaddingLeft = 60,
+            //    Rowspan = 3,
+            //    Border = 1,
+            //    PaddingTop = 20,
 
-                PaddingBottom = 5,
-                HorizontalAlignment = Element.ALIGN_LEFT
+            //    PaddingBottom = 5,
+            //    HorizontalAlignment = Element.ALIGN_LEFT
 
-            });
+            //});
             
-
             return tableLayout;
         }
 
@@ -1966,6 +1988,1743 @@ namespace SFBCpanel.Controllers
                     BackgroundColor = new iTextSharp.text.BaseColor(255, 255, 255)
                 });
             }
+        }
+
+
+        // Method to add single cell to the body  
+        private static void AddCellToBody3(PdfPTable tableLayout, string cellText)
+        {
+
+            string fontpath = Environment.GetEnvironmentVariable("SystemRoot") + "\\fonts\\times.ttf";
+            BaseFont basefont = BaseFont.CreateFont(fontpath, BaseFont.IDENTITY_H, true);
+
+            const string regex_match_arabic_hebrew = @"[\u0600-\u06FF\u0590-\u05FF]+";
+            if (Regex.IsMatch(cellText, regex_match_arabic_hebrew, RegexOptions.IgnoreCase))
+            {
+                tableLayout.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                tableLayout.AddCell(new PdfPCell(new Phrase(cellText,
+                    new Font(basefont, 8, 1, iTextSharp.text.BaseColor.BLACK)))
+                {
+                    HorizontalAlignment = Element.ALIGN_RIGHT,
+                    Padding = 5,
+                    BackgroundColor = new iTextSharp.text.BaseColor(255, 255, 255)
+                });
+            }
+            else
+            {
+                tableLayout.RunDirection = PdfWriter.RUN_DIRECTION_LTR;
+
+                tableLayout.AddCell(new PdfPCell(new Phrase(cellText,
+                    new Font(basefont, 8, 1, iTextSharp.text.BaseColor.BLACK)))
+                {
+                    HorizontalAlignment = Element.ALIGN_LEFT,
+                    Padding = 5,
+                    BackgroundColor = new iTextSharp.text.BaseColor(255, 255, 255)
+                });
+            }
+        }
+
+        //Header Cells:
+        // Method to add single cell to the Header  
+        private static void AddCellToHeader3(PdfPTable tableLayout, string cellText)
+        {
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(cellText, new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(67, 160, 106))))
+            {
+                HorizontalAlignment = Element.ALIGN_LEFT,
+                Padding = 5,
+                // BackgroundColor = new iTextSharp.text.BaseColor(128, 128, 128)
+                BackgroundColor = new iTextSharp.text.BaseColor(255, 255, 255)
+            });
+        }
+
+        //Add Content
+        protected PdfPTable Add_Content_SettlementTempDetails_To_PDF(PdfPTable tableLayout)
+        {
+
+
+
+            PdfPTableHeader tableHeader = new PdfPTableHeader();
+            string fontpath = Environment.GetEnvironmentVariable("SystemRoot") + "\\fonts\\times.ttf";
+            BaseFont basefont = BaseFont.CreateFont(fontpath, BaseFont.IDENTITY_H, true);
+            float[] headers = { 20, 30, 30, 30, 30, 20, 20, 20, 20 }; //Header Widths  
+                                                                      // float[] headers = { 20, 20, 20, 20, 20, 20 }; //Header Widths  
+            tableLayout.SetWidths(headers); //Set the pdf headers  
+            tableLayout.WidthPercentage = 100; //Set the PDF File witdh percentage  
+            tableLayout.HeaderRows = 4;
+            //Add Title to the PDF file at the top  
+
+            //List < Employee > UserLog = _context.UserLog.ToList < Employee > ();  
+            List<CustSettreport> UserLog = new List<CustSettreport>();
+            UserLog = (List<CustSettreport>)Session["SettlementTempsLog"];
+
+            DateTime dTime = DateTime.Now;
+
+
+            //paragraphs  (67, 160, 106)
+            Paragraph Title = new Paragraph("SIB - Rabih - Settlement Temp Details Log",
+                new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(0, 0, 0)));
+            //new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(0, 0, 0)));
+
+            Paragraph Date = new Paragraph("Date: " + dTime.ToString("dd-MMM-yyyy"),
+                new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(0, 0, 0)));
+
+            Paragraph Time = new Paragraph("TIME:" + dTime.ToString("HH:mm:ss"),
+                new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(0, 0, 0)));
+            Paragraph Empty = new Paragraph("",
+               new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(0, 0, 0)));
+
+
+
+            //Adding Cells
+            tableLayout.AddCell(new PdfPCell(new Phrase(Title))
+            {
+
+                Colspan = 9,
+                PaddingLeft = 60,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 5,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_CENTER
+            });
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(Date))
+            {
+                Colspan = 5,
+                PaddingRight = 10,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 15,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_LEFT
+            });
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(Time))
+            {
+                Colspan = 4,
+                PaddingLeft = 10,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 10,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_RIGHT
+            });
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(Empty)) //Empty
+            {
+                Colspan = 9,
+                PaddingLeft = 60,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 5,
+                HorizontalAlignment = Element.ALIGN_LEFT
+            });
+
+
+            ////Add header 
+
+
+
+            AddCellToHeader3(tableLayout, "Settlement Biller ID");
+            AddCellToHeader3(tableLayout, "Settlement Transaction Date");
+            AddCellToHeader3(tableLayout, "Settlement Transaction ID");
+            AddCellToHeader3(tableLayout, "Settlement Bank Refrence");
+            AddCellToHeader3(tableLayout, "Settlement Trace Number");
+            AddCellToHeader3(tableLayout, "Settlement Transaction Refrence");
+            AddCellToHeader3(tableLayout, "Settlement Amount");
+            AddCellToHeader3(tableLayout, "Settlement Fees");
+            AddCellToHeader3(tableLayout, "Settlement Biller Response");
+
+
+            ////Add body  
+
+            foreach (var emp in UserLog)
+            {
+
+                AddCellToBody3(tableLayout, emp.sbt_sett_biller_id.ToString());
+                AddCellToBody3(tableLayout, emp.sbt_sett_transaction_date.ToString());
+                AddCellToBody3(tableLayout, emp.sbt_sett_transaction_id.ToString());
+                AddCellToBody3(tableLayout, emp.sbt_sett_bank_ref.ToString());
+                AddCellToBody3(tableLayout, emp.sbt_sett_trace_number.ToString());
+                AddCellToBody3(tableLayout, emp.sbt_sett_transaction_ref.ToString());
+                AddCellToBody3(tableLayout, emp.sbt_sett_amount.ToString());
+                AddCellToBody3(tableLayout, emp.sbt_sett_fees.ToString());
+                AddCellToBody3(tableLayout, emp.sbt_sett_biller_response.ToString());
+
+
+            }
+
+            return tableLayout;
+        }
+
+        public FileResult SaveSettlementTempDetailsPDF()
+        {
+            MemoryStream workStream = new MemoryStream();
+            StringBuilder status = new StringBuilder("");
+            DateTime dTime = DateTime.Now;
+            //file name to be created   
+            string strPDFFileName = string.Format("UserLogPdf" + dTime.ToString("ddMMMyyyy") + "-" + ".pdf");
+            Document doc = new Document();
+            doc.SetMargins(0f, 0f, 0f, 0f);
+            //Create PDF Table with 6 columns  
+            /*PdfPTable tableLayout = new PdfPTable(5);*/
+            PdfPTable tableLayout = new PdfPTable(9);
+            doc.SetMargins(0f, 0f, 0f, 0f);
+            //Create PDF Table  
+
+            //file will created in this path  
+            string strAttachment = Server.MapPath("~/Downloadss/" + strPDFFileName);
+
+
+            PdfWriter.GetInstance(doc, workStream).CloseStream = false;
+            doc.Open();
+
+            //Add Content to PDF   
+
+            doc.Add(Add_Content_SettlementTempDetails_To_PDF(tableLayout));
+
+            // Closing the document  
+            doc.Close();
+
+            byte[] byteInfo = workStream.ToArray();
+            workStream.Write(byteInfo, 0, byteInfo.Length);
+            workStream.Position = 0;
+
+
+            return File(workStream, "application/pdf", strPDFFileName);
+
+        }
+
+        //Add Content
+        protected PdfPTable Add_Content_SettlementDetails_To_PDF(PdfPTable tableLayout)
+        {
+
+
+
+            PdfPTableHeader tableHeader = new PdfPTableHeader();
+            string fontpath = Environment.GetEnvironmentVariable("SystemRoot") + "\\fonts\\times.ttf";
+            BaseFont basefont = BaseFont.CreateFont(fontpath, BaseFont.IDENTITY_H, true);
+            float[] headers = { 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20 }; //Header Widths  
+                                                                              // float[] headers = { 20, 20, 20, 20, 20, 20 }; //Header Widths  
+            tableLayout.SetWidths(headers); //Set the pdf headers  
+            tableLayout.WidthPercentage = 100; //Set the PDF File witdh percentage  
+            tableLayout.HeaderRows = 4;
+            //Add Title to the PDF file at the top  
+
+            //List < Employee > UserLog = _context.UserLog.ToList < Employee > ();  
+            List<CustSettreport> UserLog = new List<CustSettreport>();
+            UserLog = (List<CustSettreport>)Session["SettlementDetailsLog"];
+
+            DateTime dTime = DateTime.Now;
+
+
+            //paragraphs  (67, 160, 106)
+            Paragraph Title = new Paragraph("SIB - Rabih - Settlement Details Log",
+                new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(0, 0, 0)));
+            //new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(0, 0, 0)));
+
+            Paragraph Date = new Paragraph("Date: " + dTime.ToString("dd-MMM-yyyy"),
+                new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(0, 0, 0)));
+
+            Paragraph Time = new Paragraph("TIME:" + dTime.ToString("HH:mm:ss"),
+                new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(0, 0, 0)));
+            Paragraph Empty = new Paragraph("",
+               new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(0, 0, 0)));
+
+
+
+            //Adding Cells
+            tableLayout.AddCell(new PdfPCell(new Phrase(Title))
+            {
+
+                Colspan = 11,
+                PaddingLeft = 60,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 5,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_CENTER
+            });
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(Date))
+            {
+                Colspan = 5,
+                PaddingRight = 10,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 15,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_LEFT
+            });
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(Time))
+            {
+                Colspan = 6,
+                PaddingLeft = 10,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 10,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_RIGHT
+            });
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(Empty)) //Empty
+            {
+                Colspan = 11,
+                PaddingLeft = 60,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 5,
+                HorizontalAlignment = Element.ALIGN_LEFT
+            });
+
+
+            ////Add header 
+
+            AddCellToHeader3(tableLayout, "Advice Number");
+            AddCellToHeader3(tableLayout, "Create Date");
+            AddCellToHeader3(tableLayout, "Settlement File Name");
+            AddCellToHeader3(tableLayout, "Biller Name");
+            AddCellToHeader3(tableLayout, "Transaction Type");
+            AddCellToHeader3(tableLayout, "Amount");
+            AddCellToHeader3(tableLayout, "From Account");
+            AddCellToHeader3(tableLayout, "To Account");
+            AddCellToHeader3(tableLayout, "CB Date");
+            AddCellToHeader3(tableLayout, "CB FT");
+            AddCellToHeader3(tableLayout, "Status");
+
+            ////Add body  
+
+            foreach (var emp in UserLog)
+            {
+
+                AddCellToBody3(tableLayout, emp.sbt_advice_no.ToString());
+                AddCellToBody3(tableLayout, emp.sbt_create_date.ToString());
+                AddCellToBody3(tableLayout, emp.sbt_sett_file.ToString());
+                AddCellToBody3(tableLayout, emp.bil_name.ToString());
+                AddCellToBody3(tableLayout, emp.sbt_type.ToString());
+                AddCellToBody3(tableLayout, emp.sbt_amount.ToString());
+                AddCellToBody3(tableLayout, emp.sbt_source_account.ToString());
+                AddCellToBody3(tableLayout, emp.sbt_destination_account.ToString());
+                AddCellToBody3(tableLayout, emp.sbt_destination_date.ToString());
+                AddCellToBody3(tableLayout, emp.sbt_authorization_number.ToString());
+                AddCellToBody3(tableLayout, emp.sbt_status.ToString());
+
+            }
+
+            return tableLayout;
+        }
+
+
+        public FileResult SaveSettlementDetailsPDF()
+        {
+            MemoryStream workStream = new MemoryStream();
+            StringBuilder status = new StringBuilder("");
+            DateTime dTime = DateTime.Now;
+            //file name to be created   
+            string strPDFFileName = string.Format("UserLogPdf" + dTime.ToString("ddMMMyyyy") + "-" + ".pdf");
+            Document doc = new Document();
+            doc.SetMargins(0f, 0f, 0f, 0f);
+            //Create PDF Table with 6 columns  
+            /*PdfPTable tableLayout = new PdfPTable(5);*/
+            PdfPTable tableLayout = new PdfPTable(11);
+            doc.SetMargins(0f, 0f, 0f, 0f);
+            //Create PDF Table  
+
+            //file will created in this path  
+            string strAttachment = Server.MapPath("~/Downloadss/" + strPDFFileName);
+
+
+            PdfWriter.GetInstance(doc, workStream).CloseStream = false;
+            doc.Open();
+
+            //Add Content to PDF   
+
+            doc.Add(Add_Content_SettlementDetails_To_PDF(tableLayout));
+
+            // Closing the document  
+            doc.Close();
+
+            byte[] byteInfo = workStream.ToArray();
+            workStream.Write(byteInfo, 0, byteInfo.Length);
+            workStream.Position = 0;
+
+
+            return File(workStream, "application/pdf", strPDFFileName);
+
+        }
+
+
+        public FileResult SaveSettlementFilePDF()
+        {
+            MemoryStream workStream = new MemoryStream();
+            StringBuilder status = new StringBuilder("");
+            DateTime dTime = DateTime.Now;
+            //file name to be created   
+            string strPDFFileName = string.Format("UserLogPdf" + dTime.ToString("ddMMMyyyy") + "-" + ".pdf");
+            Document doc = new Document();
+            doc.SetMargins(0f, 0f, 0f, 0f);
+            //Create PDF Table with 6 columns  
+            /*PdfPTable tableLayout = new PdfPTable(5);*/
+            PdfPTable tableLayout = new PdfPTable(6);
+            doc.SetMargins(0f, 0f, 0f, 0f);
+            //Create PDF Table  
+
+            //file will created in this path  
+            string strAttachment = Server.MapPath("~/Downloadss/" + strPDFFileName);
+
+
+            PdfWriter.GetInstance(doc, workStream).CloseStream = false;
+            doc.Open();
+
+            //Add Content to PDF   
+
+            doc.Add(Add_Content_Settlement_To_PDF(tableLayout));
+
+            // Closing the document  
+            doc.Close();
+
+            byte[] byteInfo = workStream.ToArray();
+            workStream.Write(byteInfo, 0, byteInfo.Length);
+            workStream.Position = 0;
+
+
+            return File(workStream, "application/pdf", strPDFFileName);
+
+        }
+
+        //Add Content
+        protected PdfPTable Add_Content_Settlement_To_PDF(PdfPTable tableLayout)
+        {
+
+
+
+            PdfPTableHeader tableHeader = new PdfPTableHeader();
+            string fontpath = Environment.GetEnvironmentVariable("SystemRoot") + "\\fonts\\times.ttf";
+            BaseFont basefont = BaseFont.CreateFont(fontpath, BaseFont.IDENTITY_H, true);
+            float[] headers = { 20, 30, 30, 20, 20, 30 }; //Header Widths  
+            tableLayout.SetWidths(headers); //Set the pdf headers  
+            tableLayout.WidthPercentage = 100; //Set the PDF File witdh percentage  
+            tableLayout.HeaderRows = 4;
+            //Add Title to the PDF file at the top  
+
+            //List < Employee > UserLog = _context.UserLog.ToList < Employee > ();  
+            List<CustSettreport> UserLog = new List<CustSettreport>();
+            UserLog = (List<CustSettreport>)Session["SettlementLog"];
+
+            DateTime dTime = DateTime.Now;
+
+
+            //paragraphs  (67, 160, 106)
+            Paragraph Title = new Paragraph("SIB - Rabih - Settlement File Log",
+                new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(0, 0, 0)));
+            //new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(0, 0, 0)));
+
+            Paragraph Date = new Paragraph("Date: " + dTime.ToString("dd-MMM-yyyy"),
+                new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(0, 0, 0)));
+
+            Paragraph Time = new Paragraph("TIME:" + dTime.ToString("HH:mm:ss"),
+                new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(0, 0, 0)));
+            Paragraph Empty = new Paragraph("",
+               new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(0, 0, 0)));
+
+
+
+            //Adding Cells
+            tableLayout.AddCell(new PdfPCell(new Phrase(Title))
+            {
+
+                Colspan = 5,
+                PaddingLeft = 60,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 5,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_CENTER
+            });
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(Date))
+            {
+                Colspan = 2,
+                PaddingRight = 10,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 15,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_LEFT
+            });
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(Time))
+            {
+                Colspan = 5,
+                PaddingLeft = 8,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 10,
+                // BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_LEFT
+            });
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(Empty)) //Empty
+            {
+                Colspan = 4,
+                PaddingLeft = 60,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 5,
+                HorizontalAlignment = Element.ALIGN_LEFT
+            });
+
+
+
+            ////Add header 
+
+            AddCellToHeader3(tableLayout, "ID");
+            AddCellToHeader3(tableLayout, "Create Date");
+            AddCellToHeader3(tableLayout, "Status");
+            AddCellToHeader3(tableLayout, "Number OF Record");
+            AddCellToHeader3(tableLayout, "Number OF Settlement Record");
+            AddCellToHeader3(tableLayout, "Settlement File");
+
+            ////Add body  
+
+            foreach (var emp in UserLog)
+            {
+
+                AddCellToBody3(tableLayout, emp.sbf_sett_id.ToString());
+                AddCellToBody3(tableLayout, emp.sbf_create_date.ToString());
+                AddCellToBody3(tableLayout, emp.sbf_sattus.ToString());
+                AddCellToBody3(tableLayout, emp.sbf_no_rec.ToString());
+                AddCellToBody3(tableLayout, emp.sbf_no_sett_rec.ToString());
+                AddCellToBody3(tableLayout, emp.Settlement_File.ToString());
+
+            }
+
+            return tableLayout;
+        }
+
+        public ActionResult SDECReport()
+        {
+
+
+
+            List<req_res_model> req_res_data = new List<req_res_model>();
+            req_res_model model = new req_res_model();
+            dynamic requestdata = null, responsedata = null;
+
+            req_res_data = ds.getreq_res_log();
+            Session["billersreport"] = req_res_data;
+            //List<SelectListItem> billers = new List<SelectListItem>();
+
+            //billers = ds.billers_statuses();
+
+
+
+            //Session["bilers"] = billers;
+
+            return View();
+
+        }
+
+
+
+        public ActionResult BillerAuthorization()
+        {
+            if (Session["user_name"] == null)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+            if (Session["user_branch"] == null)
+            {
+                return RedirectToAction("Login", "Login");
+            }
+          
+
+            if (Session["stsresult"] != null)
+            {
+                ViewBag.SuccessMessage = Session["stsresult"].ToString();
+                Session["stsresult"] = null;
+            }
+
+            List<PaymentsReportModel> customer = new List<PaymentsReportModel>();
+            customer = ds.PendingBillerTran();
+
+            return View(customer);
+        }
+        
+
+
+
+
+
+        [HttpGet]
+        public ActionResult PaymentsReport()
+        {
+            PaymentsReportModel model = new PaymentsReportModel();
+
+            List<SelectListItem> transactions_statuses = new List<SelectListItem>();
+            List<SelectListItem> billerDescListItems = new List<SelectListItem>();
+            List<SelectListItem> billerListItems = new List<SelectListItem>();
+            transactions_statuses.Add(new SelectListItem { Text = "All", Value = "0" });
+            transactions_statuses.Add(new SelectListItem { Text = "Successful", Value = "S" });
+            transactions_statuses.Add(new SelectListItem { Text = "Failed", Value = "F" });
+
+            List<PaymentBillers> billerList = ds.GetBillersData();
+            billerListItems.Add(new SelectListItem { Text = "All", Value = "0" });
+            for (int i = 0; i < billerList.Count; i++)
+            {
+                billerListItems.Add(new SelectListItem
+                {
+                    Text = billerList[i].BillerName,
+                    Value = billerList[i].BillerId.ToString()
+                });
+            }
+            List<PaymentBillers> billerDescList = ds.GetBillersDescData();
+            billerDescListItems.Add(new SelectListItem { Text = "All", Value = "0" });
+            for (int i = 0; i < billerDescList.Count; i++)
+            {
+                billerDescListItems.Add(new SelectListItem
+                {
+                    Text = billerDescList[i].Biller_Dec_Name,
+                    Value = billerDescList[i].Biller_Dec_Id.ToString()
+                });
+            }
+            model.Billers = billerListItems;
+            model.SubBillers = billerDescListItems;
+            model.transactions_statuses = transactions_statuses;
+            Session["billerListItems"] = billerListItems;
+            Session["billerDescListItems"] = billerDescListItems;
+            return View(model);
+        }
+
+        [HttpPost]
+        public JsonResult GetStates(string id)
+        {
+            if (id == null)
+            {
+                id = "0";
+            }
+
+            List<SelectListItem> billerDescListItems = new List<SelectListItem>();
+
+            int CountriesID = Convert.ToInt32(id);
+            List<PaymentBillers> billerDescList = ds.GetBillersDescData();
+            List<PaymentBillers> billerList = ds.GetBillersData();
+            billerDescListItems.Add(new SelectListItem { Text = "All", Value = "0" });
+            var result = (from subBiller in billerDescList
+                          where subBiller.BillerId.ToString() == id
+                     select new
+                     {
+                         subBiller.Biller_Dec_Id
+                     ,
+                         subBiller.Biller_Dec_Name
+                     }).ToList();
+            return Json(new SelectList(result, "Biller_Dec_Id", "Biller_Dec_Name"));
+        }
+        public ActionResult PaymentsReportDetails(string service_code, string tran_id)
+        {
+
+            if (Session["stsresult"] != null)
+            {
+                ViewBag.SuccessMessage = Session["stsresult"].ToString();
+                Session["stsresult"] = null;
+            }
+            string responseStatus = "";
+            string responseMessage = "";
+            //string bilresponseMessage = "";
+            string bilresponseStatus = "";
+            // PaymentsReportModel model = (PaymentsReportModel)Session["Transactions"];
+            List<PaymentsReportModel> billrep = new List<PaymentsReportModel>();
+            //model.transactions = model.transactions.Where(s => s.bbl_id == Id).ToList();
+            //String response = Connecttocore.GetStatus(service_code , tran_id);
+            if (service_code != null || tran_id != null) {
+                String response = Connecttocore.GetStatus(service_code, tran_id);
+                //string response = " {   \"responseCode\": 559, \"responseMessage\": \"Transaction Status Check Failed\", \"responseStatus\" : \"Failed\"  } ";
+                //string response = "{\r\n    \"applicationId\": \"SAUS\",\r\n    \"sourceTransactionId\": \"2301192010029456\",\r\n    \"bpgTransactionId\": null,\r\n    \"responseCode\": 501,\r\n    \"responseMessage\": \"Successful Operation\",\r\n    \"responseStatus\": \"Success\",\r\n    \"origionalSourceTransactionId\": \"2301192012396461\",\r\n    \"origionalTransaction\": {\r\n        \"billerId\": 102,\r\n        \"serviceRequestType\": 2,\r\n        \"transactionPaidAmount\": 1960.0,\r\n        \"serviceCode\": \"201\",\r\n        \"bpgTransactionId\": 401752479,\r\n        \"responseStatus\": \"Successful\",\r\n        \"sourceTransactionId\": 2301192012396461,\r\n        \"billDueAmount\": null,\r\n        \"token\": null,\r\n        \"responseCode\": 500,\r\n        \"transactionTotalAmount\": null,\r\n        \"billTotalAmount\": null,\r\n        \"transactionFee\": null,\r\n        \"sourceTransactionDateTime\": null,\r\n        \"currency\": null,\r\n        \"additionalData\": {\r\n            \"return\": \"true\",\r\n            \"SubTransactionID\": \"124514712\",\r\n            \"Balance\": \"-3\",\r\n            \"Error\": \"0\"\r\n        },\r\n        \"applicationId\": \"SAUS\",\r\n        \"billDueDate\": null,\r\n        \"responseMessage\": \"operation was executed successfully\",\r\n        \"customerBillerRef\": \"0124840881\"\r\n    }\r\n}";
+
+                JObject jobj = new JObject();
+                jobj = JObject.Parse(response);
+                dynamic result = jobj;
+                //result.responseCode.Equals(500)
+                if (result.responseCode == "500")
+                {
+                    JObject jobj2 = new JObject();
+                    JSToken jobj3 = new JSToken();
+                    JToken message = result.SelectToken("origionalTransaction");
+                    //string origintran = result.origionalTransaction;
+                    //jobj2 = JObject.Parse(result.origionalTransaction);
+                    dynamic result2 = message;
+
+                    bilresponseStatus = result2.responseStatus;
+                    //bilresponseMessage = result.responseMessage;
+
+                }
+                else
+                {
+                    bilresponseStatus = "Failed to check status";
+                }
+
+                responseStatus = result.responseStatus;
+                responseMessage = result.responseMessage;
+            }
+
+            List<PaymentsReportModel> transts = ds.getstatusbnkbilloftran(tran_id, service_code);
+            //string bal = result.result;
+            //string[] separators = { ",", ":" };
+            //string value = bal;
+            //string[] acc = value.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            string bnk_response = "";
+            string biller_response = "";
+
+            foreach (var item in transts) {
+
+                bnk_response = item.bnk_response;
+                 biller_response = item.biller_response;
+
+           
+            }
+
+            if(bnk_response.Equals("00001"))
+            {
+                bnk_response = "Successfull";
+            }
+            if (!bnk_response.Equals("00001"))
+            {
+                bnk_response = "Failed";
+            }
+
+            if (biller_response.Equals("500"))
+            {
+                biller_response = "Successfull";
+            }
+            if (!biller_response.Equals("500"))
+            {
+                biller_response = "Failed";
+            }
+            billrep.Add(new PaymentsReportModel
+            {
+                status = responseStatus,
+                message = responseMessage,
+                tran_id = tran_id,
+                SubBillersId = service_code,
+                bil_message = bilresponseStatus,
+                bnk_response = bnk_response,
+                biller_response = biller_response
+            });
+            //model.status = responseStatus;
+            //model.message = responseMessage;
+
+
+             Session["billersreport"] = billrep;
+            return View(billrep);
+        }
+
+
+
+        public ActionResult Reverse(string account_no, string biller_id,string billersubid,string channel_id ,string bnkrefrance, string amount,string vocher_id)
+        {
+
+            if (Session["stsresult"] != null)
+            {
+                ViewBag.SuccessMessage = Session["stsresult"].ToString();
+                Session["stsresult"] = null;
+            }
+            string responseCode = "";
+            string responseMessage = "";
+            string mess = "";
+            //string bilresponseMessage = "";
+            string bilresponseStatus = "";
+            // PaymentsReportModel model = (PaymentsReportModel)Session["Transactions"];
+            List<PaymentsReportModel> billrep = new List<PaymentsReportModel>();
+            //model.transactions = model.transactions.Where(s => s.bbl_id == Id).ToList();
+            //String response = Connecttocore.GetStatus(service_code , tran_id);
+            if (billersubid != null )
+            {
+                String response = Connecttocore.BillerReverse(account_no , biller_id,billersubid,channel_id,bnkrefrance,amount,vocher_id);
+                //string response = " {   \"responseCode\": 559, \"responseMessage\": \"Transaction Status Check Failed\", \"responseStatus\" : \"Failed\"  } ";
+               // string response = "{\r\n\r\n    \"reponseMessage\": \"Execution Error\",\r\n\r\n    \"responseCode\": \"1003\"\r\n\r\n}";
+                JObject jobj = new JObject();
+                jobj = JObject.Parse(response);
+                dynamic result = jobj;
+                if(result.errcode == "0")
+                {
+                    Session["stsresult"] = "Failed revese operation";
+                    return RedirectToAction("BillerAuthorization");
+                }
+                responseCode = result.responseCode;
+                responseMessage = result.reponseMessage;
+                if (responseCode == "1")
+                {
+                    string username = Session["user_name"].ToString();
+                    int res = ds.updatefinalsts(bnkrefrance , username);
+
+                    if (!res.Equals(-1))
+                    {
+
+
+                         mess = "Final Status Updated Successfully";
+                        //Session["chqmessage"] = mess;
+
+                    }
+                    else
+                    {
+                       mess = "Sorry You Cannot process now";
+                       // Session["chqmessage"] = message;
+
+                    }
+                    Session["stsresult"] = responseMessage + " "+ mess;
+                    return RedirectToAction("BillerAuthorization");
+                }
+                //responseMessage = result.reponseMessage;
+                Session["stsresult"] = responseMessage +  " " + mess;
+                return RedirectToAction("BillerAuthorization");
+            }
+
+
+
+            //model.status = responseStatus;
+            //model.message = responseMessage;
+
+
+            //Session["billersreport"] = billrep;
+            //return View();
+            Session["stsresult"] = "Failed revese operation";
+            return RedirectToAction("BillerAuthorization");
+        }
+
+        public ActionResult PaymentsReportChangeStatus( string tran_id , string service_code)
+        {
+            // PaymentsReportModel model = (PaymentsReportModel)Session["Transactions"];
+            List<PaymentsReportModel> billrep = new List<PaymentsReportModel>();
+            //model.transactions = model.transactions.Where(s => s.bbl_id == Id).ToList();
+            Session["tran_id"] = tran_id;
+            if (!string.IsNullOrEmpty(tran_id))
+            {
+                string username = Session["user_name"].ToString() ;
+                int result = ds.updateBillerstatusfoereverse(tran_id ,username);
+                if (result != -1)
+                {
+                    Session["stsresult"] = "The Transction  will changed status to be reverse Successfully";
+                   
+                    return RedirectToAction("PaymentsReportDetails", new { service_code = service_code, tran_id = tran_id });
+                }
+                else
+                {
+                    Session["stsresult"] = "The Transction  will not changed status to be reverse Successfully  or status already Successfull ";
+
+              
+                    return RedirectToAction("PaymentsReportDetails", new { service_code = service_code, tran_id = tran_id });
+                }
+            }
+
+                   // Session["stsresult"] = billrep;
+              return RedirectToAction("PaymentsReportDetails", new { service_code = service_code, tran_id = tran_id });
+        }
+
+
+        [HttpPost]
+        public ActionResult PaymentsReport(PaymentsReportModel model)
+        {
+            model.transactions = ds.GetPaymentsReportData(model.fromDate, model.toDate, model.BillerId, model.SubBillersId, model.transactions_statusesId);
+            List<SelectListItem> transactions_statuses = new List<SelectListItem>();
+            List<SelectListItem> billerDescListItems = new List<SelectListItem>();
+            List<SelectListItem> billerListItems = new List<SelectListItem>();
+            transactions_statuses.Add(new SelectListItem { Text = "All", Value = "0" });
+            transactions_statuses.Add(new SelectListItem { Text = "Successful", Value = "S" });
+            transactions_statuses.Add(new SelectListItem { Text = "Failed", Value = "F" });
+            billerListItems = (List<SelectListItem>)Session["billerListItems"];
+            billerDescListItems = (List<SelectListItem>)Session["billerDescListItems"];
+            model.Billers = billerListItems;
+            model.SubBillers = billerDescListItems;
+            model.transactions_statuses = transactions_statuses;
+            Session["Transactions"] = model;
+            Session["billersreport"] = model.transactions;
+            return View(model);
+        }
+
+
+
+        public ActionResult ZainReport()
+        {
+
+
+
+            List<req_res_model> req_res_data = new List<req_res_model>();
+            req_res_model model = new req_res_model();
+            dynamic requestdata = null, responsedata = null;
+            List<SelectListItem> transactions_statuses = new List<SelectListItem>();
+            transactions_statuses.Add(new SelectListItem { Text = "All", Value = "All" });
+            transactions_statuses.Add(new SelectListItem { Text = "Successful", Value = "Secussfully" });
+            transactions_statuses.Add(new SelectListItem { Text = "Failed", Value = "Failed" });
+
+
+            model.transactions_statuses = transactions_statuses;
+            req_res_data = ds.getreq_res_log();
+            Session["billersreport"] = req_res_data;
+            //List<SelectListItem> billers = new List<SelectListItem>();
+
+            //billers = ds.billers_statuses();
+
+
+
+            //Session["bilers"] = billers;
+
+            return View(model);
+
+        }
+
+        public JsonResult FilteredSDECReport(string fromdate, string todate)
+        {
+
+
+            string formatedFromDate = DateTime.Parse(fromdate).ToString();
+            string formatedtodate = DateTime.Parse(todate).ToString();
+            string[] readyfromdate = formatedFromDate.Split(' ');
+            string[] readytodate = formatedtodate.Split(' ');
+            List<req_res_model> req_res_data = new List<req_res_model>();
+
+
+            req_res_data = ds.getfilteredSDEC(fromdate, todate);
+
+            Session["billersreport"] = req_res_data;
+
+
+            foreach (req_res_model transaction in req_res_data)
+            {
+                dynamic requestdata = JObject.Parse(transaction.tran_req);
+                dynamic responsedata = JObject.Parse(transaction.tran_resp);
+                if (requestdata.Account != null)
+                {
+                    transaction.PayCustCode = requestdata.PayCustomerCode;
+                    transaction.PayCustName = requestdata.PayCustomerName;
+                    transaction.PayAmount = responsedata.PayAmount;
+                    //transaction.Voucher = requestdata.BillerVoucher;
+                    transaction.Account = requestdata.Account;
+                    //transaction.status = responsedata.OrderStatus;
+                    transaction.VoucherRes = responsedata.PaymentVoucherNo;
+
+                    transaction.status = responsedata.OrderStatus;
+                    //transaction.Account = responsedata.Account;
+                }
+                if (transaction.VoucherRes == null || transaction.VoucherRes == "")
+                {
+                    transaction.VoucherRes = "N/A";
+
+                }
+
+                if (responsedata.PayAmount == null)
+                {
+                    transaction.PayAmount = "N/A";
+
+                }
+
+                if (transaction.token == null || transaction.token == "")
+                {
+                    transaction.token = "N/A";
+
+                }
+
+
+                if (requestdata.Account == null)
+                {
+                    transaction.Account = "N/A";
+
+                }
+
+                if (requestdata.PayCustomerCode == null)
+                {
+                    transaction.PayCustCode = "N/A";
+
+                }
+
+                if (requestdata.PayCustomerName == null)
+                {
+                    transaction.PayCustName = "N/A";
+
+                }
+
+                if (responsedata.OrderStatus == null)
+                {
+                    transaction.status = "N/A";
+
+
+                }
+
+
+            }
+
+
+            // List<req_res_model> sdecreport = new List<req_res_model>();
+
+            //sdecreport = req_res_data;
+            Session["sdecreport"] = req_res_data;
+            JsonResult data = Json(new { data = req_res_data }, JsonRequestBehavior.AllowGet);
+            data.MaxJsonLength = int.MaxValue;
+            return data;
+        }
+
+        public JsonResult FilteredZainReport(string fromdate, string todate, string status)
+        {
+
+
+
+            string formatedFromDate = DateTime.Parse(fromdate).ToString();
+            string formatedtodate = DateTime.Parse(todate).ToString();
+            string[] readyfromdate = formatedFromDate.Split(' ');
+            string[] readytodate = formatedtodate.Split(' ');
+            List<req_res_model> req_res_data = new List<req_res_model>();
+
+
+            req_res_data = ds.getfilteredZain(fromdate, todate, status);
+
+            Session["billersreport"] = req_res_data;
+
+
+            foreach (req_res_model transaction in req_res_data)
+            {
+                dynamic requestdata = JObject.Parse(transaction.BBL_BNKREFRENCE);
+
+                //string ft = requestdata.reference;
+                //string tranDate = transaction.TRAN_Data;
+                //string amount = transaction.bbl_billamount;
+                //string billResponse = transaction.BBL_BILLERRESPONSE;
+                //string phone = transaction.bbl_billervoucher;
+                //string bnkResponse = transaction.bbl_bnkresponse;
+                //string traceNo = transaction.bbl_sys_traceno;
+                //string userid = transaction.user_id;
+
+
+
+                transaction.ft = requestdata.reference;
+                transaction.tranDate = transaction.TRAN_Data;
+                transaction.amount = transaction.bbl_billamount;
+                transaction.billResponse = transaction.BBL_BILLERRESPONSE;
+                transaction.phone = transaction.bbl_billervoucher;
+                transaction.bnkResponse = transaction.bbl_bnkresponse;
+                transaction.traceNo = transaction.bbl_sys_traceno;
+                transaction.userid = transaction.user_id;
+
+
+
+
+            }
+
+            Session["billersreport"] = req_res_data;
+            // List<req_res_model> sdecreport = new List<req_res_model>();
+
+            //sdecreport = req_res_data;
+            //Session["zainreport"] = req_res_data;
+            JsonResult data = Json(new { data = req_res_data }, JsonRequestBehavior.AllowGet);
+            data.MaxJsonLength = int.MaxValue;
+            return data;
+        }
+
+        public ActionResult Accounttoaccountreport()
+        {
+            Custreport model = new Custreport();
+            model.Branches = ds.PopulateBranchs();
+
+            List<SelectListItem> transaction_names_list = new List<SelectListItem>();
+            transaction_names_list.Add(new SelectListItem { Text = "All", Value = "All" });
+            transaction_names_list.Add(new SelectListItem { Text = "AccountToCardTransfer", Value = "AccountToCardTransfer" });
+            transaction_names_list.Add(new SelectListItem { Text = "To Bank Customer Transfer", Value = "To Bank Customer Transfer" });
+            List<SelectListItem> transactions_statuses = new List<SelectListItem>();
+            transactions_statuses.Add(new SelectListItem { Text = "All", Value = "All" });
+            transactions_statuses.Add(new SelectListItem { Text = "Successful", Value = "Secussfully" });
+            transactions_statuses.Add(new SelectListItem { Text = "Failed", Value = "Failed" });
+
+            model.transactions_names = transaction_names_list;
+            model.transactions_statuses = transactions_statuses;
+
+
+
+            List<CustomerTransferReportViewModel> accounttranfertransactions = new List<CustomerTransferReportViewModel>();
+
+
+            Session["accounttranfertransactions"] = accounttranfertransactions;
+
+            return View(model);
+        }
+
+        public JsonResult FilterAccountToAccountReport(string branch_code, string status, string fromdate, string todate, int pageNumber)
+        {
+            string formatedFromDate = DateTime.Parse(fromdate).ToString();
+            string formatedtodate = DateTime.Parse(todate).ToString();
+            string[] readyfromdate = formatedFromDate.Split(' ');
+            string[] readytodate = formatedtodate.Split(' ');
+
+
+
+            List<CustomerTransferReportViewModel> accounttranfertransactions = new List<CustomerTransferReportViewModel>();
+            List<CustomerTransferReportViewModel> Printaccounttranfertransactions = new List<CustomerTransferReportViewModel>();
+            accounttranfertransactions = ds.FilteredAccountToAccountTransactions(branch_code, status, readyfromdate[0], readytodate[0], pageNumber);
+            Printaccounttranfertransactions = ds.FilteredAccountToAccountPrintTransactions(branch_code, status, readyfromdate[0], readytodate[0]);
+            foreach (CustomerTransferReportViewModel transaction in accounttranfertransactions)
+            {
+                dynamic requestdata = JObject.Parse(transaction.TranFullReq);
+                dynamic responsedata = JObject.Parse(transaction.TranFullResp);
+                // transaction.TranReqAmount = requestdata.tranamount;
+                transaction.TranFromAccount = requestdata.accountfrom;
+                transaction.TranToAccount = requestdata.accountto;
+                transaction.alsocustomername = requestdata.FromAccountName;
+                transaction.CustomerName = requestdata.recipientName;
+                transaction.ResponseStatus = responsedata.status;
+                if (responsedata.status != "")
+                {
+                    if (transaction.ResponseStatus.ToString() != "00")
+                    {
+                        string word = transaction.ResponseStatus;
+                        string[] words = word.Split(':');
+                        transaction.FT = words[1];
+                    }
+                }
+                string amorpm = transaction.TranDate.Substring(transaction.TranDate.Length - 2);
+                transaction.TranDate = transaction.TranDate.Substring(0, 15) + " " + amorpm;
+            }
+
+            foreach (CustomerTransferReportViewModel transaction in Printaccounttranfertransactions)
+            {
+                dynamic requestdata = JObject.Parse(transaction.TranFullReq);
+                dynamic responsedata = JObject.Parse(transaction.TranFullResp);
+                //transaction.TranReqAmount = requestdata.tranamount;
+                transaction.TranFromAccount = requestdata.accountfrom;
+                transaction.TranToAccount = requestdata.accountto;
+                transaction.alsocustomername = requestdata.FromAccountName;
+                transaction.CustomerName = requestdata.recipientName;
+                transaction.ResponseStatus = responsedata.status;
+                if (responsedata.status != "")
+                {
+                    if (transaction.ResponseStatus.ToString() != "00")
+                    {
+                        string word = transaction.ResponseStatus;
+                        string[] words = word.Split(':');
+                        transaction.FT = words[1];
+                    }
+                }
+                string amorpm = transaction.TranDate.Substring(transaction.TranDate.Length - 2);
+                transaction.TranDate = transaction.TranDate.Substring(0, 15) + " " + amorpm;
+            }
+            Session["accounttranfertransactions"] = accounttranfertransactions;
+            Session["Printaccounttranfertransactions"] = Printaccounttranfertransactions;
+            JsonResult data = Json(new { data = accounttranfertransactions }, JsonRequestBehavior.AllowGet);
+            data.MaxJsonLength = int.MaxValue;
+            return data;
+        }
+
+        public JsonResult FilteredCustomersByAdmin(string admin, string fromdate, string todate, int PageNumber)
+        {
+            List<CustomerReportModel> customers = new List<CustomerReportModel>();
+            List<CustomerReportModel> Printcustomers = new List<CustomerReportModel>();
+            if (fromdate == "" || todate == "")
+            {
+                customers = ds.GetCustomersByAdmin("All", "All", "All", PageNumber);
+            }
+            else
+            {
+                string formatedFromDate = DateTime.Parse(fromdate).ToString();//.Substring(0,9);
+                                                                              // string parsedDate = DateTime.Parse(todate).ToString();
+                string formatedtodate = DateTime.Parse(todate).ToString();
+                string[] readyfromdate = formatedFromDate.Split(' ');
+                string[] readytodate = formatedtodate.Split(' ');//.Substring(0, 9);
+
+                //List<CustomerReportModel> customers = new List<CustomerReportModel>();
+                // List<CustomerReportModel> Printcustomers = new List<CustomerReportModel>();
+                customers = ds.GetCustomersByAdmin(admin, readyfromdate[0], readytodate[0], PageNumber);
+            }
+
+            //customers = ds.GetCustomersByAdmin(admin, formatedFromDate, formatedtodate, PageNumber);
+            // Printcustomers = ds.PrintGetCustomersByAdmin(admin, readyfromdate[0], readytodate[0]);
+            Session["customersbyadmin"] = customers;
+            // Session["Printcustomersbyadmin"] = Printcustomers;
+            JsonResult data = Json(new { data = customers }, JsonRequestBehavior.AllowGet);
+            return data;
+        }
+
+        public JsonResult FilteredDateOverviewReport(string branch_code, string fromdate, string todate)
+        {
+
+            string formatedFromDate = DateTime.Parse(fromdate).ToString();
+            string formatedtodate = DateTime.Parse(todate).ToString();
+            string[] readyfromdate = formatedFromDate.Split(' ');
+            string[] readytodate = formatedtodate.Split(' ');
+            List<CustomerTransferReportViewModel> accumulativereport = ds.TotalTransactionsAmountsPerBranch(branch_code, readyfromdate[0], readytodate[0]);
+            Session["accumulativereport"] = accumulativereport;
+            JsonResult data = Json(new { data = accumulativereport }, JsonRequestBehavior.AllowGet);
+            return data;
+
+        }
+
+        public JsonResult FilterTransactionsDatePerBranches(string transaction_name, string fromdate, string todate)
+        {
+
+            string formatedFromDate = DateTime.Parse(fromdate).ToString();
+            string formatedtodate = DateTime.Parse(todate).ToString();
+            string[] readyfromdate = formatedFromDate.Split(' ');
+            string[] readytodate = formatedtodate.Split(' ');
+            List<CustomerTransferReportViewModel> accumulativereport = ds.GetTransactionPerBranch(transaction_name, readyfromdate[0], readytodate[0]);
+
+
+            Session["transactionperbranch"] = accumulativereport;
+            JsonResult data = Json(new { data = accumulativereport }, JsonRequestBehavior.AllowGet);
+            return data;
+        }
+
+        public JsonResult FilterCreditAPIReport(string branch_code, string status, string fromdate, string todate, int pageNumber)
+        {
+            string formatedFromDate = DateTime.Parse(fromdate).ToString();
+            string formatedtodate = DateTime.Parse(todate).ToString();
+            string[] readyfromdate = formatedFromDate.Split(' ');
+            string[] readytodate = formatedtodate.Split(' ');
+
+
+            List<CustomerTransferReportViewModel> creditapitransactions = ds.GetCreditAPITransaction(branch_code, status, readyfromdate[0], readytodate[0], pageNumber);
+            foreach (CustomerTransferReportViewModel transaction in creditapitransactions)
+            {
+                dynamic requestdata = JObject.Parse(transaction.TranFullReq);
+                dynamic responsedata = JObject.Parse(transaction.TranFullResp);
+                transaction.TranReqAmount = requestdata.tranamount;
+                transaction.PAN = requestdata.PAN;
+                transaction.TranFromAccount = requestdata.Fromaccount;
+                transaction.CustomerName = requestdata.customerName;
+                transaction.ResponseStatus = responsedata.responseStatus;
+                transaction.RRN = responsedata.RRN;
+                // string word = responsedata.status;
+                string word = transaction.Tran_FT;
+
+                string[] words = word.Split(':');
+                if (word.Equals("Failed ") || word.Equals("0002"))
+                {
+                    // transaction.FT = responsedata.responseStatus;
+                    transaction.FT = word;
+
+
+                }
+                else
+                {
+
+                    transaction.FT = words[1];
+                }
+                //transaction.FT = words[1];
+                string amorpm = transaction.TranDate.Substring(transaction.TranDate.Length - 2);
+                transaction.TranDate = transaction.TranDate.Substring(0, 15) + " " + amorpm;
+                //transaction.TranDate = transaction.TranDate;
+            }
+            Session["creditapitransactions"] = creditapitransactions;
+            JsonResult data = Json(new { data = creditapitransactions }, JsonRequestBehavior.AllowGet);
+            data.MaxJsonLength = int.MaxValue;
+            return data;
+        }
+
+
+        [HttpPost]
+        public FileResult saveSDECreport(CustomerReportModel model)
+        {
+
+
+            string branchname = "";
+
+            if (branchname == "Admin")
+            {
+                branchname = "All Users";
+                Session["Branchname"] = branchname;
+            }
+
+            if (model.BranchCode != null)
+            {
+                branchname = model.BranchCode;
+
+                Session["Branchname"] = branchname;
+            }
+            else
+            {
+                branchname = "All";
+                Session["Branchname"] = branchname;
+            }
+
+
+            //
+            //  string branchname = model.BranchCode;
+
+
+
+            Session["Branchname"] = branchname;
+            MemoryStream workStream = new MemoryStream();
+            StringBuilder status = new StringBuilder("");
+            DateTime dTime = DateTime.Now;
+            //file name to be created 
+            string strPDFFileName = string.Format("SDEC Report " + branchname + dTime.ToString("yyyyMMdd") + "-" + ".pdf");
+            Document doc = new Document();
+            doc.SetMargins(0f, 0f, 0f, 0f);
+            //Create PDF Table with 5 columns
+            PdfPTable tableLayout = new PdfPTable(10);
+            doc.SetMargins(0f, 0f, 0f, 0f);
+            //Create PDF Table
+
+            //file will created in this path
+            string strAttachment = Server.MapPath("~/Downloads/" + strPDFFileName);
+
+
+            PdfWriter.GetInstance(doc, workStream).CloseStream = false;
+            doc.Open();
+
+            //Add Content to PDF 
+            doc.Add(Add_Content_ToSDEC_PDF(tableLayout));
+
+            // Closing the document
+            doc.Close();
+
+            byte[] byteInfo = workStream.ToArray();
+            workStream.Write(byteInfo, 0, byteInfo.Length);
+            workStream.Position = 0;
+
+
+            return File(workStream, "application/pdf", strPDFFileName);
+
+        }
+
+        protected PdfPTable Add_Content_ToSDEC_PDF(PdfPTable tableLayout)
+        {
+
+            float[] headers = { 20, 10, 10, 12, 10, 10, 16, 10, 12, 10 };  //Header Widths
+            tableLayout.SetWidths(headers);        //Set the pdf headers
+            tableLayout.WidthPercentage = 95;       //Set the PDF File witdh percentage
+            tableLayout.HeaderRows = 1;
+
+            DateTime dTime = DateTime.Now;
+
+            //paragraphs
+            //paragraphs
+            Paragraph Title = new Paragraph("SIB - Rabih",
+                new Font(Font.FontFamily.HELVETICA, 8, 1, iTextSharp.text.BaseColor.WHITE));
+            Paragraph Title2 = new Paragraph("SDEC Report " + Session["Branchname"].ToString(),
+               new Font(Font.FontFamily.HELVETICA, 8, 1, iTextSharp.text.BaseColor.WHITE));
+            Paragraph Date = new Paragraph("Date: " + dTime.ToString("dd-MMM-yyyy"),
+                new Font(Font.FontFamily.HELVETICA, 5, 1, iTextSharp.text.BaseColor.WHITE));
+            Paragraph Time = new Paragraph("TIME:" + dTime.ToString("HH:mm:ss"),
+                new Font(Font.FontFamily.HELVETICA, 5, 1, iTextSharp.text.BaseColor.WHITE));
+            Chunk c = new Chunk("NAS ALBAIT MOBILE - RSDEC Report",
+                new Font(Font.FontFamily.HELVETICA, 8, 1, iTextSharp.text.BaseColor.WHITE));
+
+            Paragraph Total = new Paragraph(c);
+            //Adding Cells
+            Paragraph empty = new Paragraph("\n\n",
+                new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(0, 0, 0)));
+            //Adding Cells
+            tableLayout.AddCell(new PdfPCell(new Phrase(Title))
+            {
+                Colspan = 10,
+                PaddingLeft = 30,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 5,
+                PaddingTop = 5,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_CENTER
+            });
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(Title2))
+            {
+                Colspan = 10,
+                PaddingLeft = 30,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 5,
+                PaddingTop = 5,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_CENTER
+            });
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(Date))
+            {
+                Colspan = 5,
+                PaddingRight = 10,
+                Border = 0,
+                PaddingBottom = 10,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_LEFT
+            });
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(Time))
+            {
+                Colspan = 5,
+                PaddingLeft = 10,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 10,
+                PaddingTop = 5,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_RIGHT
+            });
+
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(empty))
+            {
+                Colspan = 10,
+                PaddingLeft = 60,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 15,
+                PaddingTop = 15,
+                HorizontalAlignment = Element.ALIGN_LEFT
+            });
+
+
+            ////Add header
+            AddCellToHeaderRefined(tableLayout, "Tran Date");
+            AddCellToHeaderRefined(tableLayout, "User ID");
+            AddCellToHeaderRefined(tableLayout, "Account");
+            AddCellToHeaderRefined(tableLayout, "Amount");
+            AddCellToHeaderRefined(tableLayout, "Meter No");
+            AddCellToHeaderRefined(tableLayout, "Meter Name");
+            AddCellToHeaderRefined(tableLayout, "RRN");
+            AddCellToHeaderRefined(tableLayout, "Voucher");
+            AddCellToHeaderRefined(tableLayout, "Token");
+            AddCellToHeaderRefined(tableLayout, "Status");
+
+            List<req_res_model> Printcustomers = new List<req_res_model>();
+            //Printcustomers = (List<CustomerReportModel>)Session["customersbyadmin"];
+            Printcustomers = (List<req_res_model>)Session["billersreport"];
+            // customersbyadmin
+            foreach (var customer in Printcustomers)
+            {
+
+                dynamic requestdata = JObject.Parse(customer.tran_req);
+                dynamic responsedata = JObject.Parse(customer.tran_resp);
+                //if (requestdata != "{}"){ 
+
+                if (requestdata.Account != null)
+                {
+                    customer.PayCustCode = requestdata.PayCustomerCode;
+                    customer.PayCustName = requestdata.PayCustomerName;
+                    customer.PayAmount = responsedata.PayAmount;
+                    //customer.Voucher = requestdata.BillerVoucher;
+                    customer.Account = requestdata.Account;
+                    //transaction.status = responsedata.OrderStatus;
+                    customer.VoucherRes = responsedata.PaymentVoucherNo;
+                    customer.status = responsedata.OrderStatus;
+                    //transaction.Account = responsedata.Account;
+                }
+                // if (responsedata.OrderStatus != null || responsedata != null)
+
+                if (responsedata.PaymentVoucherNo == null)
+                {
+                    customer.VoucherRes = "N/A";
+
+                }
+
+                if (responsedata.PayAmount == null)
+                {
+                    customer.PayAmount = "N/A";
+
+                }
+
+                if (customer.tran_resp_result == null || customer.tran_resp_result == " ")
+                {
+                    customer.tran_resp_result = "N/A";
+
+                }
+
+                if (customer.token == null || customer.token == " ")
+                {
+                    customer.token = "N/A";
+
+                }
+
+                if (requestdata.Account == null)
+                {
+                    customer.Account = "N/A";
+
+                }
+
+
+
+
+                if (requestdata.PayCustomerCode == null)
+                {
+                    customer.PayCustCode = "N/A";
+
+                }
+
+                if (requestdata.PayCustomerName == null)
+                {
+                    customer.PayCustName = "N/A";
+
+                }
+
+
+                if (responsedata.OrderStatus == null)
+                {
+                    customer.status = "N/A";
+
+
+                }
+
+
+
+
+
+
+                AddCellToBodyRefined(tableLayout, customer.TRAN_Data.ToString());
+                AddCellToBodyRefined(tableLayout, customer.user_id.ToString());
+                AddCellToBodyRefined(tableLayout, customer.Account.ToString());
+                AddCellToBodyRefined(tableLayout, customer.PayAmount.ToString());
+                AddCellToBodyRefined(tableLayout, customer.PayCustCode.ToString());
+                AddCellToBodyRefined(tableLayout, customer.PayCustName.ToString());
+                AddCellToBodyRefined(tableLayout, customer.tran_resp_result.ToString());
+                AddCellToBodyRefined(tableLayout, customer.VoucherRes.ToString());
+                AddCellToBodyRefined(tableLayout, customer.token.ToString());
+                AddCellToBodyRefined(tableLayout, customer.status.ToString());
+
+                //}
+            }
+
+            //tableLayout.AddCell(new PdfPCell(new Phrase(" "))
+            //{
+            //    Colspan = 10,
+            //    PaddingLeft = 60,
+            //    Rowspan = 3,
+            //    Border = 1,
+            //    Top = 5,
+            //    PaddingTop = 5,
+            //    //BackgroundColor = new BaseColor(67, 160, 106),
+            //    PaddingBottom = 5,
+            //    HorizontalAlignment = Element.ALIGN_CENTER
+
+            //});
+
+            //tableLayout.AddCell(new PdfPCell(new Phrase(Total))
+            //{
+            //    Colspan = 10,
+            //    PaddingLeft = 60,
+            //    Rowspan = 3,
+            //    Border = 1,
+            //    Top = 5,
+            //    PaddingTop = 5,
+            //    BackgroundColor = new BaseColor(67, 160, 106),
+            //    PaddingBottom = 5,
+            //    HorizontalAlignment = Element.ALIGN_CENTER
+            //});
+
+            return tableLayout;
+
+        }
+
+        [HttpPost]
+        public FileResult saveZainreport(CustomerReportModel model)
+        {
+
+
+            string branchname = "";
+
+            if (branchname == "Admin")
+            {
+                branchname = "All Users";
+                Session["Branchname"] = branchname;
+            }
+
+            if (model.BranchCode != null)
+            {
+                branchname = model.BranchCode;
+
+                Session["Branchname"] = branchname;
+            }
+            else
+            {
+                branchname = "All";
+                Session["Branchname"] = branchname;
+            }
+
+
+            //
+            //  string branchname = model.BranchCode;
+
+
+
+            Session["Branchname"] = branchname;
+            MemoryStream workStream = new MemoryStream();
+            StringBuilder status = new StringBuilder("");
+            DateTime dTime = DateTime.Now;
+            //file name to be created 
+            string strPDFFileName = string.Format("Zain Report " + branchname + dTime.ToString("yyyyMMdd") + "-" + ".pdf");
+            Document doc = new Document();
+            doc.SetMargins(0f, 0f, 0f, 0f);
+            //Create PDF Table with 5 columns
+            PdfPTable tableLayout = new PdfPTable(6);
+            doc.SetMargins(0f, 0f, 0f, 0f);
+            //Create PDF Table
+
+            //file will created in this path
+            string strAttachment = Server.MapPath("~/Downloads/" + strPDFFileName);
+
+
+            PdfWriter.GetInstance(doc, workStream).CloseStream = false;
+            doc.Open();
+
+            //Add Content to PDF 
+            doc.Add(Add_Content_ToZain_PDF(tableLayout));
+
+            // Closing the document
+            doc.Close();
+
+            byte[] byteInfo = workStream.ToArray();
+            workStream.Write(byteInfo, 0, byteInfo.Length);
+            workStream.Position = 0;
+
+
+            return File(workStream, "application/pdf", strPDFFileName);
+
+        }
+
+        protected PdfPTable Add_Content_ToZain_PDF(PdfPTable tableLayout)
+        {
+
+            float[] headers = { 20, 10, 10, 12, 10, 10 };  //Header Widths
+            tableLayout.SetWidths(headers);        //Set the pdf headers
+            tableLayout.WidthPercentage = 95;       //Set the PDF File witdh percentage
+            tableLayout.HeaderRows = 1;
+
+            DateTime dTime = DateTime.Now;
+
+            //paragraphs
+            //paragraphs
+            Paragraph Title = new Paragraph("SIB - Rabih",
+                new Font(Font.FontFamily.HELVETICA, 8, 1, iTextSharp.text.BaseColor.WHITE));
+            Paragraph Title2 = new Paragraph("Zain Report " + Session["Branchname"].ToString(),
+               new Font(Font.FontFamily.HELVETICA, 8, 1, iTextSharp.text.BaseColor.WHITE));
+            Paragraph Date = new Paragraph("Date: " + dTime.ToString("dd-MMM-yyyy"),
+                new Font(Font.FontFamily.HELVETICA, 5, 1, iTextSharp.text.BaseColor.WHITE));
+            Paragraph Time = new Paragraph("TIME:" + dTime.ToString("HH:mm:ss"),
+                new Font(Font.FontFamily.HELVETICA, 5, 1, iTextSharp.text.BaseColor.WHITE));
+            Chunk c = new Chunk("NAS ALBAIT MOBILE - Zain Report",
+                new Font(Font.FontFamily.HELVETICA, 8, 1, iTextSharp.text.BaseColor.WHITE));
+
+            Paragraph Total = new Paragraph(c);
+            //Adding Cells
+            Paragraph empty = new Paragraph("\n\n",
+                new Font(Font.FontFamily.HELVETICA, 8, 1, new BaseColor(0, 0, 0)));
+            //Adding Cells
+            tableLayout.AddCell(new PdfPCell(new Phrase(Title))
+            {
+                Colspan = 6,
+                PaddingLeft = 30,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 5,
+                PaddingTop = 5,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_CENTER
+            });
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(Title2))
+            {
+                Colspan = 6,
+                PaddingLeft = 30,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 5,
+                PaddingTop = 5,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_CENTER
+            });
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(Date))
+            {
+                Colspan = 3,
+                PaddingRight = 10,
+                Border = 0,
+                PaddingBottom = 10,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_LEFT
+            });
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(Time))
+            {
+                Colspan = 3,
+                PaddingLeft = 10,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 10,
+                PaddingTop = 5,
+                BackgroundColor = new BaseColor(67, 160, 106),
+                HorizontalAlignment = Element.ALIGN_RIGHT
+            });
+
+
+            tableLayout.AddCell(new PdfPCell(new Phrase(empty))
+            {
+                Colspan = 6,
+                PaddingLeft = 60,
+                Rowspan = 1,
+                Border = 0,
+                PaddingBottom = 15,
+                PaddingTop = 15,
+                HorizontalAlignment = Element.ALIGN_LEFT
+            });
+
+
+            ////Add header
+            AddCellToHeaderRefined(tableLayout, "Tran Date");
+            AddCellToHeaderRefined(tableLayout, "User ID");
+            AddCellToHeaderRefined(tableLayout, "Phone Number");
+            AddCellToHeaderRefined(tableLayout, "Amount");
+            AddCellToHeaderRefined(tableLayout, "Trace Number");
+            AddCellToHeaderRefined(tableLayout, "Status");
+
+            List<req_res_model> Printcustomers = new List<req_res_model>();
+            //Printcustomers = (List<CustomerReportModel>)Session["customersbyadmin"];
+            Printcustomers = (List<req_res_model>)Session["billersreport"];
+            // customersbyadmin
+
+
+
+            foreach (var customer in Printcustomers)
+            {
+
+
+
+
+
+                AddCellToBodyRefined(tableLayout, customer.TRAN_Data.ToString());
+                AddCellToBodyRefined(tableLayout, customer.user_id.ToString());
+                AddCellToBodyRefined(tableLayout, customer.bbl_billervoucher.ToString());
+                AddCellToBodyRefined(tableLayout, customer.bbl_billamount.ToString());
+                AddCellToBodyRefined(tableLayout, customer.bbl_sys_traceno.ToString());
+                AddCellToBodyRefined(tableLayout, customer.bbl_bnkresponse.ToString());
+
+
+                //}
+            }
+
+            //tableLayout.AddCell(new PdfPCell(new Phrase(" "))
+            //{
+            //    Colspan = 10,
+            //    PaddingLeft = 60,
+            //    Rowspan = 3,
+            //    Border = 1,
+            //    Top = 5,
+            //    PaddingTop = 5,
+            //    //BackgroundColor = new BaseColor(67, 160, 106),
+            //    PaddingBottom = 5,
+            //    HorizontalAlignment = Element.ALIGN_CENTER
+
+            //});
+
+            //tableLayout.AddCell(new PdfPCell(new Phrase(Total))
+            //{
+            //    Colspan = 10,
+            //    PaddingLeft = 60,
+            //    Rowspan = 3,
+            //    Border = 1,
+            //    Top = 5,
+            //    PaddingTop = 5,
+            //    BackgroundColor = new BaseColor(67, 160, 106),
+            //    PaddingBottom = 5,
+            //    HorizontalAlignment = Element.ALIGN_CENTER
+            //});
+
+            return tableLayout;
+
         }
     }
 }

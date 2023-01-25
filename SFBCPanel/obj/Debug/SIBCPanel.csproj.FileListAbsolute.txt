@@ -348,59 +348,12 @@ C:\Users\Administrator\Desktop\GitApp\sibcpanel\SFBCPanel\obj\Debug\SFBCPanel.pd
 C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\SFBCPanel.dll.config
 C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\SFBCPanel.dll
 C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\SFBCPanel.pdb
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\csc.exe
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\csc.exe.config
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\csc.rsp
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\csi.exe
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\csi.exe.config
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\csi.rsp
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\Microsoft.CodeAnalysis.CSharp.Scripting.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\Microsoft.CodeAnalysis.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\Microsoft.CodeAnalysis.Scripting.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\Microsoft.CSharp.Core.targets
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\Microsoft.DiaSymReader.Native.amd64.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\Microsoft.DiaSymReader.Native.x86.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\Microsoft.Managed.Core.targets
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\Microsoft.VisualBasic.Core.targets
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.AppContext.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.Collections.Immutable.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.Console.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.Diagnostics.FileVersionInfo.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.Diagnostics.StackTrace.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.IO.Compression.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.IO.FileSystem.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.IO.FileSystem.Primitives.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.IO.Pipes.AccessControl.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.IO.Pipes.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.Reflection.Metadata.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.Security.AccessControl.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.Security.Claims.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.Security.Cryptography.Algorithms.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.Security.Cryptography.Encoding.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.Security.Cryptography.Primitives.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.Security.Cryptography.X509Certificates.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.Security.Principal.Windows.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.Text.Encoding.CodePages.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.ValueTuple.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.Xml.ReaderWriter.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.Xml.XmlDocument.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.Xml.XPath.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\System.Xml.XPath.XDocument.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\vbc.exe
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\vbc.exe.config
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\vbc.rsp
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\VBCSCompiler.exe
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\roslyn\VBCSCompiler.exe.config
 C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\Antlr3.Runtime.dll
 C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\hashmakersol.pdfmaker.dll
 C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\itextsharp.dll
 C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\itextsharp.xmlworker.dll
 C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\log4net.dll
 C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\Microsoft.AspNet.TelemetryCorrelation.dll
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
 C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\Microsoft.Web.Infrastructure.dll
 C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\MvcCheckBoxList.dll
 C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\Newtonsoft.Json.dll
@@ -426,8 +379,51 @@ C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\Newtonsoft.Json.xml
 C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\Antlr3.Runtime.pdb
 C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\System.Diagnostics.DiagnosticSource.xml
 C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\Microsoft.AspNet.TelemetryCorrelation.xml
-C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\obj\Debug\SIBCPanel.csproj.AssemblyReference.cache
 C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\obj\Debug\SIBCPanel.csproj.CoreCompileInputs.cache
 C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\obj\Debug\SIBCPanel.csproj.CopyComplete
 C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\obj\Debug\SFBCPanel.dll
 C:\Users\smah\Desktop\web IB\sibcpanel\SFBCPanel\obj\Debug\SFBCPanel.pdb
+Z:\Projects\sibcpanel\SFBCPanel\bin\SFBCPanel.dll.config
+Z:\Projects\sibcpanel\SFBCPanel\bin\SFBCPanel.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\SFBCPanel.pdb
+Z:\Projects\sibcpanel\SFBCPanel\bin\Antlr3.Runtime.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\EntityFramework.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\EntityFramework.SqlServer.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\hashmakersol.pdfmaker.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\itextsharp.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\itextsharp.xmlworker.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\log4net.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\Microsoft.AspNet.TelemetryCorrelation.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\Microsoft.Web.Infrastructure.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\MvcCheckBoxList.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\Newtonsoft.Json.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\System.Diagnostics.DiagnosticSource.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\System.Web.Helpers.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\System.Web.Mvc.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\System.Web.Optimization.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\System.Web.Razor.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\System.Web.WebPages.Deployment.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\System.Web.WebPages.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\System.Web.WebPages.Razor.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\WebGrease.dll
+Z:\Projects\sibcpanel\SFBCPanel\bin\EntityFramework.xml
+Z:\Projects\sibcpanel\SFBCPanel\bin\EntityFramework.SqlServer.xml
+Z:\Projects\sibcpanel\SFBCPanel\bin\itextsharp.xml
+Z:\Projects\sibcpanel\SFBCPanel\bin\log4net.xml
+Z:\Projects\sibcpanel\SFBCPanel\bin\System.Web.Helpers.xml
+Z:\Projects\sibcpanel\SFBCPanel\bin\System.Web.Mvc.xml
+Z:\Projects\sibcpanel\SFBCPanel\bin\System.Web.Optimization.xml
+Z:\Projects\sibcpanel\SFBCPanel\bin\System.Web.Razor.xml
+Z:\Projects\sibcpanel\SFBCPanel\bin\System.Web.WebPages.xml
+Z:\Projects\sibcpanel\SFBCPanel\bin\System.Web.WebPages.Deployment.xml
+Z:\Projects\sibcpanel\SFBCPanel\bin\System.Web.WebPages.Razor.xml
+Z:\Projects\sibcpanel\SFBCPanel\bin\Newtonsoft.Json.xml
+Z:\Projects\sibcpanel\SFBCPanel\bin\Antlr3.Runtime.pdb
+Z:\Projects\sibcpanel\SFBCPanel\bin\System.Diagnostics.DiagnosticSource.xml
+Z:\Projects\sibcpanel\SFBCPanel\bin\Microsoft.AspNet.TelemetryCorrelation.xml
+Z:\Projects\sibcpanel\SFBCPanel\obj\Debug\SIBCPanel.csproj.AssemblyReference.cache
+Z:\Projects\sibcpanel\SFBCPanel\obj\Debug\SIBCPanel.csproj.CoreCompileInputs.cache
+Z:\Projects\sibcpanel\SFBCPanel\obj\Debug\SIBCPanel.csproj.CopyComplete
+Z:\Projects\sibcpanel\SFBCPanel\obj\Debug\SFBCPanel.dll
+Z:\Projects\sibcpanel\SFBCPanel\obj\Debug\SFBCPanel.pdb

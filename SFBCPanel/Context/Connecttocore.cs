@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.ModelBinding;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SFBCPanel.Models;
 using ModelState = System.Web.Mvc.ModelState;
 
 namespace SFBCPanel.Context
@@ -24,10 +25,10 @@ namespace SFBCPanel.Context
         {
             try
             {
-                //using (StreamReader sr = new StreamReader("C:\\Users\\Shaikh\\Desktop\\SIBCPanel\\SFBCPanel\\Configuration\\SIBconfiguration.txt"))
-                using (StreamReader sr = new StreamReader("C:\\Users\\smah\\Desktop\\web IB\\sibcpanel\\SFBCPanel\\Configuration\\SIBconfiguration.txt"))
+                // using (StreamReader sr = new StreamReader("Z:\\Projects\\sibcpanel\\SFBCPanel\\Configuration\\SIBconfiguration.txt"))
+                //using (StreamReader sr = new StreamReader("C:\\Users\\smah\\Desktop\\web IB\\sibcpanel\\SFBCPanel\\Configuration\\SIBconfiguration.txt"))
                 
-                //using (StreamReader sr = new StreamReader("C:\\inetpub\\wwwroot\\SSBCPanel\\Configuration\\SIBconfiguration.txt"))
+                using (StreamReader sr = new StreamReader("C:\\inetpub\\wwwroot\\SSBCPanel\\Configuration\\SIBconfiguration.txt"))
                 {
                     string line;
                     while ((line = sr.ReadLine()) != null)
@@ -141,6 +142,93 @@ namespace SFBCPanel.Context
             dynamicJson.Authentication = "Card";
             dynamicJson.Channel = "InternetBanking";
             dynamicJson.lang = "1";
+            dynamicJson.uuid = Guid.NewGuid();
+
+            string json = "";
+            json = JsonConvert.SerializeObject(dynamicJson);
+            var responJsonText = "";
+            JObject JResp = new JObject();
+
+            using (var objClient = new HttpClient())
+            {
+                try
+                {
+                    HttpResponseMessage respon = objClient
+                        .PostAsync(requestUri, new StringContent(json, Encoding.UTF8, "application/json")).Result;
+
+                    if (respon.IsSuccessStatusCode)
+                    {
+                        responJsonText = respon.Content.ReadAsStringAsync().Result;
+                    }
+                }
+                catch (Exception e)
+                {
+                    responJsonText = "Error";
+                }
+
+                return responJsonText;
+
+            }
+
+        }
+
+        public static string GetStatus(string serviceCode , string tran_id)
+        {
+            getconfig();
+            //Uri requestUri = new Uri(BASE_URL + "/GetCustInfoByID");
+            Uri requestUri = new Uri(BASE_URL + "/GetStatus");
+            dynamic dynamicJson = new ExpandoObject();
+
+            //dynamicJson.CustID = cif;//"1300420105s93883".ToString();
+            dynamicJson.serviceCode = serviceCode;
+            dynamicJson.origionalSourceTransactionId = tran_id;
+            dynamicJson.Authentication = "Card";
+            dynamicJson.Channel = "InternetBanking";
+            dynamicJson.lang = "1";
+            dynamicJson.uuid = Guid.NewGuid();
+
+            string json = "";
+            json = JsonConvert.SerializeObject(dynamicJson);
+            var responJsonText = "";
+            JObject JResp = new JObject();
+
+            using (var objClient = new HttpClient())
+            {
+                try
+                {
+                    HttpResponseMessage respon = objClient
+                        .PostAsync(requestUri, new StringContent(json, Encoding.UTF8, "application/json")).Result;
+
+                    if (respon.IsSuccessStatusCode)
+                    {
+                        responJsonText = respon.Content.ReadAsStringAsync().Result;
+                    }
+                }
+                catch (Exception e)
+                {
+                    responJsonText = "Error";
+                }
+
+                return responJsonText;
+            }
+        }
+
+        public static string BillerReverse(string account_no,string biller_id,string billersubid,string channel_id,string bnkrefrance,string amount,string vocher_id)
+        {
+            getconfig();
+            //Uri requestUri = new Uri(BASE_URL + "/GetCustInfoByID");
+            Uri requestUri = new Uri(BASE_URL + "/BPGReverse");
+            dynamic dynamicJson = new ExpandoObject();
+
+            //dynamicJson.CustID = cif;//"1300420105s93883".ToString();
+            dynamicJson.acounttfrom = account_no;
+            dynamicJson.Biller_ID = biller_id;
+            dynamicJson.Biller_sub_ID = billersubid;
+            dynamicJson.Channel_ID = channel_id;
+            dynamicJson.refno = bnkrefrance;
+            dynamicJson.amount = amount;
+            dynamicJson.voucher_ID = vocher_id;
+
             dynamicJson.uuid = Guid.NewGuid();
 
             string json = "";

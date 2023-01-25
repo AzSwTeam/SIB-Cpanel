@@ -205,33 +205,36 @@ namespace Cpanel.Controllers
         {
             string message;
 
-            model = ds.GetUserRegistrationData(model.placeholder);
+            //model = ds.GetUserRegistrationData(model.placeholder);
 
-            model.Branches = ds.PopulateBranchs(model.BranchCode, model.placeholder);
-            model.AccTypes = ds.PopulateAccountTypes(model.placeholder);
-            model.Currencies = ds.PopulateCurrencies();
+            //model.Branches = ds.PopulateBranchs(model.BranchCode, model.placeholder);
+            //model.AccTypes = ds.PopulateAccountTypes(model.placeholder);
+            //model.Currencies = ds.PopulateCurrencies();
 
-            model.catgories = ds.GetGatgories();
-            model.Channels = ds.Channels();
+            //model.catgories = ds.GetGatgories();
+            //model.Channels = ds.Channels();
 
-            if (ModelState.IsValidField(model.BranchCode) && ModelState.IsValidField(model.AccountNumber) &&
-                   ModelState.IsValidField(model.AccountTypecode) && ModelState.IsValidField(model.CurrencyCode))
+            //if (ModelState.IsValidField(model.BranchCode) && ModelState.IsValidField(model.AccountNumber) &&
+            //       ModelState.IsValidField(model.AccountTypecode) && ModelState.IsValidField(model.CurrencyCode))
 
-            {
+            //{
 
-                //if (ModelState.IsValid)
+            //if (ModelState.IsValid)
 
-                //{
+            //{
                 custinfo infomodel = new custinfo();
-                String fullaccount = "18" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
+                //String fullaccount = "18" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
                 String response;
+                 //response = ds.custregcheck2(model.cif, "");
+                infomodel = ds.getcustinfo("", "", "", "", "", model.placeholder);
+                //infomodel = ds.getcustinfo(model.BranchCode, model.AccountTypecode, model.AccountNumber, model.CurrencyCode, model.CategoryCode, fullaccount);
 
-                infomodel = ds.getcustinfo(model.BranchCode, model.AccountTypecode, model.AccountNumber, model.CurrencyCode, model.CategoryCode, fullaccount);
                 response = infomodel.lblconfirm;
                 if (response.Equals("This Account is Already exist") && infomodel.status.ToString().Equals("A"))
+                 //if (response.Equals("This Account is Already exist") )
                 {
                     //String Accountnumber = "13" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
-                    String Accountnumber = "18" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
+                    //String Accountnumber = "18" + model.BranchCode + model.AccountTypecode + model.CurrencyCode + model.AccountNumber;
                     infomodel.Profiles = ds.PopulateProfiles();
                     Session["resultcustinfo"] = infomodel;
                     return RedirectToAction("Detials");
@@ -298,7 +301,7 @@ namespace Cpanel.Controllers
                     ModelState.AddModelError("", message);
                     return RedirectToAction("CustInfo", model);
                 }
-            }
+            //}
             else
             {
                 message = "Customer Dosen't exist";

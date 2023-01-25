@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Services.Description;
 
 namespace Cpanel.Controllers
 {
@@ -32,7 +33,11 @@ namespace Cpanel.Controllers
             }
             String userbranch = Session["user_branch"].ToString();
 
-
+            if (Session["message"] != null)
+            {
+                ViewBag.SuccessMessage = Session["message"].ToString();
+                Session["message"] = null;
+            }
             Customerinfopass model = new Customerinfopass();
             model.Branches = ds.PopulateBranchs(userbranch);
             model.AccTypes = ds.PopulateAccountTypes();
@@ -157,6 +162,7 @@ namespace Cpanel.Controllers
                     {
 
                         message = "This Customer Account Is Not Authorized";
+                        Session["message"] = message;
                         ModelState.AddModelError("", message);
                         return View(model);
                     }
@@ -165,6 +171,7 @@ namespace Cpanel.Controllers
                     {
 
                         message = "This Customer Account Is Not Authorized";
+                        Session["message"] = message;
                         ModelState.AddModelError("", message);
                         return View(model);
                     }
@@ -172,6 +179,7 @@ namespace Cpanel.Controllers
                     else if (response.Equals("This Account is Already exist") && infomodel.status.ToString().Equals("R"))
                     {
                         message = "This Customer Account Is Rejected";
+                        Session["message"] = message;
                         ModelState.AddModelError("", message);
                         return View(model);
 
@@ -181,6 +189,7 @@ namespace Cpanel.Controllers
                     else if (response.Equals("This Account is Already exist") && infomodel.status.ToString().Equals("D"))
                     {
                         message = "This Customer Account Is Deleted or Deactivated";
+                        Session["message"] = message;
                         ModelState.AddModelError("", message);
                         return View(model);
 
@@ -189,6 +198,7 @@ namespace Cpanel.Controllers
                     else if (response.Equals("This Account is Already exist") && infomodel.status.ToString().Equals("S"))
                     {
                         message = "This Customer Account Is Stoped";
+                        Session["message"] = message;
                         ModelState.AddModelError("", message);
                         return View(model);
 
@@ -197,6 +207,7 @@ namespace Cpanel.Controllers
                     else
                     {
                         message = "This Customer Account Is Not Register";
+                        Session["message"] = message;
                         ModelState.AddModelError("", message);
                         return View(model);
 
@@ -207,6 +218,7 @@ namespace Cpanel.Controllers
                 else
                 {
                     message = "All Fields are required ";
+                    Session["message"] = message;
                     ModelState.AddModelError("", "Something is missing" + message);
 
                 }
@@ -214,6 +226,7 @@ namespace Cpanel.Controllers
             catch (Exception ex)
             {
                 message = "Please Contact for Support";
+                 Session["message"] = message;
                 ModelState.AddModelError("", "Something is missing" + message);
 
             }
@@ -232,8 +245,8 @@ namespace Cpanel.Controllers
                 model = new Customerinfopass();
                 String userbranch = Session["user_branch"].ToString();
                 model = ds.GetUserinfoData(passedmodel.Branch);
-                model.Branches = ds.PopulateBranchs(model.BranchCode, passedmodel.Branch);
-                model.AccTypes = ds.PopulateAccountTypes(passedmodel.Branch);
+                model.Branches = ds.PopulateBranchs(model.Branch, model.CustomerID);
+                model.AccTypes = ds.PopulateAccountTypes(model.CustomerID);
                 model.Currencies = ds.PopulateCurrencies(model.CurrencyCode);
 
                 model.catgories = ds.GetGatgories();
@@ -282,7 +295,8 @@ namespace Cpanel.Controllers
                 TempData["Success"] = true;
                 ViewBag.ResponseStat = "Successful";
                 ViewBag.ResponseMSG = "Password sent to customer via sms successfully";
-                ViewBag.SuccessMessage = "Password sent to customer via SMS.";
+                ViewBag.SuccessMessage = "Password sent to customer via SMS successfully.";
+                Session["message"] = ViewBag.SuccessMessage;
                 return RedirectToAction("ResetCust");
             }
             else
@@ -291,6 +305,7 @@ namespace Cpanel.Controllers
                 ViewBag.ResponseStat = "Not Successful";
                 ViewBag.ResponseMSG = "Faild to send password sms, please try again.";
                 ViewBag.SuccessMessage = "Message was not sent to customer, Please try again.";
+                Session["message"] = ViewBag.SuccessMessage;
                 return RedirectToAction("ResetCust");
             }
         }
